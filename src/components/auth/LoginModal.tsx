@@ -38,25 +38,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
 
     setIsLoading(true);
-    try {
-      await login(email, password, role);
+    const { error } = await login(email, password);
+    
+    if (error) {
+      toast({
+        title: "Erreur de connexion",
+        description: error,
+        variant: "destructive"
+      });
+    } else {
       toast({
         title: "Connexion réussie",
-        description: `Bienvenue sur 9RIB !`
+        description: "Bienvenue sur 9RIB !"
       });
       onClose();
       // Reset form
       setEmail('');
       setPassword('');
-    } catch (error) {
-      toast({
-        title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   return (

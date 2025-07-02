@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'client' | 'artisan';
 
@@ -17,9 +19,10 @@ export interface User {
 
 export interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isLoading: boolean;
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
-  register: (email: string, password: string, name: string, role: UserRole, phone?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  register: (email: string, password: string, name: string, role: UserRole, phone?: string, cin?: string) => Promise<{ error?: string }>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
@@ -40,43 +43,67 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in on app start
-    const savedUser = localStorage.getItem('9rib_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('9rib_user');
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session);
+        setSession(session);
+        
+        if (session?.user) {
+          // Fetch user profile from profiles table
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile && !error) {
+            setUser({
+              id: profile.id,
+              email: profile.email,
+              name: profile.name,
+              role: profile.role as UserRole,
+              phone: profile.phone,
+              cin: profile.cin,
+              isVerified: profile.is_verified,
+              avatar: profile.avatar_url,
+              city: profile.city
+            });
+          }
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session);
+      // The onAuthStateChange will handle the rest
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string, role: UserRole): Promise<void> => {
+  const login = async (email: string, password: string): Promise<{ error?: string }> => {
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock user data - in real app this would come from API
-    const mockUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      name: email.split('@')[0],
-      role,
-      isVerified: Math.random() > 0.5,
-      phone: role === 'artisan' ? '+212600000000' : undefined,
-      cin: role === 'artisan' ? 'BK123456' : undefined,
-      city: 'Casablanca'
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem('9rib_user', JSON.stringify(mockUser));
-    setIsLoading(false);
+      password
+    });
+
+    if (error) {
+      setIsLoading(false);
+      return { error: error.message };
+    }
+
+    return {};
   };
 
   const register = async (
@@ -84,47 +111,66 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password: string, 
     name: string, 
     role: UserRole, 
-    phone?: string
-  ): Promise<void> => {
+    phone?: string,
+    cin?: string
+  ): Promise<{ error?: string }> => {
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const redirectUrl = `${window.location.origin}/`;
     
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
+    const { error } = await supabase.auth.signUp({
       email,
-      name,
-      role,
-      phone,
-      isVerified: false,
-      city: 'Casablanca'
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('9rib_user', JSON.stringify(newUser));
-    setIsLoading(false);
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          name,
+          role,
+          phone,
+          cin
+        }
+      }
+    });
+
+    if (error) {
+      setIsLoading(false);
+      return { error: error.message };
+    }
+
+    return {};
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('9rib_user');
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   const updateProfile = async (data: Partial<User>): Promise<void> => {
     if (!user) return;
     
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
     
-    const updatedUser = { ...user, ...data };
-    setUser(updatedUser);
-    localStorage.setItem('9rib_user', JSON.stringify(updatedUser));
+    const updateData: any = {};
+    if (data.name) updateData.name = data.name;
+    if (data.phone) updateData.phone = data.phone;
+    if (data.cin) updateData.cin = data.cin;
+    if (data.city) updateData.city = data.city;
+    if (data.avatar) updateData.avatar_url = data.avatar;
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update(updateData)
+      .eq('id', user.id);
+    
+    if (!error) {
+      setUser({ ...user, ...data });
+    }
+    
     setIsLoading(false);
   };
 
   const value: AuthContextType = {
     user,
+    session,
     isLoading,
     login,
     register,

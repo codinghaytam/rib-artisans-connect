@@ -67,15 +67,22 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     }
 
     setIsLoading(true);
-    try {
-      await register(
-        formData.email,
-        formData.password,
-        formData.name,
-        role,
-        formData.phone
-      );
-      
+    const { error } = await register(
+      formData.email,
+      formData.password,
+      formData.name,
+      role,
+      formData.phone,
+      formData.cin
+    );
+    
+    if (error) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error,
+        variant: "destructive"
+      });
+    } else {
       toast({
         title: "Inscription réussie",
         description: `Bienvenue sur 9RIB ! ${role === 'artisan' ? 'Votre profil artisan sera vérifié sous 24h.' : ''}`
@@ -91,15 +98,8 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
         phone: '',
         cin: ''
       });
-    } catch (error) {
-      toast({
-        title: "Erreur d'inscription",
-        description: "Une erreur est survenue lors de l'inscription",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   return (
