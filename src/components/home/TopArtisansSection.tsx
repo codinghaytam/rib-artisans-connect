@@ -68,13 +68,13 @@ export const TopArtisansSection: React.FC = () => {
                       {artisan.profiles?.avatar_url ? (
                         <img 
                           src={artisan.profiles.avatar_url}
-                          alt={artisan.profiles?.full_name || artisan.business_name || 'Artisan'}
+                          alt={artisan.profiles?.name || artisan.business_name || 'Artisan'}
                           className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg"
                         />
                       ) : (
                         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
                           <span className="text-2xl font-bold text-terracotta-600">
-                            {artisan.profiles?.full_name?.split(' ').map(n => n?.[0]).join('') || 
+                            {artisan.profiles?.name?.split(' ').map(n => n?.[0]).join('') || 
                              artisan.business_name?.split(' ').map(n => n?.[0]).join('') ||
                              'A'}
                           </span>
@@ -91,7 +91,7 @@ export const TopArtisansSection: React.FC = () => {
                   <div className="p-6">
                     {/* Name and Profession */}
                     <h3 className="text-xl font-bold mb-1 text-gray-800 group-hover:text-terracotta-600 transition-colors">
-                      {artisan.profiles?.full_name || artisan.business_name}
+                      {artisan.profiles?.name || artisan.business_name}
                     </h3>
                     <p className="text-terracotta-600 font-medium mb-2">
                       {artisan.categories?.name}

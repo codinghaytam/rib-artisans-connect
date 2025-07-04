@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const userProfile: User = {
               id: profile.id,
               email: profile.email,
-              name: profile.full_name || '',
+              name: profile.name || '',
               role: profile.role as UserRole,
               phone: profile.phone || undefined,
               isVerified: false, // Default value
@@ -133,7 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const userProfile: User = {
             id: profile.id,
             email: profile.email,
-            name: profile.full_name || '',
+            name: profile.name || '',
             role: profile.role as UserRole,
             phone: profile.phone || undefined,
             isVerified: false, // Default to false, will be updated below
@@ -215,7 +215,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             { 
               id: authData.user.id,
               email: email,
-              full_name: name,
+              name: name,
               role: role,
               phone: phone || null,
               cin: cin || null,
