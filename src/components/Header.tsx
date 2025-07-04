@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-700"
+                className="text-gray-700 hover:bg-transparent"
               >
                 {mobileMenuOpen ? 
                   <X className="h-6 w-6" /> : 
@@ -199,88 +199,120 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Navigation Menu - Transparent and Sleek */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-white z-50 pt-20 px-4">
-          <nav className="flex flex-col space-y-4 text-center">
-            <Link 
-              to="/" 
-              className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Accueil
-            </Link>
-            {location.pathname === '/' && onScrollToArtisans ? (
-              <button
-                className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600 bg-transparent"
-                onClick={() => {
-                  onScrollToArtisans();
-                  setMobileMenuOpen(false);
-                }}
-              >
-                Artisans
-              </button>
-            ) : (
-              <Link 
-                to="/artisans" 
-                className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Artisans
-              </Link>
-            )}
-            {location.pathname === '/' && onScrollToCategories ? (
-              <button
-                className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600 bg-transparent"
-                onClick={() => {
-                  onScrollToCategories();
-                  setMobileMenuOpen(false);
-                }}
-              >
-                Catégories
-              </button>
-            ) : (
-              <Link 
-                to="/categories" 
-                className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Catégories
-              </Link>
-            )}
-            <Link 
-              to="/contact" 
-              className="text-xl py-3 border-b border-gray-100 text-gray-800 hover:text-terracotta-600"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            
-            {/* Mobile auth buttons */}
-            {!user && (
-              <div className="flex flex-col space-y-3 mt-4">
-                <Button
-                  onClick={() => {
-                    setShowLoginModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Connexion
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowRegisterModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600"
-                >
-                  S'inscrire
-                </Button>
+        <div className="md:hidden fixed inset-0 z-50">
+          {/* Backdrop with blur effect */}
+          <div 
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          {/* Menu Content */}
+          <div className="relative bg-white/95 backdrop-blur-md shadow-2xl border-r border-gray-200/50 w-80 h-full overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-terracotta-500 to-zellige-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">9</span>
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-terracotta-600 to-zellige-700 bg-clip-text text-transparent">
+                  9RIB
+                </span>
               </div>
-            )}
-          </nav>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-gray-600 hover:bg-gray-100/50"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Navigation */}
+            <nav className="py-6">
+              <div className="space-y-1 px-4">
+                <Link 
+                  to="/" 
+                  className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Accueil
+                </Link>
+                {location.pathname === '/' && onScrollToArtisans ? (
+                  <button
+                    className="w-full text-left px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      onScrollToArtisans();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    Artisans
+                  </button>
+                ) : (
+                  <Link 
+                    to="/artisans" 
+                    className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Artisans
+                  </Link>
+                )}
+                {location.pathname === '/' && onScrollToCategories ? (
+                  <button
+                    className="w-full text-left px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    onClick={() => {
+                      onScrollToCategories();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    Catégories
+                  </button>
+                ) : (
+                  <Link 
+                    to="/categories" 
+                    className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Catégories
+                  </Link>
+                )}
+                <Link 
+                  to="/contact" 
+                  className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </div>
+              
+              {/* Mobile auth buttons */}
+              {!user && (
+                <div className="px-4 pt-6 space-y-3">
+                  <Button
+                    onClick={() => {
+                      setShowLoginModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    variant="outline"
+                    className="w-full bg-white/50 border-gray-300 hover:bg-white/80"
+                  >
+                    Connexion
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowRegisterModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                  >
+                    S'inscrire
+                  </Button>
+                </div>
+              )}
+            </nav>
+          </div>
         </div>
       )}
 
