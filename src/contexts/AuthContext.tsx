@@ -62,17 +62,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .single();
 
           if (profile && !error) {
-            setUser({
+            // Create user profile object from the database record
+            const userProfile: User = {
               id: profile.id,
               email: profile.email,
-              name: profile.name,
+              name: profile.full_name || '',
               role: profile.role as UserRole,
-              phone: profile.phone,
-              cin: profile.cin,
-              isVerified: profile.is_verified,
-              avatar: profile.avatar_url,
-              city: profile.city
-            });
+              phone: profile.phone || undefined,
+              isVerified: false, // Default value
+              avatar: profile.avatar_url || undefined
+            };
+            
+            // Check for optional/custom properties in the database
+            if ('is_verified' in profile) {
+              userProfile.isVerified = Boolean(profile.is_verified);
+            }
+            
+            if ('cin' in profile) {
+              userProfile.cin = profile.cin as string;
+            }
+            
+            if ('city' in profile) {
+              userProfile.city = profile.city as string;
+            }
+            
+            setUser(userProfile);
           }
         } else {
           setUser(null);
@@ -93,17 +107,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     setIsLoading(true);
     
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) {
+      if (error) {
+        setIsLoading(false);
+        return { error: error.message };
+      }
+      
+      // After successful login, fetch and update the user profile
+      if (data.user) {
+        // Fetch user profile from profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (profile && !profileError) {
+          // Create user profile object from the database record
+          // Checking for required properties and using defaults where necessary
+          const userProfile: User = {
+            id: profile.id,
+            email: profile.email,
+            name: profile.full_name || '',
+            role: profile.role as UserRole,
+            phone: profile.phone || undefined,
+            isVerified: false, // Default to false, will be updated below
+            avatar: profile.avatar_url || undefined
+          };
+          
+          // Check for optional/custom properties in the database
+          // These may not be in the types.ts but could exist in the actual table
+          if ('is_verified' in profile) {
+            userProfile.isVerified = Boolean(profile.is_verified);
+          }
+          
+          if ('cin' in profile) {
+            userProfile.cin = profile.cin as string;
+          }
+          
+          if ('city' in profile) {
+            userProfile.city = profile.city as string;
+          }
+          
+          setUser(userProfile);
+          setSession(data.session);
+          console.log("Login successful, user profile updated", userProfile);
+        } else {
+          console.error('Error fetching user profile:', profileError);
+        }
+      }
+      
       setIsLoading(false);
-      return { error: error.message };
+      return {};
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setIsLoading(false);
+      return { error: error.message || 'An unexpected error occurred during login' };
     }
-
-    return {};
   };
 
   const register = async (
@@ -118,23 +183,86 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          name,
-          role,
-          phone,
-          cin
+    try {
+      // Register the user
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name,
+            role,
+            phone,
+            cin
+          }
         }
+      });
+  
+      if (signUpError) {
+        setIsLoading(false);
+        return { error: signUpError.message };
       }
-    });
-
-    if (error) {
+      
+      // Auto login after successful registration
+      if (authData.user) {
+        console.log("User registered successfully, creating profile", authData.user);
+        
+        // Create user profile in the profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            { 
+              id: authData.user.id,
+              email: email,
+              full_name: name,
+              role: role,
+              phone: phone || null,
+              cin: cin || null,
+              is_active: true,
+              is_verified: role === 'client', // Auto-verify clients, artisans need verification
+            }
+          ]);
+  
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          setIsLoading(false);
+          return { error: `Registration successful, but profile creation failed: ${profileError.message}` };
+        }
+  
+        // Auto login
+        console.log("Profile created successfully, auto-logging in");
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+  
+        if (loginError) {
+          setIsLoading(false);
+          return { error: `Registration successful, but auto-login failed: ${loginError.message}` };
+        }
+        
+        // Update local user state with the newly created user
+        const userProfile = {
+          id: authData.user.id,
+          email: email,
+          name: name,
+          role: role,
+          phone: phone,
+          cin: cin,
+          isVerified: role === 'client', // Auto-verify clients, artisans need verification
+        };
+        
+        setUser(userProfile as User);
+        setSession(loginData.session);
+        console.log("Auto-login successful");
+      }
+      
+      return {};
+    } catch (error: any) {
+      console.error('Registration error:', error);
       setIsLoading(false);
-      return { error: error.message };
+      return { error: error.message || 'An unexpected error occurred during registration' };
     }
 
     return {};

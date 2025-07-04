@@ -46,17 +46,26 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         description: error,
         variant: "destructive"
       });
+      setIsLoading(false);
     } else {
-      toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur 9RIB !"
-      });
+      // Successfully logged in
+      // Close the modal first for better UX
       onClose();
+      
       // Reset form
       setEmail('');
       setPassword('');
+      setIsLoading(false);
+      
+      // Show success toast after modal is closed
+      setTimeout(() => {
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue sur 9RIB !",
+          variant: "default"
+        });
+      }, 300);
     }
-    setIsLoading(false);
   };
 
   return (

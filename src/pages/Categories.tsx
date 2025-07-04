@@ -4,60 +4,47 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Wrench, Zap, Hammer, Paintbrush, Home, Car } from 'lucide-react';
+import { 
+  Wrench, Zap, Hammer, Paintbrush, Home, Car, Building, 
+  Square, Scissors, Leaf, Sparkles, Loader2
+} from 'lucide-react';
+import { useCategories } from '@/hooks/useCategories';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const categories = [
-  {
-    id: 1,
-    name: "Plomberie",
-    description: "Installation, réparation et maintenance des systèmes de plomberie",
-    icon: Wrench,
-    count: 156,
-    color: "text-blue-600"
-  },
-  {
-    id: 2,
-    name: "Électricité",
-    description: "Services électriques résidentiels et commerciaux",
-    icon: Zap,
-    count: 124,
-    color: "text-yellow-600"
-  },
-  {
-    id: 3,
-    name: "Menuiserie",
-    description: "Travail du bois, meubles sur mesure et aménagements",
-    icon: Hammer,
-    count: 89,
-    color: "text-amber-600"
-  },
-  {
-    id: 4,
-    name: "Peinture",
-    description: "Peinture intérieure et extérieure, décoration",
-    icon: Paintbrush,
-    count: 73,
-    color: "text-purple-600"
-  },
-  {
-    id: 5,
-    name: "Rénovation",
-    description: "Rénovation complète et aménagement d'intérieur",
-    icon: Home,
-    count: 67,
-    color: "text-green-600"
-  },
-  {
-    id: 6,
-    name: "Automobile",
-    description: "Réparation et entretien automobile",
-    icon: Car,
-    count: 45,
-    color: "text-red-600"
-  }
-];
+// Map of icon names to icon components
+const iconMap = {
+  Wrench: Wrench,
+  Zap: Zap,
+  Hammer: Hammer,
+  Paintbrush: Paintbrush,
+  Home: Home,
+  Car: Car,
+  Building: Building,
+  Square: Square,
+  Scissors: Scissors,
+  Leaf: Leaf,
+  Sparkles: Sparkles
+};
+
+// Map of categories to colors
+const colorMap: Record<string, string> = {
+  "Plomberie": "text-blue-600",
+  "Électricité": "text-yellow-600",
+  "Menuiserie": "text-amber-600",
+  "Peinture": "text-purple-600",
+  "Rénovation": "text-green-600",
+  "Maçonnerie": "text-stone-600",
+  "Carrelage": "text-cyan-600",
+  "Couture": "text-pink-600",
+  "Ferronnerie": "text-gray-800",
+  "Jardinage": "text-emerald-600",
+  "Nettoyage": "text-sky-600",
+  "Automobile": "text-red-600",
+};
 
 const Categories = () => {
+  const { categories, loading, error } = useCategories();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
       <Header />
@@ -73,32 +60,50 @@ const Categories = () => {
               pour tous vos besoins.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map(category => {
-              const IconComponent = category.icon;
-              return (
-                <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                  <CardHeader className="text-center">
-                    <div className={`mx-auto mb-4 p-4 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors`}>
-                      <IconComponent className={`h-8 w-8 ${category.color}`} />
-                    </div>
-                    <CardTitle className="flex items-center justify-center gap-2">
-                      {category.name}
-                      <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-800">
-                        {category.count}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-center">
-                      {category.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-12 w-12 animate-spin text-terracotta-500" />
+              <span className="ml-2 text-lg text-gray-600">Chargement des catégories...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map(category => {
+                // Find the corresponding icon component or default to Wrench
+                const IconComponent = category.icon ? iconMap[category.icon as keyof typeof iconMap] || Wrench : Wrench;
+                // Find the corresponding color or default to blue
+                const color = colorMap[category.name] || "text-blue-600";
+                
+                return (
+                  <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
+                    <CardHeader className="text-center">
+                      <div className={`mx-auto mb-4 p-4 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors`}>
+                        <IconComponent className={`h-8 w-8 ${color}`} />
+                        {category.emoji && <span className="text-2xl ml-2">{category.emoji}</span>}
+                      </div>
+                      <CardTitle className="flex items-center justify-center gap-2">
+                        {category.name}
+                        <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-800">
+                          {category.count}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-center">
+                        {category.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
           <div className="mt-16 text-center">
             <div className="bg-white rounded-lg shadow-lg p-8">
@@ -123,5 +128,6 @@ const Categories = () => {
     </div>
   );
 };
+
 
 export default Categories;

@@ -1,11 +1,29 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, User } from 'lucide-react';
+import { MapPin, Phone, User, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const Footer: React.FC = () => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gray-900 text-white relative">
+      {/* Back to top button */}
+      <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+        <Button
+          onClick={scrollToTop}
+          className="rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white w-10 h-10 flex items-center justify-center shadow-lg"
+          size="icon"
+          aria-label="Back to top"
+        >
+          <ChevronUp className="h-5 w-5" />
+        </Button>
+      </div>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Description */}

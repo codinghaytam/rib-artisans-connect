@@ -17,6 +17,12 @@ export const SearchSection: React.FC = () => {
   const handleSearch = () => {
     console.log('Searching for:', searchTerm, 'in', selectedCity);
     // Here you would implement the actual search logic
+    
+    // Scroll to artisans section for demonstration purposes
+    const artisansSection = document.getElementById('artisans-section');
+    if (artisansSection) {
+      artisansSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (

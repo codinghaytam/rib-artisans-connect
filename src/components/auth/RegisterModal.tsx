@@ -82,13 +82,11 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
         description: error,
         variant: "destructive"
       });
+      setIsLoading(false);
     } else {
-      toast({
-        title: "Inscription réussie",
-        description: `Bienvenue sur 9RIB ! ${role === 'artisan' ? 'Votre profil artisan sera vérifié sous 24h.' : ''}`
-      });
-      
+      // Close the modal first for better UX
       onClose();
+      
       // Reset form
       setFormData({
         name: '',
@@ -98,8 +96,20 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
         phone: '',
         cin: ''
       });
+      setIsLoading(false);
+      
+      // Show success toast after modal is closed
+      setTimeout(() => {
+        toast({
+          title: "Inscription réussie",
+          description: `Bienvenue sur 9RIB ! ${role === 'artisan' 
+            ? 'Votre profil artisan sera vérifié sous 24h.' 
+            : 'Vous êtes maintenant connecté(e).'}`,
+          variant: "default",
+          duration: 6000
+        });
+      }, 300);
     }
-    setIsLoading(false);
   };
 
   return (

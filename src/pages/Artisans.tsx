@@ -1,73 +1,41 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, MapPin, Phone, Search } from 'lucide-react';
-
-// Mock data for artisans
-const mockArtisans = [
-  {
-    id: 1,
-    name: "Ahmed Benjelloun",
-    category: "Plomberie",
-    city: "Casablanca",
-    rating: 4.8,
-    reviews: 45,
-    phone: "+212 6XX-XXXXXX",
-    verified: true,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 2,
-    name: "Fatima El Alami",
-    category: "Électricité",
-    city: "Rabat",
-    rating: 4.9,
-    reviews: 32,
-    phone: "+212 6XX-XXXXXX",
-    verified: true,
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 3,
-    name: "Youssef Tazi",
-    category: "Menuiserie",
-    city: "Marrakech",
-    rating: 4.7,
-    reviews: 28,
-    phone: "+212 6XX-XXXXXX",
-    verified: true,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-  },
-  {
-    id: 4,
-    name: "Khadija Bennani",
-    category: "Peinture",
-    city: "Fès",
-    rating: 4.6,
-    reviews: 19,
-    phone: "+212 6XX-XXXXXX",
-    verified: false,
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-  }
-];
+import { Star, MapPin, Phone, Search, Loader2 } from 'lucide-react';
+import { useArtisans, useCategories, useCities } from '@/hooks/useArtisans';
+import { useToast } from '@/hooks/use-toast';
 
 const Artisans = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const { toast } = useToast();
 
-  const categories = ['Plomberie', 'Électricité', 'Menuiserie', 'Peinture', 'Maçonnerie'];
+  // Fetch data from backend
+  const { categories, loading: categoriesLoading } = useCategories();
+  const { cities, loading: citiesLoading } = useCities();
+  
+  const filters = useMemo(() => ({
+    searchTerm: searchTerm || undefined,
+    categoryId: selectedCategory || undefined,
+    cityId: selectedCity || undefined,
+  }), [searchTerm, selectedCategory, selectedCity]);
 
-  const filteredArtisans = mockArtisans.filter(artisan => {
-    const matchesSearch = artisan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         artisan.city.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || artisan.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const { artisans, loading: artisansLoading, error } = useArtisans(filters);
+
+  const handleContactArtisan = (artisanPhone: string) => {
+    toast({
+      title: "Contact",
+      description: `Numéro de téléphone copié: ${artisanPhone}`,
+    });
+    // Copy phone number to clipboard
+    navigator.clipboard.writeText(artisanPhone);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
@@ -101,62 +69,125 @@ const Artisans = () => {
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                  disabled={categoriesLoading}
                 >
                   <option value="">Toutes les catégories</option>
                   {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category.id} value={category.id}>
+                      {category.emoji ? `${category.emoji} ` : ''}{category.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                  disabled={citiesLoading}
+                >
+                  <option value="">Toutes les villes</option>
+                  {cities.map(city => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
                   ))}
                 </select>
               </div>
             </CardContent>
           </Card>
 
-          {/* Artisans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArtisans.map(artisan => (
-              <Card key={artisan.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="text-center">
-                  <img
-                    src={artisan.image}
-                    alt={artisan.name}
-                    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <CardTitle className="flex items-center justify-center gap-2">
-                    {artisan.name}
-                    {artisan.verified && (
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                        Vérifié
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <CardDescription>{artisan.category}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-center space-x-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-medium">{artisan.rating}</span>
-                    <span className="text-gray-500">({artisan.reviews} avis)</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center text-gray-600">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {artisan.city}
-                  </div>
-                  
-                  <div className="flex items-center justify-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-1" />
-                    {artisan.phone}
-                  </div>
-                  
-                  <Button className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700">
-                    Contacter
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Loading State */}
+          {artisansLoading && (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-terracotta-600" />
+              <span className="ml-2 text-lg">Chargement des artisans...</span>
+            </div>
+          )}
 
-          {filteredArtisans.length === 0 && (
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-xl text-red-600 mb-4">
+                Erreur lors du chargement des artisans
+              </p>
+              <p className="text-gray-600">{error}</p>
+            </div>
+          )}
+
+          {/* Artisans Grid */}
+          {!artisansLoading && !error && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {artisans.map(artisan => (
+                <Card key={artisan.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="text-center">
+                    <img
+                      src={artisan.profiles?.avatar_url || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face`}
+                      alt={artisan.profiles?.full_name || artisan.business_name || 'Artisan'}
+                      className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+                    />
+                    <CardTitle className="flex items-center justify-center gap-2">
+                      {artisan.profiles?.full_name || artisan.business_name}
+                      {artisan.is_verified && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          Vérifié
+                        </Badge>
+                      )}
+                      {artisan.is_featured && (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                          ⭐ Vedette
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription>
+                      {artisan.categories?.emoji ? `${artisan.categories.emoji} ` : ''}
+                      {artisan.categories?.name}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-center space-x-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-medium">{artisan.rating_average.toFixed(1)}</span>
+                      <span className="text-gray-500">({artisan.rating_count} avis)</span>
+                    </div>
+                    
+                    {artisan.cities && (
+                      <div className="flex items-center justify-center text-gray-600">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {artisan.cities.name}
+                      </div>
+                    )}
+                    
+                    {artisan.profiles?.phone && (
+                      <div className="flex items-center justify-center text-gray-600">
+                        <Phone className="h-4 w-4 mr-1" />
+                        {artisan.profiles.phone}
+                      </div>
+                    )}
+
+                    {artisan.experience_years > 0 && (
+                      <div className="text-center text-sm text-gray-600">
+                        {artisan.experience_years} ans d'expérience
+                      </div>
+                    )}
+
+                    {artisan.hourly_rate && (
+                      <div className="text-center text-sm font-medium text-terracotta-600">
+                        À partir de {artisan.hourly_rate}€/h
+                      </div>
+                    )}
+                    
+                    <Button 
+                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                      onClick={() => handleContactArtisan(artisan.profiles?.phone || '')}
+                    >
+                      Contacter
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!artisansLoading && !error && artisans.length === 0 && (
             <div className="text-center py-12">
               <p className="text-xl text-gray-600">
                 Aucun artisan trouvé pour cette recherche.

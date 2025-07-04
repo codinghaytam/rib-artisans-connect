@@ -2,8 +2,17 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MapPin, Star, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onScrollToSearch?: () => void;
+  onScrollToBecomeArtisan?: () => void;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  onScrollToSearch,
+  onScrollToBecomeArtisan
+}) => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-terracotta-50 via-white to-zellige-50">
       {/* Decorative elements */}
@@ -33,17 +42,31 @@ export const HeroSection: React.FC = () => {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white px-8 py-4 text-lg"
+              onClick={onScrollToSearch}
             >
               <User className="mr-2 h-5 w-5" />
               Trouver un artisan
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-2 border-zellige-500 text-zellige-700 hover:bg-zellige-50 px-8 py-4 text-lg"
-            >
-              Devenir artisan
-            </Button>
+            {onScrollToBecomeArtisan ? (
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-2 border-zellige-500 text-zellige-700 hover:bg-zellige-50 px-8 py-4 text-lg"
+                onClick={onScrollToBecomeArtisan}
+              >
+                Devenir artisan
+              </Button>
+            ) : (
+              <Link to="/become-artisan">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="border-2 border-zellige-500 text-zellige-700 hover:bg-zellige-50 px-8 py-4 text-lg"
+                >
+                  Devenir artisan
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Stats */}
