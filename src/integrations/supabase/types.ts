@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -900,3 +901,14 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Additional type exports for use in components
+export type ArtisanProfile = Database['public']['Tables']['artisan_profiles']['Row'] & {
+  profiles?: Database['public']['Tables']['profiles']['Row'];
+  categories?: Database['public']['Tables']['categories']['Row'];
+  cities?: Database['public']['Tables']['cities']['Row'];
+};
+
+export type Category = Database['public']['Tables']['categories']['Row'];
+
+export type City = Database['public']['Tables']['cities']['Row'];

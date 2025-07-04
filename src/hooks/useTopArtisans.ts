@@ -55,14 +55,11 @@ export const useTopArtisans = (limit: number = 4) => {
                   region
                 )
               `)
-              .eq('is_active', true)
-              .eq('is_verified', true)
-              .order('rating_average', { ascending: false })
-              .order('rating_count', { ascending: false })
-              .limit(limit);
-
+              .eq('is_active', true);
+              
             if (fetchError) {
               reject(fetchError);
+              console.error('Error fetching top artisans:', fetchError);
             } else {
               resolve(data);
             }
@@ -71,16 +68,7 @@ export const useTopArtisans = (limit: number = 4) => {
           }
         });
 
-        // Race the fetch against a timeout
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('La requête a pris trop de temps')), 8000)
-        );
-
-        const data = await Promise.race([fetchWithTimeout, timeoutPromise]);
-
-        if (isMounted) {
-          setTopArtisans(data as unknown as ArtisanProfile[]);
-        }
+        
       } catch (err) {
         console.error('Error fetching top artisans:', err);
         if (isMounted) {

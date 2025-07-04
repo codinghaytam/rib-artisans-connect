@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 export const TopArtisansSection: React.FC = () => {
   const { topArtisans, loading, error } = useTopArtisans(4);
   const { toast } = useToast();
-  console.log("Top Artisans:", topArtisans);
   const handleContactArtisan = (artisanPhone: string) => {
     toast({
       title: "Contact",
