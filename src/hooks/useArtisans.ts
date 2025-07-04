@@ -1,6 +1,32 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { ArtisanProfile, Category, City } from '@/integrations/supabase/types';
+import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
+import { handleSupabaseError } from '@/integrations/supabase/error-handling';
+import { Database } from '@/integrations/supabase/types';
+
+// Define Category type from the database
+export type Category = Database['public']['Tables']['categories']['Row'] & {
+  count?: number; // Optional count field used in category listings
+};
+
+// Define City type from the database
+export type City = Database['public']['Tables']['cities']['Row'];
+
+// Define Profile type for the user profile data
+export type Profile = {
+  id: string;
+  full_name?: string;
+  name?: string;
+  avatar_url?: string;
+  phone?: string;
+  email?: string;
+};
+
+// Define ArtisanProfile type with nested relations
+export type ArtisanProfile = Database['public']['Tables']['artisan_profiles']['Row'] & {
+  profiles?: Profile;
+  categories?: Category;
+  cities?: City;
+};
 
 export interface ArtisanFilters {
   searchTerm?: string;
@@ -15,11 +41,18 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   const fetchArtisans = async () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Check if Supabase is properly configured
+      if (!isSupabaseConfigured) {
+        throw new Error("Erreur de configuration de la base de données");
+      }
 
       let query = supabase
         .from('artisan_profiles')
@@ -82,21 +115,51 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
       setArtisans(data as unknown as ArtisanProfile[]);
     } catch (err) {
       console.error('Error fetching artisans:', err);
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      const errorMessage = handleSupabaseError(err);
+      setError(errorMessage);
+      
+      // Retry logic for network errors
+      if (retryCount < MAX_RETRIES && 
+          (err instanceof Error && 
+           (err.message.includes('network') || 
+            err.message.includes('timeout') || 
+            err.message.includes('fetch')))) {
+        console.log(`Will retry fetch (${retryCount + 1}/${MAX_RETRIES})...`);
+        setRetryCount(prev => prev + 1);
+      }
+      
+      // Empty array on error
+      setArtisans([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    let isMounted = true;
+    
+    // Set a timeout for long-running requests
+    const timeoutId = setTimeout(() => {
+      if (loading && isMounted && retryCount < MAX_RETRIES) {
+        console.warn("Artisans fetch timeout");
+        setRetryCount(prev => prev + 1);
+      }
+    }, 8000); // 8 seconds timeout before retry
+    
     fetchArtisans();
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, [
     filters.searchTerm,
     filters.categoryId,
     filters.cityId,
     filters.minRating,
     filters.isVerified,
-    filters.isAvailable
+    filters.isAvailable,
+    retryCount // Re-fetch when retry count changes
   ]);
 
   return {
@@ -113,9 +176,25 @@ export const useCategories = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured) {
+      console.error("Supabase configuration is missing");
+      if (isMounted) {
+        setError("Erreur de configuration de la base de données. Veuillez contacter l'administrateur.");
+        setLoading(false);
+      }
+      return; // Exit early if not configured
+    }
+
     const fetchCategories = async () => {
       try {
-        setLoading(true);
+        if (isMounted) {
+          setLoading(true);
+          setError(null);
+        }
+        
         const { data, error: fetchError } = await supabase
           .from('categories')
           .select('*')
@@ -123,16 +202,55 @@ export const useCategories = () => {
           .order('name');
 
         if (fetchError) throw fetchError;
-        setCategories(data);
+        
+        // Count artisans in each category
+        if (isMounted) {
+          const categoriesWithCounts = await Promise.all(
+            data.map(async (category) => {
+              const { count, error: countError } = await supabase
+                .from('artisan_profiles')
+                .select('*', { count: 'exact', head: true })
+                .eq('category_id', category.id)
+                .eq('is_active', true);
+                
+              if (countError) console.error('Error fetching count:', countError);
+              return {
+                ...category,
+                count: count || 0
+              };
+            })
+          );
+          setCategories(categoriesWithCounts);
+        }
       } catch (err) {
         console.error('Error fetching categories:', err);
-        setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+        if (isMounted) {
+          const errorMessage = handleSupabaseError(err);
+          setError(errorMessage);
+          setCategories([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchCategories();
+    
+    // Set a timeout for long-running requests
+    const timeoutId = setTimeout(() => {
+      if (loading && isMounted) {
+        console.warn("Categories fetch timeout");
+        setError("Le temps de chargement a expiré. Veuillez réessayer plus tard.");
+        setLoading(false);
+      }
+    }, 10000); // 10 seconds timeout
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return { categories, loading, error };
@@ -144,9 +262,25 @@ export const useCities = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured) {
+      console.error("Supabase configuration is missing");
+      if (isMounted) {
+        setError("Erreur de configuration de la base de données. Veuillez contacter l'administrateur.");
+        setLoading(false);
+      }
+      return; // Exit early if not configured
+    }
+
     const fetchCities = async () => {
       try {
-        setLoading(true);
+        if (isMounted) {
+          setLoading(true);
+          setError(null);
+        }
+        
         const { data, error: fetchError } = await supabase
           .from('cities')
           .select('*')
@@ -154,16 +288,39 @@ export const useCities = () => {
           .order('name');
 
         if (fetchError) throw fetchError;
-        setCities(data);
+        
+        if (isMounted) {
+          setCities(data);
+        }
       } catch (err) {
         console.error('Error fetching cities:', err);
-        setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+        if (isMounted) {
+          const errorMessage = handleSupabaseError(err);
+          setError(errorMessage);
+          setCities([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchCities();
+    
+    // Set a timeout for long-running requests
+    const timeoutId = setTimeout(() => {
+      if (loading && isMounted) {
+        console.warn("Cities fetch timeout");
+        setError("Le temps de chargement a expiré. Veuillez réessayer plus tard.");
+        setLoading(false);
+      }
+    }, 8000); // 8 seconds timeout
+    
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return { cities, loading, error };

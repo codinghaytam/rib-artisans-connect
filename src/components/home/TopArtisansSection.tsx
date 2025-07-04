@@ -9,7 +9,9 @@ import { useTopArtisans } from '@/hooks/useTopArtisans';
 import { useToast } from '@/hooks/use-toast';
 
 export const TopArtisansSection: React.FC = () => {
-  const { topArtisans, loading, error } = useTopArtisans(4);
+  // Use mock data as fallback in production environments only when all retries fail
+  const useMockData = process.env.NODE_ENV === 'production';
+  const { topArtisans, loading, error, usedMockData } = useTopArtisans(4, useMockData);
   const { toast } = useToast();
   const handleContactArtisan = (artisanPhone: string) => {
     toast({

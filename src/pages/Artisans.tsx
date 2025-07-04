@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, MapPin, Phone, Search, Loader2 } from 'lucide-react';
-import { useArtisans, useCategories, useCities } from '@/hooks/useArtisans';
+import { Star, MapPin, Phone, Search, Loader2, AlertCircle } from 'lucide-react';
+import { useArtisans, useCategories, useCities, ArtisanProfile } from '@/hooks/useArtisans';
 import { useToast } from '@/hooks/use-toast';
 
 const Artisans = () => {
@@ -105,11 +105,27 @@ const Artisans = () => {
 
           {/* Error State */}
           {error && (
-            <div className="text-center py-12">
+            <div className="text-center py-12 max-w-2xl mx-auto">
+              <div className="flex justify-center mb-6">
+                <AlertCircle className="h-16 w-16 text-red-500" />
+              </div>
               <p className="text-xl text-red-600 mb-4">
                 Erreur lors du chargement des artisans
               </p>
-              <p className="text-gray-600">{error}</p>
+              <p className="text-gray-600 mb-6">{error}</p>
+              {error.includes("configuration") || error.includes("connexion") ? (
+                <p className="text-gray-600 mb-4">
+                  Nous rencontrons actuellement des problèmes techniques. 
+                  Nos équipes travaillent à résoudre ce problème dans les plus brefs délais.
+                </p>
+              ) : (
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  className="bg-terracotta-600 hover:bg-terracotta-700"
+                >
+                  Réessayer
+                </Button>
+              )}
             </div>
           )}
 
