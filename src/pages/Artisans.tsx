@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ const Artisans = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCity, setSelectedCity] = useState('all');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Fetch data from backend
   const { categories, loading: categoriesLoading } = useCategories();
@@ -67,6 +68,10 @@ const Artisans = () => {
     });
     // Copy phone number to clipboard
     navigator.clipboard.writeText(artisanPhone);
+  };
+
+  const handleViewProfile = (artisanId: string) => {
+    navigate(`/artisan/${artisanId}`);
   };
 
   return (
@@ -177,7 +182,7 @@ const Artisans = () => {
           {!artisansLoading && !error && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {artisans.map(artisan => (
-                <Card key={artisan.id} className="hover:shadow-lg transition-shadow">
+                <Card key={artisan.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewProfile(artisan.user_id)}>
                   <CardHeader className="text-center">
                     <img
                       src={artisan.profiles?.avatar_url || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face`}
@@ -205,8 +210,8 @@ const Artisans = () => {
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-center space-x-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{artisan.rating_average.toFixed(1)}</span>
-                      <span className="text-gray-500">({artisan.rating_count} avis)</span>
+                      <span className="font-medium">{artisan.rating_average?.toFixed(1) || '0.0'}</span>
+                      <span className="text-gray-500">({artisan.rating_count || 0} avis)</span>
                     </div>
                     
                     {artisan.cities && (
@@ -223,7 +228,7 @@ const Artisans = () => {
                       </div>
                     )}
 
-                    {artisan.experience_years > 0 && (
+                    {artisan.experience_years && artisan.experience_years > 0 && (
                       <div className="text-center text-sm text-gray-600">
                         {artisan.experience_years} ans d'expérience
                       </div>
@@ -235,12 +240,27 @@ const Artisans = () => {
                       </div>
                     )}
                     
-                    <Button 
-                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
-                      onClick={() => handleContactArtisan(artisan.profiles?.phone || '')}
-                    >
-                      Contacter
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        className="flex-1 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewProfile(artisan.user_id);
+                        }}
+                      >
+                        Voir le profil
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleContactArtisan(artisan.profiles?.phone || '');
+                        }}
+                      >
+                        <Phone className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

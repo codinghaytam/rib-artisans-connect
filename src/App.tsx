@@ -9,6 +9,7 @@ import SupabaseStatusProvider from "@/contexts/SupabaseStatusProvider";
 import Index from "./pages/Index";
 import Contact from "./pages/Contact";
 import Artisans from "./pages/Artisans";
+import ArtisanProfile from "./pages/ArtisanProfile";
 import Categories from "./pages/Categories";
 import BecomeArtisan from "./pages/BecomeArtisan";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/artisans" element={<Artisans />} />
+              <Route path="/artisan/:id" element={<ArtisanProfile />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/become-artisan" element={<BecomeArtisan />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
