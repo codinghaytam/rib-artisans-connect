@@ -1,28 +1,47 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin } from 'lucide-react';
-
-const moroccanCities = [
-  'Casablanca', 'Rabat', 'Fès', 'Marrakech', 'Agadir', 'Tanger', 
-  'Meknès', 'Oujda', 'Kénitra', 'Tétouan', 'Safi', 'Mohammedia'
-];
+import { useCategories, useCities } from '@/hooks/useArtisans';
 
 export const SearchSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const navigate = useNavigate();
+
+  // Fetch categories and cities from the backend
+  const { categories } = useCategories();
+  const { cities } = useCities();
 
   const handleSearch = () => {
-    console.log('Searching for:', searchTerm, 'in', selectedCity);
-    // Here you would implement the actual search logic
+    // Build search parameters
+    const params = new URLSearchParams();
     
-    // Scroll to artisans section for demonstration purposes
-    const artisansSection = document.getElementById('artisans-section');
-    if (artisansSection) {
-      artisansSection.scrollIntoView({ behavior: 'smooth' });
+    if (searchTerm.trim()) {
+      params.set('search', searchTerm.trim());
     }
+    
+    if (selectedCategory && selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
+    }
+    
+    if (selectedCity && selectedCity !== 'all') {
+      params.set('city', selectedCity);
+    }
+    
+    // Navigate to artisans page with search parameters
+    navigate(`/artisans?${params.toString()}`);
+  };
+
+  const handleQuickSearch = (categoryName: string) => {
+    setSearchTerm(categoryName);
+    const params = new URLSearchParams();
+    params.set('search', categoryName);
+    navigate(`/artisans?${params.toString()}`);
   };
 
   return (
@@ -34,7 +53,7 @@ export const SearchSection: React.FC = () => {
           </h2>
           
           <div className="bg-white rounded-2xl shadow-xl border p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search Input */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -43,7 +62,25 @@ export const SearchSection: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 h-12 text-lg"
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
+              </div>
+
+              {/* Category Selector */}
+              <div className="relative">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="h-12 text-lg">
+                    <SelectValue placeholder="Toutes les catégories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes les catégories</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.emoji ? `${category.emoji} ` : ''}{category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* City Selector */}
@@ -54,9 +91,10 @@ export const SearchSection: React.FC = () => {
                     <SelectValue placeholder="Choisir une ville" />
                   </SelectTrigger>
                   <SelectContent>
-                    {moroccanCities.map((city) => (
-                      <SelectItem key={city} value={city.toLowerCase()}>
-                        {city}
+                    <SelectItem value="all">Toutes les villes</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city.id} value={city.id}>
+                        {city.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -76,13 +114,13 @@ export const SearchSection: React.FC = () => {
             <div className="mt-6">
               <p className="text-sm text-gray-600 mb-3">Recherches populaires :</p>
               <div className="flex flex-wrap gap-2">
-                {['Plombier', 'Électricien', 'Peintre', 'Maçon', 'Menuisier', 'Carreleur'].map((tag) => (
+                {categories.slice(0, 6).map((category) => (
                   <button
-                    key={tag}
-                    onClick={() => setSearchTerm(tag)}
+                    key={category.id}
+                    onClick={() => handleQuickSearch(category.name)}
                     className="px-4 py-2 bg-gray-100 hover:bg-terracotta-100 hover:text-terracotta-700 rounded-full text-sm transition-colors"
                   >
-                    {tag}
+                    {category.emoji ? `${category.emoji} ` : ''}{category.name}
                   </button>
                 ))}
               </div>

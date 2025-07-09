@@ -14,11 +14,10 @@ export type City = Database['public']['Tables']['cities']['Row'];
 // Define Profile type for the user profile data
 export type Profile = {
   id: string;
-  full_name?: string;
-  name?: string;
+  name: string;
   avatar_url?: string;
   phone?: string;
-  email?: string;
+  email: string;
 };
 
 // Define ArtisanProfile type with nested relations
@@ -58,19 +57,19 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
         .from('artisan_profiles')
         .select(`
           *,
-          profiles!inner (
+          profiles!user_id (
             id,
             name,
             avatar_url,
             phone,
             email
           ),
-          categories!inner (
+          categories!category_id (
             id,
             name,
             emoji
           ),
-          cities (
+          cities!city_id (
             id,
             name,
             region
@@ -138,19 +137,10 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
   useEffect(() => {
     let isMounted = true;
     
-    // Set a timeout for long-running requests
-    const timeoutId = setTimeout(() => {
-      if (loading && isMounted && retryCount < MAX_RETRIES) {
-        console.warn("Artisans fetch timeout");
-        setRetryCount(prev => prev + 1);
-      }
-    }, 8000); // 8 seconds timeout before retry
-    
     fetchArtisans();
     
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
     };
   }, [
     filters.searchTerm,
@@ -238,18 +228,8 @@ export const useCategories = () => {
 
     fetchCategories();
     
-    // Set a timeout for long-running requests
-    const timeoutId = setTimeout(() => {
-      if (loading && isMounted) {
-        console.warn("Categories fetch timeout");
-        setError("Le temps de chargement a expiré. Veuillez réessayer plus tard.");
-        setLoading(false);
-      }
-    }, 10000); // 10 seconds timeout
-    
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -308,18 +288,8 @@ export const useCities = () => {
 
     fetchCities();
     
-    // Set a timeout for long-running requests
-    const timeoutId = setTimeout(() => {
-      if (loading && isMounted) {
-        console.warn("Cities fetch timeout");
-        setError("Le temps de chargement a expiré. Veuillez réessayer plus tard.");
-        setLoading(false);
-      }
-    }, 8000); // 8 seconds timeout
-    
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
     };
   }, []);
 

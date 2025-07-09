@@ -24,7 +24,6 @@ export type City = {
 // Define Profile type for user data
 export type Profile = {
   id: string;
-  full_name?: string;
   name?: string;
   avatar_url?: string | null;
   phone?: string | null;
@@ -73,19 +72,19 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
               .from('artisan_profiles')
               .select(`
                 *,
-                profiles!inner (
+                profiles!user_id (
                   id,
-                  full_name,
+                  name,
                   avatar_url,
                   phone,
                   email
                 ),
-                categories!inner (
+                categories!category_id (
                   id,
                   name,
                   emoji
                 ),
-                cities (
+                cities!city_id (
                   id,
                   name,
                   region
@@ -222,7 +221,7 @@ export const getMockTopArtisans = (count: number = 4): ArtisanProfile[] => {
     // Nested relations
     profiles: {
       id: `user-${i+1}`,
-      full_name: `Artisan Name ${i+1}`,
+      name: `Artisan Name ${i+1}`,
       avatar_url: null,
       phone: `+212 6${i}${i} ${i}${i}${i} ${i}${i}${i}`,
       email: `artisan${i+1}@example.com`

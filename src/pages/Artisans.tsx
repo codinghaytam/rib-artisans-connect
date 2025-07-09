@@ -1,5 +1,6 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -11,19 +12,50 @@ import { useArtisans, useCategories, useCities, ArtisanProfile } from '@/hooks/u
 import { useToast } from '@/hooks/use-toast';
 
 const Artisans = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCity, setSelectedCity] = useState('all');
   const { toast } = useToast();
 
   // Fetch data from backend
   const { categories, loading: categoriesLoading } = useCategories();
   const { cities, loading: citiesLoading } = useCities();
+
+  // Initialize search filters from URL parameters
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get('search') || '';
+    const urlCategory = searchParams.get('category') || 'all';
+    const urlCity = searchParams.get('city') || 'all';
+    
+    setSearchTerm(urlSearchTerm);
+    setSelectedCategory(urlCategory);
+    setSelectedCity(urlCity);
+  }, [searchParams]);
+
+  // Update URL when filters change
+  const updateURL = (newSearchTerm: string, newCategory: string, newCity: string) => {
+    const params = new URLSearchParams();
+    
+    if (newSearchTerm.trim()) {
+      params.set('search', newSearchTerm.trim());
+    }
+    
+    if (newCategory && newCategory !== 'all') {
+      params.set('category', newCategory);
+    }
+    
+    if (newCity && newCity !== 'all') {
+      params.set('city', newCity);
+    }
+    
+    setSearchParams(params);
+  };
   
   const filters = useMemo(() => ({
     searchTerm: searchTerm || undefined,
-    categoryId: selectedCategory || undefined,
-    cityId: selectedCity || undefined,
+    categoryId: (selectedCategory && selectedCategory !== 'all') ? selectedCategory : undefined,
+    cityId: (selectedCity && selectedCity !== 'all') ? selectedCity : undefined,
   }), [searchTerm, selectedCategory, selectedCity]);
 
   const { artisans, loading: artisansLoading, error } = useArtisans(filters);
@@ -61,17 +93,25 @@ const Artisans = () => {
                   <Input
                     placeholder="Rechercher par nom ou ville..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setSearchTerm(newValue);
+                      updateURL(newValue, selectedCategory, selectedCity);
+                    }}
                     className="pl-10"
                   />
                 </div>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setSelectedCategory(newValue);
+                    updateURL(searchTerm, newValue, selectedCity);
+                  }}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                   disabled={categoriesLoading}
                 >
-                  <option value="">Toutes les catégories</option>
+                  <option value="all">Toutes les catégories</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>
                       {category.emoji ? `${category.emoji} ` : ''}{category.name}
@@ -80,11 +120,15 @@ const Artisans = () => {
                 </select>
                 <select
                   value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setSelectedCity(newValue);
+                    updateURL(searchTerm, selectedCategory, newValue);
+                  }}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                   disabled={citiesLoading}
                 >
-                  <option value="">Toutes les villes</option>
+                  <option value="all">Toutes les villes</option>
                   {cities.map(city => (
                     <option key={city.id} value={city.id}>
                       {city.name}
@@ -137,11 +181,11 @@ const Artisans = () => {
                   <CardHeader className="text-center">
                     <img
                       src={artisan.profiles?.avatar_url || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face`}
-                      alt={artisan.profiles?.full_name || artisan.business_name || 'Artisan'}
+                      alt={artisan.profiles?.name || artisan.business_name || 'Artisan'}
                       className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
                     />
                     <CardTitle className="flex items-center justify-center gap-2">
-                      {artisan.profiles?.full_name || artisan.business_name}
+                      {artisan.profiles?.name || artisan.business_name}
                       {artisan.is_verified && (
                         <Badge variant="secondary" className="bg-green-100 text-green-800">
                           Vérifié
