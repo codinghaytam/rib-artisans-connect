@@ -12,6 +12,7 @@ import Artisans from "./pages/Artisans";
 import ArtisanProfile from "./pages/ArtisanProfile";
 import Categories from "./pages/Categories";
 import BecomeArtisan from "./pages/BecomeArtisan";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/artisan/:id" element={<ArtisanProfile />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/become-artisan" element={<BecomeArtisan />} />
+              <Route path="/profile" element={<Profile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
