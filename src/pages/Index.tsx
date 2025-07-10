@@ -4,6 +4,7 @@ import { SearchSection } from '@/components/home/SearchSection';
 import { CategoriesSection } from '@/components/home/CategoriesSection';
 import { TopArtisansSection } from '@/components/home/TopArtisansSection';
 import { HeroSection } from '@/components/home/HeroSection';
+import ArtisansMapSection from '@/components/home/ArtisansMapSection';
 import { Footer } from '@/components/Footer';
 
 const Index = () => {
@@ -11,6 +12,7 @@ const Index = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const artisansRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
   
   // Function to scroll to a section
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
@@ -37,6 +39,9 @@ const Index = () => {
       </div>
       <div ref={artisansRef} id="artisans-section">
         <TopArtisansSection />
+      </div>
+      <div ref={mapRef}>
+        <ArtisansMapSection />
       </div>
       <Footer />
     </div>

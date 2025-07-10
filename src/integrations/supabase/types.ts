@@ -43,6 +43,7 @@ export type Database = {
       }
       artisan_profiles: {
         Row: {
+          address: string | null
           availability_schedule: Json | null
           business_name: string | null
           category_id: string
@@ -71,6 +72,7 @@ export type Database = {
           verification_documents: string[] | null
         }
         Insert: {
+          address?: string | null
           availability_schedule?: Json | null
           business_name?: string | null
           category_id: string
@@ -99,6 +101,7 @@ export type Database = {
           verification_documents?: string[] | null
         }
         Update: {
+          address?: string | null
           availability_schedule?: Json | null
           business_name?: string | null
           category_id?: string
