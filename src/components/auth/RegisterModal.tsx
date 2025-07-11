@@ -124,7 +124,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
     
     try {
       // Register the user first
-      const { error: authError } = await register(
+      const { error: authError, needsEmailConfirmation } = await register(
         formData.email,
         formData.password,
         formData.name,
@@ -139,6 +139,18 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({
           description: authError,
           variant: "destructive"
         });
+        setIsLoading(false);
+        return;
+      }
+
+      if (needsEmailConfirmation) {
+        toast({
+          title: "Vérification d'email requise",
+          description: "Un email de confirmation a été envoyé à votre adresse. Veuillez cliquer sur le lien dans l'email pour activer votre compte.",
+          variant: "default",
+          duration: 8000
+        });
+        onClose();
         setIsLoading(false);
         return;
       }

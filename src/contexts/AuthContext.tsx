@@ -22,7 +22,7 @@ export interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (email: string, password: string, name: string, role: UserRole, phone?: string, cin?: string) => Promise<{ error?: string }>;
+  register: (email: string, password: string, name: string, role: UserRole, phone?: string, cin?: string) => Promise<{ error?: string, needsEmailConfirmation?: boolean }>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     role: UserRole, 
     phone?: string,
     cin?: string
-  ): Promise<{ error?: string }> => {
+  ): Promise<{ error?: string, needsEmailConfirmation?: boolean }> => {
     setIsLoading(true);
     
     const redirectUrl = `${window.location.origin}/`;
@@ -204,9 +204,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error: signUpError.message };
       }
       
-      // Auto login after successful registration
-      if (authData.user) {
-        console.log("User registered successfully, creating profile", authData.user);
+      // Check if email confirmation is required
+      if (authData.user && !authData.session) {
+        console.log("User registered successfully, but email confirmation required");
+        setIsLoading(false);
+        return { needsEmailConfirmation: true };
+      }
+      
+      // If we have a session, the user is confirmed and logged in
+      if (authData.user && authData.session) {
+        console.log("User registered and logged in successfully", authData.user);
         
         // Create user profile in the profiles table
         const { error: profileError } = await supabase
@@ -229,18 +236,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setIsLoading(false);
           return { error: `Registration successful, but profile creation failed: ${profileError.message}` };
         }
-  
-        // Auto login
-        console.log("Profile created successfully, auto-logging in");
-        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-  
-        if (loginError) {
-          setIsLoading(false);
-          return { error: `Registration successful, but auto-login failed: ${loginError.message}` };
-        }
         
         // Update local user state with the newly created user
         const userProfile = {
@@ -254,18 +249,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         
         setUser(userProfile as User);
-        setSession(loginData.session);
-        console.log("Auto-login successful");
+        setSession(authData.session);
+        console.log("Registration and login successful");
       }
       
+      setIsLoading(false);
       return {};
     } catch (error: any) {
       console.error('Registration error:', error);
       setIsLoading(false);
       return { error: error.message || 'An unexpected error occurred during registration' };
     }
-
-    return {};
   };
 
   const logout = async () => {
