@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,12 +7,28 @@ import { Star, MapPin, Phone, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTopArtisans } from '@/hooks/useTopArtisans';
 import { useToast } from '@/hooks/use-toast';
+import { useArtisanMap } from '@/contexts/ArtisanMapContext';
 
 export const TopArtisansSection: React.FC = () => {
   // Use mock data as fallback in production environments only when all retries fail
   const useMockData = process.env.NODE_ENV === 'production';
   const { topArtisans, loading, error, usedMockData } = useTopArtisans(4, useMockData);
   const { toast } = useToast();
+  const { 
+    setArtisans, 
+    flyToArtisan, 
+    setHoveredArtisan, 
+    hoveredArtisan,
+    selectedArtisan 
+  } = useArtisanMap();
+
+  // Update context with artisans data
+  useEffect(() => {
+    if (topArtisans.length > 0) {
+      setArtisans(topArtisans);
+    }
+  }, [topArtisans, setArtisans]);
+
   const handleContactArtisan = (artisanPhone: string) => {
     toast({
       title: "Contact",
@@ -20,6 +36,15 @@ export const TopArtisansSection: React.FC = () => {
     });
     // Copy phone number to clipboard
     navigator.clipboard.writeText(artisanPhone);
+  };
+
+  const handleShowOnMap = (artisan: any) => {
+    flyToArtisan(artisan);
+    // Scroll to map section
+    const mapSection = document.querySelector('[data-section="map"]');
+    if (mapSection) {
+      mapSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -59,8 +84,12 @@ export const TopArtisansSection: React.FC = () => {
                 key={artisan.id}
               >
                 <Card 
-                  className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
+                  className={`group hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1 ${
+                    selectedArtisan?.user_id === artisan.id ? 'ring-2 ring-primary' : ''
+                  } ${hoveredArtisan?.user_id === artisan.id ? 'shadow-lg' : ''}`}
                   style={{ animationDelay: `${index * 150}ms` }}
+                  onMouseEnter={() => setHoveredArtisan(artisan)}
+                  onMouseLeave={() => setHoveredArtisan(null)}
                 >
                 <CardContent className="p-0">
                   {/* Image and Badge */}
@@ -160,15 +189,35 @@ export const TopArtisansSection: React.FC = () => {
                       </div>
                     )}
 
-                  {/* Contact Button */}
-                  <Button 
-                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
-                    size="sm"
-                    onClick={() => handleContactArtisan(artisan.profiles?.phone || '')}
-                  >
-                    <Phone className="h-4 w-4 mr-2" />
-                    Contacter
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleContactArtisan(artisan.profiles?.phone || '');
+                      }}
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Contacter
+                    </Button>
+                    
+                    {artisan.address && (
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-terracotta-300 text-terracotta-600 hover:bg-terracotta-50"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleShowOnMap(artisan);
+                        }}
+                      >
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Voir sur la carte
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

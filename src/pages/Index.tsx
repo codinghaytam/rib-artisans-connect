@@ -6,6 +6,7 @@ import { TopArtisansSection } from '@/components/home/TopArtisansSection';
 import { HeroSection } from '@/components/home/HeroSection';
 import ArtisansMapSection from '@/components/home/ArtisansMapSection';
 import { Footer } from '@/components/Footer';
+import { ArtisanMapProvider } from '@/contexts/ArtisanMapContext';
 
 const Index = () => {
   // Create refs for each section
@@ -22,29 +23,31 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
-      <Header 
-        onScrollToSearch={() => scrollToSection(searchRef)}
-        onScrollToCategories={() => scrollToSection(categoriesRef)}
-        onScrollToArtisans={() => scrollToSection(artisansRef)}
-      />
-      <HeroSection 
-        onScrollToSearch={() => scrollToSection(searchRef)}
-      />
-      <div ref={searchRef}>
-        <SearchSection />
+    <ArtisanMapProvider>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+        <Header 
+          onScrollToSearch={() => scrollToSection(searchRef)}
+          onScrollToCategories={() => scrollToSection(categoriesRef)}
+          onScrollToArtisans={() => scrollToSection(artisansRef)}
+        />
+        <HeroSection 
+          onScrollToSearch={() => scrollToSection(searchRef)}
+        />
+        <div ref={searchRef}>
+          <SearchSection />
+        </div>
+        <div ref={categoriesRef}>
+          <CategoriesSection />
+        </div>
+        <div ref={artisansRef} id="artisans-section">
+          <TopArtisansSection />
+        </div>
+        <div ref={mapRef} data-section="map">
+          <ArtisansMapSection />
+        </div>
+        <Footer />
       </div>
-      <div ref={categoriesRef}>
-        <CategoriesSection />
-      </div>
-      <div ref={artisansRef} id="artisans-section">
-        <TopArtisansSection />
-      </div>
-      <div ref={mapRef}>
-        <ArtisansMapSection />
-      </div>
-      <Footer />
-    </div>
+    </ArtisanMapProvider>
   );
 };
 

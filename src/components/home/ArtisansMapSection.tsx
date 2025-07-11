@@ -2,29 +2,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
-
-type ArtisanProfile = Database['public']['Tables']['artisan_profiles']['Row'] & {
-  profiles: {
-    name: string;
-    avatar_url: string | null;
-  };
-  categories: {
-    name: string;
-    emoji: string | null;
-  };
-};
+import { useArtisanMap } from '@/contexts/ArtisanMapContext';
 
 const ArtisansMapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState('');
-  const [artisans, setArtisans] = useState<ArtisanProfile[]>([]);
   const navigate = useNavigate();
+  const { 
+    artisans, 
+    setArtisans, 
+    mapRef, 
+    markersRef, 
+    selectedArtisan,
+    setSelectedArtisan,
+    hoveredArtisan 
+  } = useArtisanMap();
 
   // Fetch artisans with locations
   const fetchArtisans = async () => {
@@ -32,13 +28,22 @@ const ArtisansMapSection = () => {
       .from('artisan_profiles')
       .select(`
         *,
-        profiles!inner (
+        profiles!user_id (
+          id,
           name,
-          avatar_url
+          avatar_url,
+          phone,
+          email
         ),
-        categories!inner (
+        categories!category_id (
+          id,
           name,
           emoji
+        ),
+        cities!city_id (
+          id,
+          name,
+          region
         )
       `)
       .not('address', 'is', null)
@@ -78,23 +83,27 @@ const ArtisansMapSection = () => {
 
     mapboxgl.accessToken = mapboxToken;
     
-    map.current = new mapboxgl.Map({
+    mapRef.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [-7.6167, 33.5167], // Morocco center (Casablanca)
       zoom: 6,
     });
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     return () => {
-      map.current?.remove();
+      mapRef.current?.remove();
     };
   }, [mapboxToken]);
 
   // Add artisan markers
   useEffect(() => {
-    if (!map.current || !artisans.length || !mapboxToken) return;
+    if (!mapRef.current || !artisans.length || !mapboxToken) return;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
 
     const addMarkers = async () => {
       for (const artisan of artisans) {
@@ -105,12 +114,25 @@ const ArtisansMapSection = () => {
 
         // Create marker element
         const markerElement = document.createElement('div');
-        markerElement.className = 'artisan-marker';
+        markerElement.className = 'artisan-marker transition-all duration-200';
+        markerElement.dataset.artisanId = artisan.user_id;
         markerElement.innerHTML = `
           <div class="w-10 h-10 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
             <span class="text-white text-lg">${artisan.categories?.emoji || '🔧'}</span>
           </div>
         `;
+
+        // Add hover effects
+        markerElement.addEventListener('mouseenter', () => {
+          setSelectedArtisan(artisan);
+          markerElement.style.transform = 'scale(1.1)';
+        });
+
+        markerElement.addEventListener('mouseleave', () => {
+          if (hoveredArtisan?.user_id !== artisan.user_id) {
+            markerElement.style.transform = 'scale(1)';
+          }
+        });
 
         // Create popup content
         const popupContent = `
@@ -118,12 +140,12 @@ const ArtisansMapSection = () => {
             <div class="flex items-center gap-2 mb-2">
               <img 
                 src="${artisan.profiles?.avatar_url || '/placeholder.svg'}" 
-                alt="${artisan.profiles?.name}"
+                alt="${artisan.profiles?.name || 'Artisan'}"
                 class="w-8 h-8 rounded-full object-cover"
               />
               <div>
-                <h3 class="font-semibold text-sm">${artisan.profiles?.name}</h3>
-                <p class="text-xs text-gray-600">${artisan.categories?.name}</p>
+                <h3 class="font-semibold text-sm">${artisan.profiles?.name || artisan.business_name || 'Artisan'}</h3>
+                <p class="text-xs text-gray-600">${artisan.categories?.name || 'Artisan'}</p>
               </div>
             </div>
             <p class="text-xs text-gray-700 mb-2">${artisan.business_name || ''}</p>
@@ -139,10 +161,12 @@ const ArtisansMapSection = () => {
 
         const popup = new mapboxgl.Popup({ offset: 15 }).setHTML(popupContent);
 
-        new mapboxgl.Marker(markerElement)
+        const marker = new mapboxgl.Marker(markerElement)
           .setLngLat(coordinates)
           .setPopup(popup)
-          .addTo(map.current!);
+          .addTo(mapRef.current!);
+
+        markersRef.current.push(marker);
       }
     };
 
@@ -156,7 +180,7 @@ const ArtisansMapSection = () => {
     return () => {
       delete (window as any).navigateToArtisan;
     };
-  }, [artisans, mapboxToken, navigate]);
+  }, [artisans, mapboxToken, navigate, setSelectedArtisan, hoveredArtisan]);
 
   useEffect(() => {
     fetchArtisans();
