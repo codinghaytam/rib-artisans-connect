@@ -110,21 +110,7 @@ export const SearchSection: React.FC = () => {
               </Button>
             </div>
 
-            {/* Quick Search Tags */}
-            <div className="mt-6">
-              <p className="text-sm text-gray-600 mb-3">Recherches populaires :</p>
-              <div className="flex flex-wrap gap-2">
-                {categories.slice(0, 6).map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleQuickSearch(category.name)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-terracotta-100 hover:text-terracotta-700 rounded-full text-sm transition-colors"
-                  >
-                    {category.emoji ? `${category.emoji} ` : ''}{category.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+           
           </div>
         </div>
       </div>
