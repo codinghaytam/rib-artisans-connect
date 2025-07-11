@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { Loader } from '@googlemaps/js-api-loader';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useNavigate } from 'react-router-dom';
@@ -19,11 +18,18 @@ type ArtisanProfile = Database['public']['Tables']['artisan_profiles']['Row'] & 
   };
 };
 
+declare global {
+  interface Window {
+    google: typeof google;
+  }
+}
+
 const ArtisansMapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
+  const map = useRef<google.maps.Map | null>(null);
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState('');
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([]);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
   const navigate = useNavigate();
 
   // Fetch artisans with locations
@@ -52,18 +58,19 @@ const ArtisansMapSection = () => {
     setArtisans(data || []);
   };
 
-  // Geocode address to coordinates
+  // Geocode address to coordinates using Google Maps Geocoding API
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
-    if (!mapboxToken) return null;
+    if (!googleMapsApiKey) return null;
     
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&country=MA&limit=1`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&region=ma&key=${googleMapsApiKey}`
       );
       const data = await response.json();
       
-      if (data.features && data.features.length > 0) {
-        return data.features[0].center;
+      if (data.results && data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+        return [location.lng, location.lat];
       }
     } catch (error) {
       console.error('Geocoding error:', error);
@@ -72,29 +79,41 @@ const ArtisansMapSection = () => {
     return null;
   };
 
-  // Initialize map
+  // Initialize Google Maps
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current || !googleMapsApiKey || isMapLoaded) return;
 
-    mapboxgl.accessToken = mapboxToken;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-7.6167, 33.5167], // Morocco center (Casablanca)
-      zoom: 6,
+    const loader = new Loader({
+      apiKey: googleMapsApiKey,
+      version: 'weekly',
+      libraries: ['places', 'marker']
     });
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    loader.load().then(() => {
+      if (!mapContainer.current) return;
+
+      map.current = new window.google.maps.Map(mapContainer.current, {
+        center: { lat: 33.5167, lng: -7.6167 }, // Morocco center (Casablanca)
+        zoom: 6,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        mapId: 'artisans-map'
+      });
+
+      setIsMapLoaded(true);
+    }).catch(error => {
+      console.error('Error loading Google Maps:', error);
+    });
 
     return () => {
-      map.current?.remove();
+      setIsMapLoaded(false);
     };
-  }, [mapboxToken]);
+  }, [googleMapsApiKey, isMapLoaded]);
 
   // Add artisan markers
   useEffect(() => {
-    if (!map.current || !artisans.length || !mapboxToken) return;
+    if (!map.current || !artisans.length || !isMapLoaded) return;
 
     const addMarkers = async () => {
       for (const artisan of artisans) {
@@ -103,7 +122,7 @@ const ArtisansMapSection = () => {
         const coordinates = await geocodeAddress(artisan.address);
         if (!coordinates) continue;
 
-        // Create marker element
+        // Create custom marker element
         const markerElement = document.createElement('div');
         markerElement.className = 'artisan-marker';
         markerElement.innerHTML = `
@@ -112,8 +131,8 @@ const ArtisansMapSection = () => {
           </div>
         `;
 
-        // Create popup content
-        const popupContent = `
+        // Create info window content
+        const infoWindowContent = `
           <div class="p-2 min-w-[200px]">
             <div class="flex items-center gap-2 mb-2">
               <img 
@@ -130,25 +149,43 @@ const ArtisansMapSection = () => {
             <p class="text-xs text-gray-600 mb-2">${artisan.address}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
-              class="w-full bg-primary text-white text-xs py-1 px-2 rounded hover:bg-primary/90 transition-colors"
+              class="w-full bg-blue-600 text-white text-xs py-1 px-2 rounded hover:bg-blue-700 transition-colors"
             >
               Voir le profil
             </button>
           </div>
         `;
 
-        const popup = new mapboxgl.Popup({ offset: 15 }).setHTML(popupContent);
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: infoWindowContent,
+        });
 
-        new mapboxgl.Marker(markerElement)
-          .setLngLat(coordinates)
-          .setPopup(popup)
-          .addTo(map.current!);
+        // Use regular marker for better compatibility
+        const marker = new window.google.maps.Marker({
+          position: { lat: coordinates[1], lng: coordinates[0] },
+          map: map.current,
+          icon: {
+            url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+              <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="18" fill="hsl(var(--primary))" stroke="white" stroke-width="2"/>
+                <text x="20" y="28" text-anchor="middle" font-size="16" fill="white">${artisan.categories?.emoji || '🔧'}</text>
+              </svg>
+            `)}`,
+            scaledSize: new window.google.maps.Size(40, 40),
+            anchor: new window.google.maps.Point(20, 20)
+          }
+        });
+
+        // Add click listener to marker
+        marker.addListener('click', () => {
+          infoWindow.open(map.current, marker);
+        });
       }
     };
 
     addMarkers();
 
-    // Global navigation function for popup buttons
+    // Global navigation function for info window buttons
     (window as any).navigateToArtisan = (userId: string) => {
       navigate(`/artisan/${userId}`);
     };
@@ -156,13 +193,13 @@ const ArtisansMapSection = () => {
     return () => {
       delete (window as any).navigateToArtisan;
     };
-  }, [artisans, mapboxToken, navigate]);
+  }, [artisans, isMapLoaded, navigate]);
 
   useEffect(() => {
     fetchArtisans();
   }, []);
 
-  if (!mapboxToken) {
+  if (!googleMapsApiKey) {
     return (
       <section className="py-16 bg-gradient-to-br from-secondary/20 to-accent/20">
         <div className="container mx-auto px-4">
@@ -171,7 +208,7 @@ const ArtisansMapSection = () => {
               Trouvez des Artisans Près de Chez Vous
             </h2>
             <p className="text-muted-foreground mb-6">
-              Entrez votre token Mapbox pour voir la carte interactive des artisans
+              Entrez votre clé API Google Maps pour voir la carte interactive des artisans
             </p>
           </div>
           
@@ -179,23 +216,23 @@ const ArtisansMapSection = () => {
             <div className="flex gap-2">
               <Input
                 type="text"
-                placeholder="Entrez votre token Mapbox..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
+                placeholder="Entrez votre clé API Google Maps..."
+                value={googleMapsApiKey}
+                onChange={(e) => setGoogleMapsApiKey(e.target.value)}
               />
-              <Button onClick={() => setMapboxToken(mapboxToken)}>
+              <Button onClick={() => setGoogleMapsApiKey(googleMapsApiKey)}>
                 <MapPin className="w-4 h-4" />
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Obtenez votre token sur{' '}
+              Obtenez votre clé API sur{' '}
               <a 
-                href="https://mapbox.com/" 
+                href="https://console.cloud.google.com/google/maps-apis" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                mapbox.com
+                Google Cloud Console
               </a>
             </p>
           </div>
