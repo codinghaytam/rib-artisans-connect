@@ -263,7 +263,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    setIsLoading(true);
+    
+    try {
+      // Sign out from Supabase (backend)
+      await supabase.auth.signOut();
+      
+      // Clear local state explicitly
+      setUser(null);
+      setSession(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateProfile = async (data: Partial<User>): Promise<void> => {
