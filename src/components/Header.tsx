@@ -186,6 +186,13 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     Connexion
                   </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowRegisterModal(true)}
+                    className="text-terracotta-600 border-terracotta-600 hover:bg-terracotta-50"
+                  >
+                    S'inscrire
+                  </Button>
                   <Link to="/become-artisan">
                     <Button className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white">
                       Devenir Artisan
@@ -298,6 +305,16 @@ export const Header: React.FC<HeaderProps> = ({
                     className="w-full bg-white/50 border-gray-300 hover:bg-white/80"
                   >
                     Connexion
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowRegisterModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    variant="outline"
+                    className="w-full bg-white/50 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
+                  >
+                    S'inscrire
                   </Button>
                   <Link to="/become-artisan" className="w-full">
                     <Button
