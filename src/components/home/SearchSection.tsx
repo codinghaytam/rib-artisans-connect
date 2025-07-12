@@ -104,7 +104,7 @@ export const SearchSection: React.FC = () => {
               {/* Search Button */}
               <Button 
                 onClick={handleSearch}
-                className="h-12 text-lg bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                className="h-12 text-lg bg-secondary hover:bg-secondary/90"
               >
                 Rechercher
               </Button>

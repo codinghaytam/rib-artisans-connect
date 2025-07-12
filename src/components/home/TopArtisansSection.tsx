@@ -61,8 +61,8 @@ export const TopArtisansSection: React.FC = () => {
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-12 w-12 animate-spin text-terracotta-500" />
-            <span className="ml-2 text-lg text-gray-600">Chargement des artisans...</span>
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <span className="ml-2 text-lg text-muted-foreground">Chargement des artisans...</span>
           </div>
         ) : error ? (
           <div className="text-center py-10 max-w-xl mx-auto">
@@ -72,7 +72,7 @@ export const TopArtisansSection: React.FC = () => {
                 "Nous rencontrons actuellement des problèmes techniques. Nos équipes travaillent à résoudre ce problème." : 
                 "Veuillez réessayer plus tard ou consulter la liste complète des artisans."}
             </p>
-            <Link to="/artisans" className="text-terracotta-600 hover:underline">
+            <Link to="/artisans" className="text-primary hover:underline">
               Voir tous les artisans
             </Link>
           </div>
@@ -94,7 +94,7 @@ export const TopArtisansSection: React.FC = () => {
                 <CardContent className="p-0">
                   {/* Image and Badge */}
                   <div className="relative">
-                    <div className="h-48 bg-gradient-to-br from-terracotta-100 to-zellige-100 rounded-t-lg flex items-center justify-center">
+                    <div className="h-48 bg-muted rounded-t-lg flex items-center justify-center">
                       {artisan.profiles?.avatar_url ? (
                         <img 
                           src={artisan.profiles.avatar_url}
@@ -103,7 +103,7 @@ export const TopArtisansSection: React.FC = () => {
                         />
                       ) : (
                         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
-                          <span className="text-2xl font-bold text-terracotta-600">
+                          <span className="text-2xl font-bold text-secondary">
                             {artisan.profiles?.name?.split(' ').map(n => n?.[0]).join('') || 
                              artisan.business_name?.split(' ').map(n => n?.[0]).join('') ||
                              'A'}
@@ -120,15 +120,15 @@ export const TopArtisansSection: React.FC = () => {
 
                   <div className="p-6">
                     {/* Name and Profession */}
-                    <h3 className="text-xl font-bold mb-1 text-gray-800 group-hover:text-terracotta-600 transition-colors">
+                    <h3 className="text-xl font-bold mb-1 text-foreground group-hover:text-primary transition-colors">
                       {artisan.profiles?.name || artisan.business_name}
                     </h3>
-                    <p className="text-terracotta-600 font-medium mb-2">
+                    <p className="text-secondary font-medium mb-2">
                       {artisan.categories?.name}
                     </p>
 
                     {/* Location */}
-                    <div className="flex items-center text-gray-600 mb-3">
+                    <div className="flex items-center text-muted-foreground mb-3">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span className="text-sm">{artisan.cities?.name || 'Maroc'}</span>
                     </div>
@@ -136,12 +136,12 @@ export const TopArtisansSection: React.FC = () => {
                     {/* Rating */}
                     <div className="flex items-center mb-3">
                       <div className="flex items-center">
-                        <Star className="h-5 w-5 text-gold-500 fill-current" />
-                        <span className="font-bold text-gray-800 ml-1">
+                        <Star className="h-5 w-5 text-accent fill-current" />
+                        <span className="font-bold text-foreground ml-1">
                           {artisan.rating_average?.toFixed(1)}
                         </span>
                       </div>
-                      <span className="text-gray-600 text-sm ml-2">
+                      <span className="text-muted-foreground text-sm ml-2">
                         ({artisan.rating_count} avis)
                       </span>
                     </div>
@@ -154,7 +154,7 @@ export const TopArtisansSection: React.FC = () => {
                             <Badge 
                               key={specialty} 
                               variant="secondary" 
-                              className="text-xs bg-terracotta-50 text-terracotta-700"
+                              className="text-xs"
                             >
                               {specialty}
                             </Badge>
@@ -168,7 +168,7 @@ export const TopArtisansSection: React.FC = () => {
                       ) : (
                         <Badge 
                           variant="secondary" 
-                          className="text-xs bg-terracotta-50 text-terracotta-700"
+                          className="text-xs"
                         >
                           {artisan.categories?.name}
                         </Badge>
@@ -177,14 +177,14 @@ export const TopArtisansSection: React.FC = () => {
                     
                     {/* Experience Years */}
                     {artisan.experience_years > 0 && (
-                      <div className="text-center text-sm text-gray-600 mb-3">
+                      <div className="text-center text-sm text-muted-foreground mb-3">
                         {artisan.experience_years} ans d'expérience
                       </div>
                     )}
                     
                     {/* Hourly Rate */}
                     {artisan.hourly_rate && (
-                      <div className="text-center text-sm font-medium text-terracotta-600 mb-3">
+                      <div className="text-center text-sm font-medium text-secondary mb-3">
                         À partir de {artisan.hourly_rate}€/h
                       </div>
                     )}
@@ -192,7 +192,7 @@ export const TopArtisansSection: React.FC = () => {
                   {/* Action Buttons */}
                   <div className="space-y-2">
                     <Button 
-                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                      className="w-full bg-secondary hover:bg-secondary/90"
                       size="sm"
                       onClick={(e) => {
                         e.preventDefault();
@@ -207,7 +207,7 @@ export const TopArtisansSection: React.FC = () => {
                       <Button 
                         variant="outline"
                         size="sm"
-                        className="w-full border-terracotta-300 text-terracotta-600 hover:bg-terracotta-50"
+                        className="w-full"
                         onClick={(e) => {
                           e.preventDefault();
                           handleShowOnMap(artisan);
@@ -231,7 +231,6 @@ export const TopArtisansSection: React.FC = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-terracotta-500 text-terracotta-600 hover:bg-terracotta-50"
             >
               Voir tous les artisans
             </Button>

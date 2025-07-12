@@ -49,8 +49,8 @@ export const CategoriesSection: React.FC = () => {
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-12 w-12 animate-spin text-terracotta-500" />
-            <span className="ml-2 text-lg text-gray-600">Chargement des catégories...</span>
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <span className="ml-2 text-lg text-muted-foreground">Chargement des catégories...</span>
           </div>
         ) : error ? (
           <div className="text-center py-10 max-w-xl mx-auto">
@@ -60,7 +60,7 @@ export const CategoriesSection: React.FC = () => {
                 "Nous rencontrons actuellement des problèmes techniques. Nos équipes travaillent à résoudre ce problème." : 
                 "Veuillez réessayer plus tard ou consulter la liste complète des catégories."}
             </p>
-            <Link to="/categories" className="text-terracotta-600 hover:underline">
+            <Link to="/categories" className="text-primary hover:underline">
               Voir toutes les catégories
             </Link>
           </div>
@@ -77,13 +77,13 @@ export const CategoriesSection: React.FC = () => {
                     <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                       {category.emoji || '🔨'}
                     </div>
-                    <h3 className="text-xl font-bold mb-2 text-gray-800 group-hover:text-terracotta-600 transition-colors">
+                    <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors">
                       {category.name}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-3">
+                    <p className="text-muted-foreground text-sm mb-3">
                       {category.description}
                     </p>
-                    <div className="text-terracotta-600 font-semibold">
+                    <div className="text-secondary font-semibold">
                       {category.count || 0} artisans
                     </div>
                   </CardContent>
@@ -94,7 +94,7 @@ export const CategoriesSection: React.FC = () => {
         )}
 
         <div className="text-center mt-10">
-          <Link to="/categories" className="text-terracotta-600 hover:text-terracotta-700 font-semibold text-lg hover:underline transition-colors">
+          <Link to="/categories" className="text-primary hover:text-primary/80 font-semibold text-lg hover:underline transition-colors">
             Voir toutes les catégories →
           </Link>
         </div>
