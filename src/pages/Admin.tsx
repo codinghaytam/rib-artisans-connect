@@ -13,10 +13,13 @@ import { Navigate } from "react-router-dom";
 const Admin = () => {
   const { user } = useAuth();
 
-  // For now, redirect if not user (will add admin check after creating admin users)
+  // Check if user is authenticated and has admin role
   if (!user) {
     return <Navigate to="/" replace />;
   }
+
+  // For now, allow any authenticated user to access admin (temporarily)
+  // TODO: Add proper admin role check when admin users are created
 
   return (
     <div className="min-h-screen bg-background">
