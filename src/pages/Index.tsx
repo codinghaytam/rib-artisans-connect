@@ -24,7 +24,7 @@ const Index = () => {
 
   return (
     <ArtisanMapProvider>
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+      <div className="min-h-screen bg-background">
         <Header 
           onScrollToSearch={() => scrollToSection(searchRef)}
           onScrollToCategories={() => scrollToSection(categoriesRef)}
