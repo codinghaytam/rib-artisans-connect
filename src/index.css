@@ -8,27 +8,27 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Moroccan Artisan Marketplace Theme */
-    --background: 220 14% 98%;
-    --foreground: 224 71% 8%;
+    /* Moroccan Artisan Marketplace Theme - Deep Navy & Gold */
+    --background: 220 20% 98%;
+    --foreground: 225 100% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 224 71% 8%;
+    --card-foreground: 225 100% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 8%;
+    --popover-foreground: 225 100% 12%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 225 100% 15%;
+    --primary-foreground: 51 100% 50%;
 
-    --secondary: 25 76% 31%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 51 100% 50%;
+    --secondary-foreground: 225 100% 15%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 13% 46%;
+    --muted: 220 20% 95%;
+    --muted-foreground: 225 30% 40%;
 
-    --accent: 51 100% 50%;
-    --accent-foreground: 0 0% 29%;
+    --accent: 45 100% 60%;
+    --accent-foreground: 225 100% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -36,9 +36,9 @@ All colors MUST be HSL.
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --border: 220 20% 90%;
+    --input: 220 20% 95%;
+    --ring: 51 100% 50%;
 
     --radius: 0.75rem;
 
@@ -60,27 +60,27 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode variants for Moroccan theme */
-    --background: 224 71% 4%;
-    --foreground: 220 14% 98%;
+    /* Dark mode variants - Deep Navy & Gold Theme */
+    --background: 225 100% 8%;
+    --foreground: 51 100% 80%;
 
-    --card: 224 71% 8%;
-    --card-foreground: 220 14% 98%;
+    --card: 225 100% 12%;
+    --card-foreground: 51 100% 80%;
 
-    --popover: 224 71% 8%;
-    --popover-foreground: 220 14% 98%;
+    --popover: 225 100% 12%;
+    --popover-foreground: 51 100% 80%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 51 100% 60%;
+    --primary-foreground: 225 100% 12%;
 
-    --secondary: 25 76% 35%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 225 100% 20%;
+    --secondary-foreground: 51 100% 80%;
 
-    --muted: 220 13% 15%;
-    --muted-foreground: 220 13% 65%;
+    --muted: 225 50% 15%;
+    --muted-foreground: 51 50% 60%;
 
-    --accent: 51 100% 50%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 45 100% 70%;
+    --accent-foreground: 225 100% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -88,9 +88,9 @@ All colors MUST be HSL.
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
-    --ring: 217 91% 60%;
+    --border: 225 50% 20%;
+    --input: 225 50% 20%;
+    --ring: 51 100% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
