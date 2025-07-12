@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-terracotta-50 via-white to-zellige-50">
       {/* Background image */}
-      <div className="absolute inset-0 opacity-70">
+      <div className="absolute inset-0 opacity-20">
         <img 
           src={heroArtisan} 
           alt="Artisan traditionnel marocain au travail" 
