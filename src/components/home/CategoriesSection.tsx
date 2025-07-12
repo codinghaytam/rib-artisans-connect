@@ -4,6 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useCategories } from '@/hooks/useCategories';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import leatherArtisan from '@/assets/leather-artisan.jpg';
+import carpetWeaver from '@/assets/carpet-weaver.jpg';
+import metalworkArtisan from '@/assets/metalwork-artisan.jpg';
+import woodCarver from '@/assets/wood-carver.jpg';
 
 export const CategoriesSection: React.FC = () => {
   const { categories, loading, error } = useCategories();
@@ -16,8 +20,24 @@ export const CategoriesSection: React.FC = () => {
   }, [categories]);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
-      <div className="container mx-auto px-4">
+    <section className="py-16 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+      {/* Background artisan images */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-32 h-32 rounded-lg overflow-hidden">
+          <img src={leatherArtisan} alt="Artisan cuir" className="w-full h-full object-cover" />
+        </div>
+        <div className="absolute top-20 right-20 w-24 h-24 rounded-lg overflow-hidden">
+          <img src={carpetWeaver} alt="Tisseur de tapis" className="w-full h-full object-cover" />
+        </div>
+        <div className="absolute bottom-20 left-1/4 w-28 h-28 rounded-lg overflow-hidden">
+          <img src={metalworkArtisan} alt="Artisan métal" className="w-full h-full object-cover" />
+        </div>
+        <div className="absolute bottom-10 right-10 w-20 h-20 rounded-lg overflow-hidden">
+          <img src={woodCarver} alt="Sculpteur bois" className="w-full h-full object-cover" />
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 text-gray-800">
             Catégories populaires

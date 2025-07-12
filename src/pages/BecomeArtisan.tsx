@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Star, Users, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import heroArtisan from '@/assets/hero-artisan.jpg';
+import woodCarver from '@/assets/wood-carver.jpg';
 
 const BecomeArtisan = () => {
   const [formData, setFormData] = useState({
@@ -66,10 +68,24 @@ const BecomeArtisan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50 relative overflow-hidden">
+      {/* Background images */}
+      <div className="absolute inset-0 opacity-5">
+        <img 
+          src={heroArtisan} 
+          alt="Artisan marocain" 
+          className="absolute top-0 right-0 w-1/3 h-1/2 object-cover"
+        />
+        <img 
+          src={woodCarver} 
+          alt="Sculpteur sur bois" 
+          className="absolute bottom-0 left-0 w-1/4 h-1/3 object-cover"
+        />
+      </div>
+      
       <Header />
       
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-12 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">

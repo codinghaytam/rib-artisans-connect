@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MapPin, Star, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import heroArtisan from '@/assets/hero-artisan.jpg';
 
 interface HeroSectionProps {
   onScrollToSearch?: () => void;
@@ -15,6 +16,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-terracotta-50 via-white to-zellige-50">
+      {/* Background image */}
+      <div className="absolute inset-0 opacity-10">
+        <img 
+          src={heroArtisan} 
+          alt="Artisan traditionnel marocain au travail" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-terracotta-100/80 to-zellige-100/80"></div>
+      </div>
+      
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-32 h-32 bg-terracotta-300 rounded-full"></div>
