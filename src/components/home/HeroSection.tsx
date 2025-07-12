@@ -17,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-terracotta-50 via-white to-zellige-50">
       {/* Background image */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-40">
         <img 
           src={heroArtisan} 
           alt="Artisan traditionnel marocain au travail" 
@@ -34,16 +34,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in text-white drop-shadow-lg">
             Trouvez le{' '}
-            <span className="bg-gradient-to-r from-terracotta-600 to-zellige-700 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-terracotta-200 to-zellige-200 bg-clip-text text-transparent drop-shadow-sm">
               parfait artisan
             </span>
             <br />
             près de chez vous
           </h1>
           
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto animate-fade-in">
+          <p className="text-xl text-white mb-8 max-w-2xl mx-auto animate-fade-in drop-shadow-md">
             9RIB connecte les Marocains avec des artisans qualifiés et vérifiés. 
             Maçonnerie, plomberie, peinture, électricité... trouvez l'expert qu'il vous faut !
           </p>
