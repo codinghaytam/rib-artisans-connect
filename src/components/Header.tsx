@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,15 +22,15 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="bg-white shadow-lg border-b-2 border-terracotta-100">
+      <header className="bg-white shadow-lg border-b-2 border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-terracotta-500 to-zellige-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">9</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-terracotta-600 to-zellige-700 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-primary">
                 9RIB
               </span>
             </Link>
@@ -42,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-700 hover:bg-transparent"
+                className="text-foreground hover:bg-transparent"
               >
                 {mobileMenuOpen ? 
                   <X className="h-6 w-6" /> : 
@@ -53,34 +52,34 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link to="/" className="text-gray-700 hover:text-terracotta-600 transition-colors">
+              <Link to="/" className="text-foreground hover:text-primary transition-colors">
                 Accueil
               </Link>
               {location.pathname === '/' && onScrollToArtisans ? (
                 <button 
                   onClick={onScrollToArtisans}
-                  className="text-gray-700 hover:text-terracotta-600 transition-colors bg-transparent border-none cursor-pointer"
+                  className="text-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
                 >
                   Artisans
                 </button>
               ) : (
-                <Link to="/artisans" className="text-gray-700 hover:text-terracotta-600 transition-colors">
+                <Link to="/artisans" className="text-foreground hover:text-primary transition-colors">
                   Artisans
                 </Link>
               )}
               {location.pathname === '/' && onScrollToCategories ? (
                 <button 
                   onClick={onScrollToCategories}
-                  className="text-gray-700 hover:text-terracotta-600 transition-colors bg-transparent border-none cursor-pointer"
+                  className="text-foreground hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
                 >
                   Catégories
                 </button>
               ) : (
-                <Link to="/categories" className="text-gray-700 hover:text-terracotta-600 transition-colors">
+                <Link to="/categories" className="text-foreground hover:text-primary transition-colors">
                   Catégories
                 </Link>
               )}
-              <Link to="/contact" className="text-gray-700 hover:text-terracotta-600 transition-colors">
+              <Link to="/contact" className="text-foreground hover:text-primary transition-colors">
                 Contact
               </Link>
             </nav>
@@ -92,16 +91,16 @@ export const Header: React.FC<HeaderProps> = ({
                   <Button
                     variant="ghost"
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 rounded-full hover:bg-gray-100"
+                    className="flex items-center space-x-2 rounded-full hover:bg-muted"
                   >
                     {user.avatar ? (
                       <img 
                         src={user.avatar} 
                         alt={user.name} 
-                        className="h-8 w-8 rounded-full object-cover border-2 border-terracotta-300"
+                        className="h-8 w-8 rounded-full object-cover border-2 border-border"
                       />
                     ) : (
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-terracotta-400 to-zellige-500 flex items-center justify-center text-white">
+                      <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-white">
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -113,23 +112,23 @@ export const Header: React.FC<HeaderProps> = ({
                     )}
                   </Button>
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden">
-                      <div className="py-3 px-4 border-b border-gray-100 bg-gray-50">
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-border z-50 overflow-hidden">
+                      <div className="py-3 px-4 border-b border-border bg-muted">
                         <div className="flex items-center space-x-3">
                           {user.avatar ? (
                             <img 
                               src={user.avatar} 
                               alt={user.name} 
-                              className="h-10 w-10 rounded-full object-cover border-2 border-terracotta-300" 
+                              className="h-10 w-10 rounded-full object-cover border-2 border-border" 
                             />
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-terracotta-400 to-zellige-500 flex items-center justify-center text-white">
+                            <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-white">
                               {user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
                           <div>
                             <div className="font-medium">{user.name}</div>
-                            <div className="text-xs text-gray-500">{user.role === 'artisan' ? 'Artisan' : 'Client'}</div>
+                            <div className="text-xs text-muted-foreground">{user.role === 'artisan' ? 'Artisan' : 'Client'}</div>
                           </div>
                         </div>
                       </div>
@@ -137,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
                         {user.role === 'artisan' && (
                           <Link
                             to="/dashboard"
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
                             onClick={() => setShowUserMenu(false)}
                           >
                             <span className="mr-2">🧰</span> Tableau de bord
@@ -145,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
                         )}
                         <Link
                           to="/profile"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
                           onClick={() => setShowUserMenu(false)}
                         >
                           <span className="mr-2">👤</span> Mon profil
@@ -153,13 +152,13 @@ export const Header: React.FC<HeaderProps> = ({
                         {user.role === 'client' && (
                           <Link
                             to="/mes-projets"
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
                             onClick={() => setShowUserMenu(false)}
                           >
                             <span className="mr-2">📋</span> Mes projets
                           </Link>
                         )}
-                        <div className="border-t border-gray-100 my-1"></div>
+                        <div className="border-t border-border my-1"></div>
                         <button
                           onClick={() => {
                             logout();
@@ -178,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="ghost"
-                      className="text-gray-700 hover:text-terracotta-600"
+                      className="text-foreground hover:text-primary"
                     >
                       Connexion
                     </Button>
@@ -186,13 +185,13 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="outline"
-                      className="text-terracotta-600 border-terracotta-600 hover:bg-terracotta-50"
+                      className="text-primary border-primary hover:bg-muted"
                     >
                       S'inscrire
                     </Button>
                   </Link>
                   <Link to="/become-artisan">
-                    <Button className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white">
+                    <Button className="bg-secondary hover:bg-secondary/90 text-white">
                       Devenir Artisan
                     </Button>
                   </Link>
@@ -213,14 +212,14 @@ export const Header: React.FC<HeaderProps> = ({
           />
           
           {/* Menu Content */}
-          <div className="relative bg-white/95 backdrop-blur-md shadow-2xl border-r border-gray-200/50 w-80 h-full overflow-y-auto">
+          <div className="relative bg-white/95 backdrop-blur-md shadow-2xl border-r border-border w-80 h-full overflow-y-auto">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-terracotta-500 to-zellige-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">9</span>
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-terracotta-600 to-zellige-700 bg-clip-text text-transparent">
+                <span className="text-xl font-bold text-primary">
                   9RIB
                 </span>
               </div>
@@ -228,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-gray-600 hover:bg-gray-100/50"
+                className="text-muted-foreground hover:bg-muted"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -239,14 +238,14 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="space-y-1 px-4">
                 <Link 
                   to="/" 
-                  className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                  className="block px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Accueil
                 </Link>
                 {location.pathname === '/' && onScrollToArtisans ? (
                   <button
-                    className="w-full text-left px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    className="w-full text-left px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                     onClick={() => {
                       onScrollToArtisans();
                       setMobileMenuOpen(false);
@@ -257,7 +256,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ) : (
                   <Link 
                     to="/artisans" 
-                    className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    className="block px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Artisans
@@ -265,7 +264,7 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
                 {location.pathname === '/' && onScrollToCategories ? (
                   <button
-                    className="w-full text-left px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    className="w-full text-left px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                     onClick={() => {
                       onScrollToCategories();
                       setMobileMenuOpen(false);
@@ -276,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ) : (
                   <Link 
                     to="/categories" 
-                    className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                    className="block px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Catégories
@@ -284,7 +283,7 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
                 <Link 
                   to="/contact" 
-                  className="block px-4 py-3 text-gray-700 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-lg transition-all duration-200"
+                  className="block px-4 py-3 text-foreground hover:bg-muted hover:text-primary rounded-lg transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Contact
@@ -297,7 +296,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="outline"
-                      className="w-full bg-white/50 border-gray-300 hover:bg-white/80"
+                      className="w-full bg-white/50 border-border hover:bg-white/80"
                     >
                       Connexion
                     </Button>
@@ -305,7 +304,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="outline"
-                      className="w-full bg-white/50 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
+                      className="w-full bg-white/50 border-primary text-primary hover:bg-muted"
                     >
                       S'inscrire
                     </Button>
@@ -313,7 +312,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/become-artisan" className="w-full">
                     <Button
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                      className="w-full bg-secondary hover:bg-secondary/90"
                     >
                       Devenir Artisan
                     </Button>
