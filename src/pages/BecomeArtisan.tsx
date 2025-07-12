@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -7,28 +7,60 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Star, Users, Shield } from 'lucide-react';
+import { CheckCircle, Star, Users, Shield, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import heroArtisan from '@/assets/hero-artisan.jpg';
 import woodCarver from '@/assets/wood-carver.jpg';
 
 const BecomeArtisan = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     cin: '',
-    city: '',
-    category: '',
-    experience: '',
-    description: ''
+    business_name: '',
+    city_id: '',
+    category_id: '',
+    experience_years: '',
+    description: '',
+    specialties: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
   const { toast } = useToast();
 
-  const categories = [
-    'Plomberie', 'Électricité', 'Menuiserie', 'Peinture', 
-    'Maçonnerie', 'Rénovation', 'Jardinage', 'Automobile'
-  ];
+  useEffect(() => {
+    fetchCategories();
+    fetchCities();
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      }));
+    }
+  }, [user]);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true);
+    setCategories(data || []);
+  };
+
+  const fetchCities = async () => {
+    const { data } = await supabase
+      .from('cities')
+      .select('*')
+      .eq('is_active', true);
+    setCities(data || []);
+  };
 
   const benefits = [
     {
@@ -48,16 +80,64 @@ const BecomeArtisan = () => {
     }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Candidature envoyée",
-      description: "Nous examinerons votre demande et vous contacterons sous 48h.",
-    });
-    setFormData({
-      name: '', email: '', phone: '', cin: '', city: '',
-      category: '', experience: '', description: ''
-    });
+    setLoading(true);
+
+    try {
+      const specialtiesArray = formData.specialties
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      const applicationData = {
+        user_id: user?.id || null,
+        email: formData.email,
+        name: formData.name,
+        phone: formData.phone,
+        business_name: formData.business_name,
+        category_id: formData.category_id,
+        city_id: formData.city_id,
+        description: formData.description,
+        experience_years: parseInt(formData.experience_years),
+        specialties: specialtiesArray,
+        status: 'not_read'
+      };
+
+      const { error } = await supabase
+        .from('artisan_applications')
+        .insert([applicationData]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Candidature envoyée",
+        description: "Nous examinerons votre demande et vous contacterons sous 48h.",
+      });
+
+      // Reset form
+      setFormData({
+        name: user?.name || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        cin: '',
+        business_name: '',
+        city_id: '',
+        category_id: '',
+        experience_years: '',
+        description: '',
+        specialties: ''
+      });
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'envoi de votre candidature.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -194,52 +274,88 @@ const BecomeArtisan = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                        Ville *
+                      <label htmlFor="business_name" className="block text-sm font-medium text-gray-700 mb-2">
+                        Nom de l'entreprise
                       </label>
                       <Input
-                        id="city"
-                        name="city"
+                        id="business_name"
+                        name="business_name"
                         type="text"
-                        required
-                        value={formData.city}
+                        value={formData.business_name}
                         onChange={handleChange}
-                        placeholder="Votre ville"
+                        placeholder="Nom de votre entreprise (optionnel)"
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="city_id" className="block text-sm font-medium text-gray-700 mb-2">
+                        Ville *
+                      </label>
+                      <select
+                        id="city_id"
+                        name="city_id"
+                        required
+                        value={formData.city_id}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                      >
+                        <option value="">Sélectionnez une ville</option>
+                        {cities.map(city => (
+                          <option key={city.id} value={city.id}>{city.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
                         Catégorie *
                       </label>
                       <select
-                        id="category"
-                        name="category"
+                        id="category_id"
+                        name="category_id"
                         required
-                        value={formData.category}
+                        value={formData.category_id}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                       >
                         <option value="">Sélectionnez une catégorie</option>
                         {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
+                          <option key={category.id} value={category.id}>
+                            {category.emoji} {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="experience_years" className="block text-sm font-medium text-gray-700 mb-2">
                       Années d'expérience *
                     </label>
                     <Input
-                      id="experience"
-                      name="experience"
+                      id="experience_years"
+                      name="experience_years"
                       type="number"
                       required
                       min="0"
-                      value={formData.experience}
+                      value={formData.experience_years}
                       onChange={handleChange}
                       placeholder="Nombre d'années"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="specialties" className="block text-sm font-medium text-gray-700 mb-2">
+                      Spécialités (séparées par des virgules)
+                    </label>
+                    <Input
+                      id="specialties"
+                      name="specialties"
+                      type="text"
+                      value={formData.specialties}
+                      onChange={handleChange}
+                      placeholder="ex: Installation électrique, Réparation, Maintenance"
                     />
                   </div>
 
@@ -259,9 +375,17 @@ const BecomeArtisan = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 disabled:opacity-50"
                   >
-                    Envoyer ma candidature
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Envoi en cours...
+                      </>
+                    ) : (
+                      "Envoyer ma candidature"
+                    )}
                   </Button>
                 </form>
               </CardContent>

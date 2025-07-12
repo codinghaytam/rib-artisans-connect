@@ -41,6 +41,84 @@ export type Database = {
         }
         Relationships: []
       }
+      artisan_applications: {
+        Row: {
+          admin_notes: string | null
+          business_name: string | null
+          category_id: string | null
+          city_id: string | null
+          created_at: string
+          description: string | null
+          email: string
+          experience_years: number | null
+          id: string
+          name: string
+          payment_receipt_url: string | null
+          phone: string | null
+          processed_at: string | null
+          processed_by: string | null
+          specialties: string[] | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_name?: string | null
+          category_id?: string | null
+          city_id?: string | null
+          created_at?: string
+          description?: string | null
+          email: string
+          experience_years?: number | null
+          id?: string
+          name: string
+          payment_receipt_url?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          specialties?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          business_name?: string | null
+          category_id?: string | null
+          city_id?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string
+          experience_years?: number | null
+          id?: string
+          name?: string
+          payment_receipt_url?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          specialties?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_applications_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_applications_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artisan_profiles: {
         Row: {
           address: string | null
