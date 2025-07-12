@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LoginModal } from '@/components/auth/LoginModal';
-import { RegisterModal } from '@/components/auth/RegisterModal';
 import { User, Search, MapPin, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
@@ -19,8 +17,6 @@ export const Header: React.FC<HeaderProps> = ({
   onScrollToArtisans 
 }) => {
   const { user, logout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -179,20 +175,22 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setShowLoginModal(true)}
-                    className="text-gray-700 hover:text-terracotta-600"
-                  >
-                    Connexion
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowRegisterModal(true)}
-                    className="text-terracotta-600 border-terracotta-600 hover:bg-terracotta-50"
-                  >
-                    S'inscrire
-                  </Button>
+                  <Link to="/auth">
+                    <Button
+                      variant="ghost"
+                      className="text-gray-700 hover:text-terracotta-600"
+                    >
+                      Connexion
+                    </Button>
+                  </Link>
+                  <Link to="/auth">
+                    <Button
+                      variant="outline"
+                      className="text-terracotta-600 border-terracotta-600 hover:bg-terracotta-50"
+                    >
+                      S'inscrire
+                    </Button>
+                  </Link>
                   <Link to="/become-artisan">
                     <Button className="bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white">
                       Devenir Artisan
@@ -296,26 +294,22 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Mobile auth buttons */}
               {!user && (
                 <div className="px-4 pt-6 space-y-3">
-                  <Button
-                    onClick={() => {
-                      setShowLoginModal(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    variant="outline"
-                    className="w-full bg-white/50 border-gray-300 hover:bg-white/80"
-                  >
-                    Connexion
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setShowRegisterModal(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    variant="outline"
-                    className="w-full bg-white/50 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
-                  >
-                    S'inscrire
-                  </Button>
+                  <Link to="/auth">
+                    <Button
+                      variant="outline"
+                      className="w-full bg-white/50 border-gray-300 hover:bg-white/80"
+                    >
+                      Connexion
+                    </Button>
+                  </Link>
+                  <Link to="/auth">
+                    <Button
+                      variant="outline"
+                      className="w-full bg-white/50 border-terracotta-600 text-terracotta-600 hover:bg-terracotta-50"
+                    >
+                      S'inscrire
+                    </Button>
+                  </Link>
                   <Link to="/become-artisan" className="w-full">
                     <Button
                       onClick={() => setMobileMenuOpen(false)}
@@ -330,24 +324,6 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       )}
-
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSwitchToRegister={() => {
-          setShowLoginModal(false);
-          setShowRegisterModal(true);
-        }}
-      />
-
-      <RegisterModal
-        isOpen={showRegisterModal}
-        onClose={() => setShowRegisterModal(false)}
-        onSwitchToLogin={() => {
-          setShowRegisterModal(false);
-          setShowLoginModal(true);
-        }}
-      />
     </>
   );
 };

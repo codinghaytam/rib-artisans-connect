@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -9,13 +9,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Star, MapPin, Phone, Mail, Clock, Award, User, Camera, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 import { useArtisanProfile, useArtisanReviews } from '@/hooks/useArtisanProfile';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ArtisanProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const { artisan, loading: artisanLoading, error: artisanError } = useArtisanProfile(id || '');
   const { reviews, loading: reviewsLoading, error: reviewsError } = useArtisanReviews(id || '');
+
+  // Track artisan profile view
+  useEffect(() => {
+    if (id && artisan) {
+      const trackView = async () => {
+        try {
+          await supabase.functions.invoke('track-view', {
+            body: {
+              type: 'artisan',
+              target_id: id,
+              viewer_id: user?.id || null,
+              viewer_ip: null, // Will be determined by the edge function
+              user_agent: navigator.userAgent
+            }
+          });
+        } catch (error) {
+          console.error('Error tracking view:', error);
+        }
+      };
+
+      trackView();
+    }
+  }, [id, artisan, user]);
 
   const handleContact = (type: 'phone' | 'email', value: string) => {
     if (type === 'phone') {

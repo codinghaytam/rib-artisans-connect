@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
-export type UserRole = 'client' | 'artisan';
+export type UserRole = 'client' | 'artisan' | 'admin';
 
 export interface User {
   id: string;
@@ -215,27 +215,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (authData.user && authData.session) {
         console.log("User registered and logged in successfully", authData.user);
         
-        // Create user profile in the profiles table
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            { 
-              id: authData.user.id,
-              email: email,
-              name: name,
-              role: role,
-              phone: phone || null,
-              cin: cin || null,
-              is_active: true,
-              is_verified: role === 'client', // Auto-verify clients, artisans need verification
-            }
-          ]);
-  
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          setIsLoading(false);
-          return { error: `Registration successful, but profile creation failed: ${profileError.message}` };
-        }
+        // Create user profile in the profiles table - This will be handled by the trigger
+        // so we don't need to manually insert into profiles table
+        console.log("User registered and logged in successfully", authData.user);
         
         // Update local user state with the newly created user
         const userProfile = {
