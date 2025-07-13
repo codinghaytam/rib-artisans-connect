@@ -48,13 +48,13 @@ export const TopArtisansSection: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 text-gray-800">
+          <h2 className="text-4xl font-bold mb-4 text-foreground">
             Top artisans de confiance
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Découvrez nos artisans les mieux notés, vérifiés et recommandés par la communauté
           </p>
         </div>
@@ -66,8 +66,8 @@ export const TopArtisansSection: React.FC = () => {
           </div>
         ) : error ? (
           <div className="text-center py-10 max-w-xl mx-auto">
-            <p className="text-red-500 mb-4 text-lg">{error}</p>
-            <p className="text-gray-600 mb-6">
+            <p className="text-destructive mb-4 text-lg">{error}</p>
+            <p className="text-muted-foreground mb-6">
               {error.includes("connexion") || error.includes("configuration") ? 
                 "Nous rencontrons actuellement des problèmes techniques. Nos équipes travaillent à résoudre ce problème." : 
                 "Veuillez réessayer plus tard ou consulter la liste complète des artisans."}
@@ -103,7 +103,7 @@ export const TopArtisansSection: React.FC = () => {
                         />
                       ) : (
                         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
-                          <span className="text-2xl font-bold text-secondary">
+                          <span className="text-2xl font-bold text-primary">
                             {artisan.profiles?.name?.split(' ').map(n => n?.[0]).join('') || 
                              artisan.business_name?.split(' ').map(n => n?.[0]).join('') ||
                              'A'}
@@ -112,7 +112,7 @@ export const TopArtisansSection: React.FC = () => {
                       )}
                     </div>
                     {artisan.is_verified && (
-                      <Badge className="absolute top-3 right-3 bg-green-500 hover:bg-green-600">
+                      <Badge className="absolute top-3 right-3 bg-success hover:bg-success/90">
                         ✓ Vérifié
                       </Badge>
                     )}
@@ -123,7 +123,7 @@ export const TopArtisansSection: React.FC = () => {
                     <h3 className="text-xl font-bold mb-1 text-foreground group-hover:text-primary transition-colors">
                       {artisan.profiles?.name || artisan.business_name}
                     </h3>
-                    <p className="text-secondary font-medium mb-2">
+                    <p className="text-primary font-medium mb-2">
                       {artisan.categories?.name}
                     </p>
 
@@ -184,7 +184,7 @@ export const TopArtisansSection: React.FC = () => {
                     
                     {/* Hourly Rate */}
                     {artisan.hourly_rate && (
-                      <div className="text-center text-sm font-medium text-secondary mb-3">
+                      <div className="text-center text-sm font-medium text-primary mb-3">
                         À partir de {artisan.hourly_rate}€/h
                       </div>
                     )}
@@ -192,7 +192,7 @@ export const TopArtisansSection: React.FC = () => {
                   {/* Action Buttons */}
                   <div className="space-y-2">
                     <Button 
-                      className="w-full bg-secondary hover:bg-secondary/90"
+                      className="w-full"
                       size="sm"
                       onClick={(e) => {
                         e.preventDefault();
