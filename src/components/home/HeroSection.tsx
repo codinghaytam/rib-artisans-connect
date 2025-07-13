@@ -28,12 +28,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-primary/30"></div>
       
-      {/* Decorative elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-secondary rounded-full"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-accent rounded-full"></div>
-        <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-accent rounded-full"></div>
-      </div>
+     
       
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">
