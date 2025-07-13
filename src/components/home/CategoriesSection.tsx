@@ -26,7 +26,7 @@ export const CategoriesSection: React.FC = () => {
       <MoroccanPatternGrid density="medium" color="text-primary/8" />
       
       {/* Background artisan images */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-70">
         <div className="absolute top-10 left-10 w-32 h-32 rounded-lg overflow-hidden">
           <img src={leatherArtisan} alt="Artisan cuir" className="w-full h-full object-cover" />
         </div>
