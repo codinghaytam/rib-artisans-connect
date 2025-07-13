@@ -46,16 +46,16 @@ const Categories = () => {
   const { categories, loading, error } = useCategories();
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               Catégories d'artisans
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Explorez nos différentes catégories d'artisans professionnels
               pour tous vos besoins.
             </p>
@@ -69,8 +69,8 @@ const Categories = () => {
           
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-12 w-12 animate-spin text-terracotta-500" />
-              <span className="ml-2 text-lg text-gray-600">Chargement des catégories...</span>
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <span className="ml-2 text-lg text-muted-foreground">Chargement des catégories...</span>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,7 +89,7 @@ const Categories = () => {
                       </div>
                       <CardTitle className="flex items-center justify-center gap-2">
                         {category.name}
-                        <Badge variant="secondary" className="bg-terracotta-100 text-terracotta-800">
+                        <Badge variant="secondary">
                           {category.count}
                         </Badge>
                       </CardTitle>
@@ -107,15 +107,15 @@ const Categories = () => {
 
           <div className="mt-16 text-center">
             <div className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-foreground mb-4">
                 Vous ne trouvez pas votre catégorie ?
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Contactez-nous pour ajouter votre spécialité à notre plateforme.
               </p>
               <a
                 href="/contact"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 text-white font-medium rounded-lg transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors"
               >
                 Nous contacter
               </a>

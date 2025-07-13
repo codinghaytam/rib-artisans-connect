@@ -57,12 +57,12 @@ const ArtisanProfile = () => {
 
   if (artisanLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+      <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-terracotta-600" />
-            <span className="ml-2 text-lg">Chargement du profil...</span>
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-lg text-foreground">Chargement du profil...</span>
           </div>
         </main>
         <Footer />
@@ -72,17 +72,17 @@ const ArtisanProfile = () => {
 
   if (artisanError || !artisan) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+      <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="text-center py-12 max-w-2xl mx-auto">
             <div className="flex justify-center mb-6">
-              <AlertCircle className="h-16 w-16 text-red-500" />
+              <AlertCircle className="h-16 w-16 text-destructive" />
             </div>
-            <p className="text-xl text-red-600 mb-4">
+            <p className="text-xl text-destructive mb-4">
               Erreur lors du chargement du profil
             </p>
-            <p className="text-gray-600 mb-6">{artisanError || "Artisan non trouvé"}</p>
+            <p className="text-muted-foreground mb-6">{artisanError || "Artisan non trouvé"}</p>
           </div>
         </main>
         <Footer />
@@ -91,7 +91,7 @@ const ArtisanProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
@@ -111,7 +111,7 @@ const ArtisanProfile = () => {
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div>
-                      <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                      <h1 className="text-3xl font-bold text-foreground mb-2">
                         {artisan.profiles?.name || artisan.business_name}
                       </h1>
                       
@@ -119,18 +119,18 @@ const ArtisanProfile = () => {
                         {artisan.categories?.emoji && (
                           <span className="text-xl">{artisan.categories.emoji}</span>
                         )}
-                        <span className="text-lg text-gray-600">{artisan.categories?.name}</span>
+                        <span className="text-lg text-muted-foreground">{artisan.categories?.name}</span>
                       </div>
                       
                       <div className="flex flex-wrap gap-2 mb-4">
                         {artisan.is_verified && (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <Badge variant="secondary" className="bg-success/10 text-success">
                             <Award className="h-3 w-3 mr-1" />
                             Vérifié
                           </Badge>
                         )}
                         {artisan.is_featured && (
-                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                          <Badge variant="secondary" className="bg-accent/10 text-accent-foreground">
                             ⭐ Vedette
                           </Badge>
                         )}
@@ -140,9 +140,9 @@ const ArtisanProfile = () => {
                         </Badge>
                       </div>
                       
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                          <Star className="h-4 w-4 fill-accent text-accent mr-1" />
                           <span className="font-medium">{artisan.rating_average?.toFixed(1) || '0.0'}</span>
                           <span className="ml-1">({artisan.rating_count || 0} avis)</span>
                         </div>
@@ -159,10 +159,10 @@ const ArtisanProfile = () => {
                     <div className="flex flex-col gap-3">
                       {artisan.hourly_rate && (
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-terracotta-600">
+                          <div className="text-2xl font-bold text-primary">
                             {artisan.hourly_rate}€/h
                           </div>
-                          <div className="text-sm text-gray-500">À partir de</div>
+                          <div className="text-sm text-muted-foreground">À partir de</div>
                         </div>
                       )}
                       
@@ -170,7 +170,6 @@ const ArtisanProfile = () => {
                         {artisan.profiles?.phone && (
                           <Button 
                             onClick={() => handleContact('phone', artisan.profiles?.phone || '')}
-                            className="bg-terracotta-600 hover:bg-terracotta-700"
                           >
                             <Phone className="h-4 w-4 mr-2" />
                             Appeler
@@ -217,7 +216,7 @@ const ArtisanProfile = () => {
                   <CardTitle>Description</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-foreground leading-relaxed">
                     {artisan.description || "Aucune description disponible."}
                   </p>
                   
@@ -226,19 +225,19 @@ const ArtisanProfile = () => {
                       <h3 className="font-semibold mb-3">Informations</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Expérience:</span>
+                          <span className="text-muted-foreground">Expérience:</span>
                           <span>{artisan.experience_years || 0} ans</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Projets réalisés:</span>
+                          <span className="text-muted-foreground">Projets réalisés:</span>
                           <span>{artisan.total_projects || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Temps de réponse:</span>
+                          <span className="text-muted-foreground">Temps de réponse:</span>
                           <span>{artisan.response_time_hours || 24}h</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Rayon d'action:</span>
+                          <span className="text-muted-foreground">Rayon d'action:</span>
                           <span>{artisan.service_radius || 20} km</span>
                         </div>
                       </div>
@@ -286,7 +285,7 @@ const ArtisanProfile = () => {
                   {artisan.portfolio_images && artisan.portfolio_images.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {artisan.portfolio_images.map((image, index) => (
-                        <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                        <div key={index} className="aspect-square rounded-lg overflow-hidden bg-muted">
                           <img
                             src={image}
                             alt={`Portfolio ${index + 1}`}
@@ -296,7 +295,7 @@ const ArtisanProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-gray-500">
+                    <div className="text-center py-12 text-muted-foreground">
                       <Camera className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>Aucune image de portfolio disponible</p>
                     </div>
@@ -319,7 +318,7 @@ const ArtisanProfile = () => {
                   ) : reviews && reviews.length > 0 ? (
                     <div className="space-y-6">
                       {reviews.map((review) => (
-                        <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+                        <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <div className="flex items-center gap-2 mb-1">
@@ -329,8 +328,8 @@ const ArtisanProfile = () => {
                                       key={star}
                                       className={`h-4 w-4 ${
                                         star <= review.rating
-                                          ? 'fill-yellow-400 text-yellow-400'
-                                          : 'text-gray-300'
+                                          ? 'fill-accent text-accent'
+                                          : 'text-muted'
                                       }`}
                                     />
                                   ))}
@@ -338,31 +337,31 @@ const ArtisanProfile = () => {
                                 <span className="font-medium">{review.rating}/5</span>
                               </div>
                               {review.title && (
-                                <h4 className="font-medium text-gray-900">{review.title}</h4>
+                                <h4 className="font-medium text-foreground">{review.title}</h4>
                               )}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {new Date(review.created_at || '').toLocaleDateString('fr-FR')}
                             </div>
                           </div>
                           
                           {review.comment && (
-                            <p className="text-gray-700 mb-3">{review.comment}</p>
+                            <p className="text-foreground mb-3">{review.comment}</p>
                           )}
                           
                           {(review.work_quality_rating || review.communication_rating || review.timeliness_rating) && (
                             <div className="flex flex-wrap gap-4 text-sm">
                               {review.work_quality_rating && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-gray-600">Qualité:</span>
+                                  <span className="text-muted-foreground">Qualité:</span>
                                   <div className="flex">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                       <Star
                                         key={star}
                                         className={`h-3 w-3 ${
                                           star <= review.work_quality_rating!
-                                            ? 'fill-yellow-400 text-yellow-400'
-                                            : 'text-gray-300'
+                                            ? 'fill-accent text-accent'
+                                            : 'text-muted'
                                         }`}
                                       />
                                     ))}
@@ -371,15 +370,15 @@ const ArtisanProfile = () => {
                               )}
                               {review.communication_rating && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-gray-600">Communication:</span>
+                                  <span className="text-muted-foreground">Communication:</span>
                                   <div className="flex">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                       <Star
                                         key={star}
                                         className={`h-3 w-3 ${
                                           star <= review.communication_rating!
-                                            ? 'fill-yellow-400 text-yellow-400'
-                                            : 'text-gray-300'
+                                            ? 'fill-accent text-accent'
+                                            : 'text-muted'
                                         }`}
                                       />
                                     ))}
@@ -388,7 +387,7 @@ const ArtisanProfile = () => {
                               )}
                               {review.timeliness_rating && (
                                 <div className="flex items-center gap-1">
-                                  <span className="text-gray-600">Ponctualité:</span>
+                                  <span className="text-muted-foreground">Ponctualité:</span>
                                   <div className="flex">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                       <Star
@@ -409,7 +408,7 @@ const ArtisanProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-gray-500">
+                    <div className="text-center py-12 text-muted-foreground">
                       <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>Aucun avis disponible</p>
                     </div>

@@ -65,16 +65,16 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               Contactez-nous
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Une question ? Un projet ? N'hésitez pas à nous contacter. 
               Notre équipe est là pour vous accompagner.
             </p>
@@ -93,7 +93,7 @@ const Contact = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                         Nom complet
                       </label>
                       <Input
@@ -107,7 +107,7 @@ const Contact = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                         Email
                       </label>
                       <Input
@@ -123,7 +123,7 @@ const Contact = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
                       Sujet
                     </label>
                     <Input
@@ -138,7 +138,7 @@ const Contact = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
                       Message
                     </label>
                     <Textarea
@@ -154,7 +154,7 @@ const Contact = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                    className="w-full"
                   >
                     Envoyer le message
                   </Button>
@@ -170,10 +170,10 @@ const Contact = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-start space-x-4">
-                    <MapPin className="h-6 w-6 text-terracotta-600 mt-1" />
+                    <MapPin className="h-6 w-6 text-primary mt-1" />
                     <div>
-                      <h3 className="font-semibold text-gray-900">Adresse</h3>
-                      <p className="text-gray-600">
+                      <h3 className="font-semibold text-foreground">Adresse</h3>
+                      <p className="text-muted-foreground">
                         Avenue Hassan II<br />
                         Casablanca 20000<br />
                         Maroc
@@ -182,18 +182,18 @@ const Contact = () => {
                   </div>
                   
                   <div className="flex items-start space-x-4">
-                    <Phone className="h-6 w-6 text-terracotta-600 mt-1" />
+                    <Phone className="h-6 w-6 text-primary mt-1" />
                     <div>
-                      <h3 className="font-semibold text-gray-900">Téléphone</h3>
-                      <p className="text-gray-600">+212 5XX-XXXXXX</p>
+                      <h3 className="font-semibold text-foreground">Téléphone</h3>
+                      <p className="text-muted-foreground">+212 5XX-XXXXXX</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start space-x-4">
-                    <Mail className="h-6 w-6 text-terracotta-600 mt-1" />
+                    <Mail className="h-6 w-6 text-primary mt-1" />
                     <div>
-                      <h3 className="font-semibold text-gray-900">Email</h3>
-                      <p className="text-gray-600">contact@9rib.ma</p>
+                      <h3 className="font-semibold text-foreground">Email</h3>
+                      <p className="text-muted-foreground">contact@9rib.ma</p>
                     </div>
                   </div>
                 </CardContent>
@@ -206,15 +206,15 @@ const Contact = () => {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Lundi - Vendredi</span>
+                      <span className="text-muted-foreground">Lundi - Vendredi</span>
                       <span className="font-medium">9h00 - 18h00</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Samedi</span>
+                      <span className="text-muted-foreground">Samedi</span>
                       <span className="font-medium">9h00 - 16h00</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Dimanche</span>
+                      <span className="text-muted-foreground">Dimanche</span>
                       <span className="font-medium">Fermé</span>
                     </div>
                   </div>

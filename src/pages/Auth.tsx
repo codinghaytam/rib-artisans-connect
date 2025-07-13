@@ -132,24 +132,24 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-terracotta-500 to-zellige-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">9</span>
+              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-xl">9</span>
               </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-terracotta-600 to-zellige-700 bg-clip-text text-transparent">
+              <span className="text-3xl font-bold text-primary">
                 9RIB
               </span>
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-foreground mb-2">
               Bienvenue sur 9RIB
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Connectez-vous pour accéder à votre compte
             </p>
           </div>
@@ -190,7 +190,7 @@ const Auth = () => {
 
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                      className="w-full"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -210,30 +210,30 @@ const Auth = () => {
                     <div className="grid w-full grid-cols-2 gap-2">
                       <div className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                         registerData.role === 'client' 
-                          ? 'border-terracotta-500 bg-terracotta-50' 
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-primary bg-primary/10' 
+                          : 'border-border hover:border-muted-foreground'
                       }`}
                       onClick={() => setRegisterData(prev => ({ ...prev, role: 'client' }))}>
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4" />
                           <span className="text-sm font-medium">Client</span>
                         </div>
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Rechercher des artisans
                         </p>
                       </div>
                       
                       <div className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                         registerData.role === 'artisan' 
-                          ? 'border-terracotta-500 bg-terracotta-50' 
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-primary bg-primary/10' 
+                          : 'border-border hover:border-muted-foreground'
                       }`}
                       onClick={() => setRegisterData(prev => ({ ...prev, role: 'artisan' }))}>
                         <div className="flex items-center space-x-2">
                           <Hammer className="h-4 w-4" />
                           <span className="text-sm font-medium">Artisan</span>
                         </div>
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Proposer mes services
                         </p>
                       </div>
@@ -302,7 +302,7 @@ const Auth = () => {
 
                       <Button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700"
+                        className="w-full"
                         disabled={isLoading}
                       >
                         {isLoading ? (
@@ -324,7 +324,7 @@ const Auth = () => {
           <div className="text-center mt-6">
             <Link 
               to="/" 
-              className="text-sm text-gray-600 hover:text-terracotta-600 transition-colors"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               ← Retour à l'accueil
             </Link>

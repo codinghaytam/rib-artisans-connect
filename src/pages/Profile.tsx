@@ -233,7 +233,7 @@ const Profile = () => {
                       {user.role === 'artisan' ? 'Artisan' : 'Client'}
                     </Badge>
                     {user.isVerified && (
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <Badge variant="secondary" className="bg-success/10 text-success">
                         Vérifié
                       </Badge>
                     )}
@@ -258,7 +258,7 @@ const Profile = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                <Heart className="h-5 w-5 fill-destructive text-destructive" />
                 Mes Artisans Favoris ({favorites.length})
               </CardTitle>
             </CardHeader>
@@ -317,7 +317,7 @@ const Profile = () => {
                                   size="sm"
                                   onClick={() => removeFavorite(favorite.id, artisan.profiles?.name || artisan.business_name)}
                                   disabled={removingFavorite === favorite.id}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                                 >
                                   {removingFavorite === favorite.id ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -330,7 +330,7 @@ const Profile = () => {
                               <div className="flex items-center gap-4 mt-2">
                                 {artisan.rating_average > 0 && (
                                   <div className="flex items-center gap-1">
-                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                    <Star className="h-4 w-4 fill-accent text-accent" />
                                     <span className="text-sm font-medium">
                                       {artisan.rating_average.toFixed(1)}
                                     </span>
@@ -347,7 +347,7 @@ const Profile = () => {
                                 )}
                                 
                                 {artisan.is_verified && (
-                                  <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                                  <Badge variant="secondary" className="bg-success/10 text-success text-xs">
                                     Vérifié
                                   </Badge>
                                 )}

@@ -148,7 +148,7 @@ const BecomeArtisan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50 relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background images */}
       <div className="absolute inset-0 opacity-5">
         <img 
@@ -168,10 +168,10 @@ const BecomeArtisan = () => {
       <main className="container mx-auto px-4 py-12 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-foreground mb-4">
               Rejoignez notre réseau d'artisans
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Développez votre activité en rejoignant la plateforme de référence
               pour les artisans au Maroc.
             </p>
@@ -184,8 +184,8 @@ const BecomeArtisan = () => {
               return (
                 <Card key={index}>
                   <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 p-3 rounded-full bg-terracotta-100">
-                      <IconComponent className="h-6 w-6 text-terracotta-600" />
+                    <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
+                      <IconComponent className="h-6 w-6 text-primary" />
                     </div>
                     <CardTitle className="text-lg">{benefit.title}</CardTitle>
                   </CardHeader>
@@ -212,7 +212,7 @@ const BecomeArtisan = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                         Nom complet *
                       </label>
                       <Input
@@ -226,7 +226,7 @@ const BecomeArtisan = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                         Email *
                       </label>
                       <Input
@@ -243,7 +243,7 @@ const BecomeArtisan = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
                         Téléphone *
                       </label>
                       <Input
@@ -257,7 +257,7 @@ const BecomeArtisan = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="cin" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="cin" className="block text-sm font-medium text-foreground mb-2">
                         CIN *
                       </label>
                       <Input
@@ -274,7 +274,7 @@ const BecomeArtisan = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="business_name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="business_name" className="block text-sm font-medium text-foreground mb-2">
                         Nom de l'entreprise
                       </label>
                       <Input
@@ -290,7 +290,7 @@ const BecomeArtisan = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="city_id" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="city_id" className="block text-sm font-medium text-foreground mb-2">
                         Ville *
                       </label>
                       <select
@@ -299,7 +299,7 @@ const BecomeArtisan = () => {
                         required
                         value={formData.city_id}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                        className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                       >
                         <option value="">Sélectionnez une ville</option>
                         {cities.map(city => (
@@ -308,7 +308,7 @@ const BecomeArtisan = () => {
                       </select>
                     </div>
                     <div>
-                      <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="category_id" className="block text-sm font-medium text-foreground mb-2">
                         Catégorie *
                       </label>
                       <select
@@ -317,7 +317,7 @@ const BecomeArtisan = () => {
                         required
                         value={formData.category_id}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                        className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                       >
                         <option value="">Sélectionnez une catégorie</option>
                         {categories.map(category => (
@@ -330,7 +330,7 @@ const BecomeArtisan = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="experience_years" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="experience_years" className="block text-sm font-medium text-foreground mb-2">
                       Années d'expérience *
                     </label>
                     <Input
@@ -346,7 +346,7 @@ const BecomeArtisan = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="specialties" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="specialties" className="block text-sm font-medium text-foreground mb-2">
                       Spécialités (séparées par des virgules)
                     </label>
                     <Input
@@ -360,7 +360,7 @@ const BecomeArtisan = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
                       Description de vos services
                     </label>
                     <Textarea
@@ -376,7 +376,7 @@ const BecomeArtisan = () => {
                   <Button 
                     type="submit" 
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-terracotta-500 to-terracotta-600 hover:from-terracotta-600 hover:to-terracotta-700 disabled:opacity-50"
+                    className="w-full disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -399,32 +399,32 @@ const BecomeArtisan = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-terracotta-100 rounded-full flex items-center justify-center">
-                      <span className="text-terracotta-600 font-semibold text-sm">1</span>
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <span className="text-primary font-semibold text-sm">1</span>
                     </div>
                     <div>
                       <h3 className="font-semibold">Soumettez votre candidature</h3>
-                      <p className="text-gray-600 text-sm">Remplissez le formulaire avec vos informations</p>
+                      <p className="text-muted-foreground text-sm">Remplissez le formulaire avec vos informations</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-terracotta-100 rounded-full flex items-center justify-center">
-                      <span className="text-terracotta-600 font-semibold text-sm">2</span>
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <span className="text-primary font-semibold text-sm">2</span>
                     </div>
                     <div>
                       <h3 className="font-semibold">Vérification</h3>
-                      <p className="text-gray-600 text-sm">Nous vérifions vos documents et qualifications</p>
+                      <p className="text-muted-foreground text-sm">Nous vérifions vos documents et qualifications</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-terracotta-100 rounded-full flex items-center justify-center">
-                      <span className="text-terracotta-600 font-semibold text-sm">3</span>
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <span className="text-primary font-semibold text-sm">3</span>
                     </div>
                     <div>
                       <h3 className="font-semibold">Activation du profil</h3>
-                      <p className="text-gray-600 text-sm">Votre profil est activé et visible aux clients</p>
+                      <p className="text-muted-foreground text-sm">Votre profil est activé et visible aux clients</p>
                     </div>
                   </div>
                 </CardContent>
@@ -437,19 +437,19 @@ const BecomeArtisan = () => {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                       <span className="text-sm">Pièce d'identité valide</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                       <span className="text-sm">Minimum 2 ans d'expérience</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                       <span className="text-sm">Références vérifiables</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                       <span className="text-sm">Assurance professionnelle (recommandée)</span>
                     </div>
                   </div>
