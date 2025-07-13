@@ -32,7 +32,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in text-white drop-shadow-lg">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in text-white">
             Trouvez le{' '}
             <span className="text-accent drop-shadow-lg">
               parfait artisan
