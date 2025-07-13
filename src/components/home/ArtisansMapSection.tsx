@@ -10,7 +10,7 @@ import { useArtisanMap } from '@/contexts/ArtisanMapContext';
 
 const ArtisansMapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
+  const mapboxToken = 'pk.eyJ1IjoiaGF5dGFtMTIzIiwiYSI6ImNtY3pjdmNmMzB0M2UyaXNidXlvZnFzeWUifQ.r_6ckMpjvRIbJsn6JeAOQg';
   const navigate = useNavigate();
   const { 
     artisans, 
@@ -186,47 +186,6 @@ const ArtisansMapSection = () => {
     fetchArtisans();
   }, []);
 
-  if (!mapboxToken) {
-    return (
-      <section className="py-16 bg-gradient-to-br from-secondary/20 to-accent/20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Trouvez des Artisans Près de Chez Vous
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Entrez votre token Mapbox pour voir la carte interactive des artisans
-            </p>
-          </div>
-          
-          <div className="max-w-md mx-auto">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Entrez votre token Mapbox..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-              />
-              <Button onClick={() => setMapboxToken(mapboxToken)}>
-                <MapPin className="w-4 h-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Obtenez votre token sur{' '}
-              <a 
-                href="https://mapbox.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                mapbox.com
-              </a>
-            </p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="py-16 bg-gradient-to-br from-secondary/20 to-accent/20">
