@@ -8,6 +8,7 @@ import leatherArtisan from '@/assets/leather-artisan.jpg';
 import carpetWeaver from '@/assets/carpet-weaver.jpg';
 import metalworkArtisan from '@/assets/metalwork-artisan.jpg';
 import woodCarver from '@/assets/wood-carver.jpg';
+import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
 
 export const CategoriesSection: React.FC = () => {
   const { categories, loading, error } = useCategories();
@@ -21,6 +22,9 @@ export const CategoriesSection: React.FC = () => {
 
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+      {/* Moroccan decorative patterns */}
+      <MoroccanPatternGrid density="medium" color="text-primary/8" />
+      
       {/* Background artisan images */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 left-10 w-32 h-32 rounded-lg overflow-hidden">

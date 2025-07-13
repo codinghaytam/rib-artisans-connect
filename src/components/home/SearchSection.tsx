@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin } from 'lucide-react';
 import { useCategories, useCities } from '@/hooks/useArtisans';
+import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
 
 export const SearchSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,8 +46,9 @@ export const SearchSection: React.FC = () => {
   };
 
   return (
-    <section className="py-12 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="py-12 bg-white relative overflow-hidden">
+      <MoroccanPatternGrid density="low" color="text-muted-foreground/10" />
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
             Cherchez un artisan par métier, ville ou note
