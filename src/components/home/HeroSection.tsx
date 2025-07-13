@@ -19,7 +19,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Background image */}
       <div className="absolute inset-0 opacity-60">
         <img 
-          src="" 
+          src={heroArtisan} 
           alt="Artisan traditionnel marocain au travail" 
           className="w-full h-full object-cover"
         />
