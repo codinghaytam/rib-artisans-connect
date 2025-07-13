@@ -23,7 +23,7 @@ export const CategoriesSection: React.FC = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
       {/* Moroccan decorative patterns */}
-      <QuatrefoilBackground opacity={0.7} />
+      <QuatrefoilBackground opacity={1} />
       
       {/* Background artisan images */}
       <div className="absolute inset-0 opacity-70">
