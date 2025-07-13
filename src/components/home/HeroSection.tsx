@@ -32,7 +32,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       
       {/* Moroccan decorative patterns */}
       <QuatrefoilBackground opacity={0.1} />
-      <MoroccanPatternGrid density="low" color="text-accent" />
       
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">
@@ -45,7 +44,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             près de chez vous
           </h1>
           
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto animate-fade-in drop-shadow-md">
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto animate-fade-in ">
             9RIB connecte les Marocains avec des artisans qualifiés et vérifiés. 
             Maçonnerie, plomberie, peinture, électricité... trouvez l'expert qu'il vous faut !
           </p>
