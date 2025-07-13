@@ -9,7 +9,7 @@ import carpetWeaver from '@/assets/carpet-weaver.jpg';
 import metalworkArtisan from '@/assets/metalwork-artisan.jpg';
 import woodCarver from '@/assets/wood-carver.jpg';
 import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
-
+import {QuatrefoilBackground} from '@/components/decorative/QuatrefoilBackground';
 export const CategoriesSection: React.FC = () => {
   const { categories, loading, error } = useCategories();
   // Select top categories based on artisan count (limit to 8)
@@ -23,7 +23,7 @@ export const CategoriesSection: React.FC = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
       {/* Moroccan decorative patterns */}
-      <MoroccanPatternGrid density="medium" color="text-primary/8" />
+      <QuatrefoilBackground density="medium" color="text-primary/8" />
       
       {/* Background artisan images */}
       <div className="absolute inset-0 opacity-70">
