@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, MapPin } from 'lucide-react';
 import { useCategories, useCities } from '@/hooks/useArtisans';
 import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
+import { QuatrefoilBackground } from '@/components/decorative/QuatrefoilBackground';
 
 export const SearchSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +48,7 @@ export const SearchSection: React.FC = () => {
 
   return (
     <section className="py-12 bg-white relative overflow-hidden">
+      <QuatrefoilBackground opacity={0.08} />
       <MoroccanPatternGrid density="low" color="text-muted-foreground/10" />
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">

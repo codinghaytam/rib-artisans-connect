@@ -5,6 +5,7 @@ import { MapPin, Star, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroArtisan from '@/assets/hero-artisan.jpg';
 import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
+import { QuatrefoilBackground } from '@/components/decorative/QuatrefoilBackground';
 
 interface HeroSectionProps {
   onScrollToSearch?: () => void;
@@ -30,7 +31,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="absolute inset-0 bg-primary/30"></div>
       
       {/* Moroccan decorative patterns */}
-      <MoroccanPatternGrid density="medium" color="text-accent" />
+      <QuatrefoilBackground opacity={0.1} />
+      <MoroccanPatternGrid density="low" color="text-accent" />
       
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">

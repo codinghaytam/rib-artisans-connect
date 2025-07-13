@@ -2,7 +2,7 @@ import React from 'react';
 
 interface MoroccanPatternsProps {
   className?: string;
-  variant?: 'star' | 'diamond' | 'flower' | 'geometric' | 'cross' | 'circle';
+  variant?: 'star' | 'diamond' | 'flower' | 'geometric' | 'cross' | 'circle' | 'quatrefoil';
   size?: 'sm' | 'md' | 'lg';
   opacity?: number;
 }
@@ -51,6 +51,11 @@ export const MoroccanPatterns: React.FC<MoroccanPatternsProps> = ({
         <circle cx="12" cy="12" r="4" fill="white"/>
         <circle cx="12" cy="12" r="2" fill="currentColor"/>
       </svg>
+    ),
+    quatrefoil: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className={`${sizeClasses[size]} ${className}`} style={{ opacity }}>
+        <path d="M12 2c-2.5 0-4.5 2-4.5 4.5 0 1.5.7 2.8 1.8 3.7C8.2 11.2 7.5 12.5 7.5 14c0 2.5 2 4.5 4.5 4.5 1.5 0 2.8-.7 3.7-1.8 1.1 1.1 2.4 1.8 3.7 1.8 2.5 0 4.5-2 4.5-4.5 0-1.5-.7-2.8-1.8-3.7 1.1-1.1 1.8-2.4 1.8-3.7 0-2.5-2-4.5-4.5-4.5-1.5 0-2.8.7-3.7 1.8C14.8 2.7 13.5 2 12 2z" />
+      </svg>
     )
   };
 
@@ -68,7 +73,7 @@ export const MoroccanPatternGrid: React.FC<PatternGridProps> = ({
   density = 'low',
   color = 'text-accent'
 }) => {
-  const patterns = ['star', 'diamond', 'flower', 'geometric', 'cross', 'circle'] as const;
+  const patterns = ['star', 'diamond', 'flower', 'geometric', 'cross', 'circle', 'quatrefoil'] as const;
   const sizes = ['sm', 'md', 'lg'] as const;
   
   const gridCounts = {
