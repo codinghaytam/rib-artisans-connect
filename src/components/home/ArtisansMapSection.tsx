@@ -7,11 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { useArtisanMap } from '@/contexts/ArtisanMapContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ArtisansMapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapboxToken = 'pk.eyJ1IjoiaGF5dGFtMTIzIiwiYSI6ImNtY3pjdmNmMzB0M2UyaXNidXlvZnFzeWUifQ.r_6ckMpjvRIbJsn6JeAOQg';
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  
   const { 
     artisans, 
     setArtisans, 
@@ -77,17 +82,42 @@ const ArtisansMapSection = () => {
     return null;
   };
 
+  // Get user's current location
+  useEffect(() => {
+    if (user && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([longitude, latitude]);
+        },
+        (error) => {
+          console.log('Geolocation error:', error);
+        },
+        { timeout: 10000, enableHighAccuracy: false }
+      );
+    }
+  }, [user]);
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || !mapboxToken) return;
 
     mapboxgl.accessToken = mapboxToken;
     
+    // Morocco bounds
+    const moroccoBounds = new mapboxgl.LngLatBounds(
+      [-17.0, 21.0], // Southwest coordinates
+      [-1.0, 35.9]   // Northeast coordinates
+    );
+    
     mapRef.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [-7.6167, 33.5167], // Morocco center (Casablanca)
       zoom: 6,
+      maxBounds: moroccoBounds, // Restrict to Morocco
+      minZoom: 5,
+      maxZoom: 16
     });
 
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -117,8 +147,8 @@ const ArtisansMapSection = () => {
         markerElement.className = 'artisan-marker transition-all duration-200';
         markerElement.dataset.artisanId = artisan.user_id;
         markerElement.innerHTML = `
-          <div class="w-10 h-10 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-            <span class="text-white text-lg">${artisan.categories?.emoji || '🔧'}</span>
+          <div class="w-10 h-10 rounded-full bg-primary border-2 border-background shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+            <span class="text-primary-foreground text-lg">${artisan.categories?.emoji || '🔧'}</span>
           </div>
         `;
 
@@ -152,7 +182,7 @@ const ArtisansMapSection = () => {
             <p class="text-xs text-gray-600 mb-2">${artisan.address}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
-              class="w-full bg-primary text-white text-xs py-1 px-2 rounded hover:bg-primary/90 transition-colors"
+              class="w-full bg-primary text-primary-foreground text-xs py-1 px-2 rounded hover:bg-primary/90 transition-colors"
             >
               Voir le profil
             </button>
@@ -182,6 +212,47 @@ const ArtisansMapSection = () => {
     };
   }, [artisans, mapboxToken, navigate, setSelectedArtisan, hoveredArtisan]);
 
+  // Add user location marker
+  useEffect(() => {
+    if (!mapRef.current || !userLocation || !user) return;
+
+    // Remove existing user marker
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+    }
+
+    // Create user marker element
+    const userMarkerElement = document.createElement('div');
+    userMarkerElement.className = 'user-marker';
+    userMarkerElement.innerHTML = `
+      <div class="w-12 h-12 rounded-full bg-accent border-3 border-background shadow-xl flex items-center justify-center relative">
+        <div class="w-6 h-6 rounded-full bg-accent-foreground"></div>
+        <div class="absolute inset-0 rounded-full border-2 border-accent animate-pulse"></div>
+      </div>
+    `;
+
+    // Create popup for user location
+    const userPopup = new mapboxgl.Popup({ offset: 15 }).setHTML(`
+      <div class="p-2">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+            <span class="text-accent-foreground text-sm">👤</span>
+          </div>
+          <div>
+            <h3 class="font-semibold text-sm">Votre position</h3>
+            <p class="text-xs text-muted-foreground">${user.name}</p>
+          </div>
+        </div>
+      </div>
+    `);
+
+    userMarkerRef.current = new mapboxgl.Marker(userMarkerElement)
+      .setLngLat(userLocation)
+      .setPopup(userPopup)
+      .addTo(mapRef.current);
+
+  }, [userLocation, user]);
+
   useEffect(() => {
     fetchArtisans();
   }, []);
@@ -195,16 +266,21 @@ const ArtisansMapSection = () => {
             Trouvez des Artisans Près de Chez Vous
           </h2>
           <p className="text-muted-foreground">
-            Découvrez les artisans disponibles dans votre région
+            Découvrez les artisans disponibles dans votre région au Maroc
           </p>
         </div>
         
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden shadow-lg">
           <div ref={mapContainer} className="absolute inset-0" />
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-            <p className="text-sm font-medium text-gray-700">
+          <div className="absolute top-4 left-4 bg-card/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
+            <p className="text-sm font-medium text-card-foreground">
               {artisans.length} artisan{artisans.length > 1 ? 's' : ''} disponible{artisans.length > 1 ? 's' : ''}
             </p>
+            {user && userLocation && (
+              <p className="text-xs text-muted-foreground mt-1">
+                📍 Votre position affichée
+              </p>
+            )}
           </div>
         </div>
       </div>
