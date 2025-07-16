@@ -144,11 +144,24 @@ const ArtisansMapSection = () => {
 
         // Create marker element
         const markerElement = document.createElement('div');
-        markerElement.className = 'artisan-marker transition-all duration-200';
+        markerElement.className = 'artisan-marker';
         markerElement.dataset.artisanId = artisan.user_id;
+        markerElement.style.cssText = 'transition: all 0.2s ease;';
         markerElement.innerHTML = `
-          <div class="w-10 h-10 rounded-full bg-primary border-2 border-background shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-            <span class="text-primary-foreground text-lg">${artisan.categories?.emoji || '🔧'}</span>
+          <div style="
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background-color: hsl(var(--primary)); 
+            border: 2px solid white; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: transform 0.2s ease;
+          ">
+            <span style="color: white; font-size: 18px;">${artisan.categories?.emoji || '🔧'}</span>
           </div>
         `;
 
@@ -182,7 +195,19 @@ const ArtisansMapSection = () => {
             <p class="text-xs text-gray-600 mb-2">${artisan.address}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
-              class="w-full bg-primary text-primary-foreground text-xs py-1 px-2 rounded hover:bg-primary/90 transition-colors"
+              style="
+                width: 100%; 
+                background-color: hsl(var(--primary)); 
+                color: white; 
+                font-size: 12px; 
+                padding: 4px 8px; 
+                border-radius: 4px; 
+                border: none; 
+                cursor: pointer; 
+                transition: background-color 0.2s ease;
+              "
+              onmouseover="this.style.backgroundColor='hsl(var(--primary) / 0.9)'"
+              onmouseout="this.style.backgroundColor='hsl(var(--primary))'"
             >
               Voir le profil
             </button>
@@ -225,9 +250,31 @@ const ArtisansMapSection = () => {
     const userMarkerElement = document.createElement('div');
     userMarkerElement.className = 'user-marker';
     userMarkerElement.innerHTML = `
-      <div class="w-12 h-12 rounded-full bg-accent border-3 border-background shadow-xl flex items-center justify-center relative">
-        <div class="w-6 h-6 rounded-full bg-accent-foreground"></div>
-        <div class="absolute inset-0 rounded-full border-2 border-accent animate-pulse"></div>
+      <div style="
+        width: 48px; 
+        height: 48px; 
+        border-radius: 50%; 
+        background-color: hsl(var(--accent)); 
+        border: 3px solid white; 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        position: relative;
+      ">
+        <div style="
+          width: 24px; 
+          height: 24px; 
+          border-radius: 50%; 
+          background-color: white;
+        "></div>
+        <div style="
+          position: absolute; 
+          inset: 0; 
+          border-radius: 50%; 
+          border: 2px solid hsl(var(--accent)); 
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        "></div>
       </div>
     `;
 
