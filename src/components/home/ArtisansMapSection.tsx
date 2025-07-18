@@ -1,27 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
 import { useArtisanMap } from '@/contexts/ArtisanMapContext';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Fix Leaflet default marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
 const ArtisansMapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapboxToken = 'pk.eyJ1IjoiaGF5dGFtMTIzIiwiYSI6ImNtY3pjdmNmMzB0M2UyaXNidXlvZnFzeWUifQ.r_6ckMpjvRIbJsn6JeAOQg';
   const navigate = useNavigate();
   const { user } = useAuth();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const userMarkerRef = useRef<L.Marker | null>(null);
+  const leafletMap = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
   
   const { 
     artisans, 
     setArtisans, 
-    mapRef, 
-    markersRef, 
     selectedArtisan,
     setSelectedArtisan,
     hoveredArtisan 
@@ -62,18 +66,16 @@ const ArtisansMapSection = () => {
     setArtisans(data || []);
   };
 
-  // Geocode address to coordinates
+  // Geocode address using Nominatim (OpenStreetMap)
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
-    if (!mapboxToken) return null;
-    
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&country=MA&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Morocco')}&limit=1&countrycodes=ma`
       );
       const data = await response.json();
       
-      if (data.features && data.features.length > 0) {
-        return data.features[0].center;
+      if (data && data.length > 0) {
+        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
       }
     } catch (error) {
       console.error('Geocoding error:', error);
@@ -88,7 +90,7 @@ const ArtisansMapSection = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setUserLocation([longitude, latitude]);
+          setUserLocation([latitude, longitude]);
         },
         (error) => {
           console.log('Geolocation error:', error);
@@ -100,39 +102,39 @@ const ArtisansMapSection = () => {
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) return;
 
-    mapboxgl.accessToken = mapboxToken;
-    
     // Morocco bounds
-    const moroccoBounds = new mapboxgl.LngLatBounds(
-      [-17.0, 21.0], // Southwest coordinates
-      [-1.0, 35.9]   // Northeast coordinates
-    );
+    const moroccoBounds: L.LatLngBoundsExpression = [
+      [21.0, -17.0], // Southwest coordinates [lat, lng]
+      [35.9, -1.0]   // Northeast coordinates [lat, lng]
+    ];
     
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-7.6167, 33.5167], // Morocco center (Casablanca)
+    leafletMap.current = L.map(mapContainer.current, {
+      center: [33.5167, -7.6167], // Morocco center (Casablanca) [lat, lng]
       zoom: 6,
-      maxBounds: moroccoBounds, // Restrict to Morocco
+      maxBounds: moroccoBounds,
       minZoom: 5,
       maxZoom: 16
     });
 
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(leafletMap.current);
 
     return () => {
-      mapRef.current?.remove();
+      leafletMap.current?.remove();
     };
-  }, [mapboxToken]);
+  }, []);
 
   // Add artisan markers
   useEffect(() => {
-    if (!mapRef.current || !artisans.length || !mapboxToken) return;
+    if (!leafletMap.current || !artisans.length) return;
 
     // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current.forEach(marker => leafletMap.current?.removeLayer(marker));
     markersRef.current = [];
 
     const addMarkers = async () => {
@@ -142,57 +144,46 @@ const ArtisansMapSection = () => {
         const coordinates = await geocodeAddress(artisan.address);
         if (!coordinates) continue;
 
-        // Create marker element
-        const markerElement = document.createElement('div');
-        markerElement.className = 'artisan-marker';
-        markerElement.dataset.artisanId = artisan.user_id;
-        markerElement.style.cssText = 'transition: all 0.2s ease;';
-        markerElement.innerHTML = `
-          <div style="
-            width: 40px; 
-            height: 40px; 
-            border-radius: 50%; 
-            background-color: hsl(var(--primary)); 
-            border: 2px solid white; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            transition: transform 0.2s ease;
-          ">
-            <span style="color: white; font-size: 18px;">${artisan.categories?.emoji || '🔧'}</span>
-          </div>
-        `;
-
-        // Add hover effects
-        markerElement.addEventListener('mouseenter', () => {
-          setSelectedArtisan(artisan);
-          markerElement.style.transform = 'scale(1.1)';
-        });
-
-        markerElement.addEventListener('mouseleave', () => {
-          if (hoveredArtisan?.user_id !== artisan.user_id) {
-            markerElement.style.transform = 'scale(1)';
-          }
+        // Create custom icon for artisan
+        const artisanIcon = L.divIcon({
+          html: `
+            <div style="
+              width: 40px; 
+              height: 40px; 
+              border-radius: 50%; 
+              background-color: hsl(var(--primary)); 
+              border: 2px solid white; 
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              cursor: pointer; 
+              transition: transform 0.2s ease;
+            ">
+              <span style="color: white; font-size: 18px;">${artisan.categories?.emoji || '🔧'}</span>
+            </div>
+          `,
+          className: 'artisan-marker',
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
         });
 
         // Create popup content
         const popupContent = `
-          <div class="p-2 min-w-[200px]">
-            <div class="flex items-center gap-2 mb-2">
+          <div style="padding: 8px; min-width: 200px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
               <img 
                 src="${artisan.profiles?.avatar_url || '/placeholder.svg'}" 
                 alt="${artisan.profiles?.name || 'Artisan'}"
-                class="w-8 h-8 rounded-full object-cover"
+                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;"
               />
               <div>
-                <h3 class="font-semibold text-sm">${artisan.profiles?.name || artisan.business_name || 'Artisan'}</h3>
-                <p class="text-xs text-gray-600">${artisan.categories?.name || 'Artisan'}</p>
+                <h3 style="font-weight: 600; font-size: 14px; margin: 0;">${artisan.profiles?.name || artisan.business_name || 'Artisan'}</h3>
+                <p style="font-size: 12px; color: #666; margin: 0;">${artisan.categories?.name || 'Artisan'}</p>
               </div>
             </div>
-            <p class="text-xs text-gray-700 mb-2">${artisan.business_name || ''}</p>
-            <p class="text-xs text-gray-600 mb-2">${artisan.address}</p>
+            <p style="font-size: 12px; color: #333; margin: 0 0 8px 0;">${artisan.business_name || ''}</p>
+            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${artisan.address}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
               style="
@@ -214,12 +205,14 @@ const ArtisansMapSection = () => {
           </div>
         `;
 
-        const popup = new mapboxgl.Popup({ offset: 15 }).setHTML(popupContent);
+        const marker = L.marker(coordinates, { icon: artisanIcon })
+          .addTo(leafletMap.current!)
+          .bindPopup(popupContent);
 
-        const marker = new mapboxgl.Marker(markerElement)
-          .setLngLat(coordinates)
-          .setPopup(popup)
-          .addTo(mapRef.current!);
+        // Add hover effects
+        marker.on('mouseover', () => {
+          setSelectedArtisan(artisan);
+        });
 
         markersRef.current.push(marker);
       }
@@ -235,75 +228,76 @@ const ArtisansMapSection = () => {
     return () => {
       delete (window as any).navigateToArtisan;
     };
-  }, [artisans, mapboxToken, navigate, setSelectedArtisan, hoveredArtisan]);
+  }, [artisans, navigate, setSelectedArtisan]);
 
   // Add user location marker
   useEffect(() => {
-    if (!mapRef.current || !userLocation || !user) return;
+    if (!leafletMap.current || !userLocation || !user) return;
 
     // Remove existing user marker
     if (userMarkerRef.current) {
-      userMarkerRef.current.remove();
+      leafletMap.current.removeLayer(userMarkerRef.current);
     }
 
-    // Create user marker element
-    const userMarkerElement = document.createElement('div');
-    userMarkerElement.className = 'user-marker';
-    userMarkerElement.innerHTML = `
-      <div style="
-        width: 48px; 
-        height: 48px; 
-        border-radius: 50%; 
-        background-color: hsl(var(--accent)); 
-        border: 3px solid white; 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        position: relative;
-      ">
+    // Create custom icon for user location
+    const userIcon = L.divIcon({
+      html: `
         <div style="
-          width: 24px; 
-          height: 24px; 
+          width: 48px; 
+          height: 48px; 
           border-radius: 50%; 
-          background-color: white;
-        "></div>
-        <div style="
-          position: absolute; 
-          inset: 0; 
-          border-radius: 50%; 
-          border: 2px solid hsl(var(--accent)); 
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        "></div>
-      </div>
-    `;
+          background-color: hsl(var(--accent)); 
+          border: 3px solid white; 
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          position: relative;
+        ">
+          <div style="
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            background-color: white;
+          "></div>
+          <div style="
+            position: absolute; 
+            inset: 0; 
+            border-radius: 50%; 
+            border: 2px solid hsl(var(--accent)); 
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          "></div>
+        </div>
+      `,
+      className: 'user-marker',
+      iconSize: [48, 48],
+      iconAnchor: [24, 24]
+    });
 
     // Create popup for user location
-    const userPopup = new mapboxgl.Popup({ offset: 15 }).setHTML(`
-      <div class="p-2">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-            <span class="text-accent-foreground text-sm">👤</span>
+    const userPopupContent = `
+      <div style="padding: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background-color: hsl(var(--accent)); display: flex; align-items: center; justify-content: center;">
+            <span style="color: hsl(var(--accent-foreground)); font-size: 14px;">👤</span>
           </div>
           <div>
-            <h3 class="font-semibold text-sm">Votre position</h3>
-            <p class="text-xs text-muted-foreground">${user.name}</p>
+            <h3 style="font-weight: 600; font-size: 14px; margin: 0;">Votre position</h3>
+            <p style="font-size: 12px; color: hsl(var(--muted-foreground)); margin: 0;">${user.name || 'Utilisateur'}</p>
           </div>
         </div>
       </div>
-    `);
+    `;
 
-    userMarkerRef.current = new mapboxgl.Marker(userMarkerElement)
-      .setLngLat(userLocation)
-      .setPopup(userPopup)
-      .addTo(mapRef.current);
+    userMarkerRef.current = L.marker(userLocation, { icon: userIcon })
+      .addTo(leafletMap.current)
+      .bindPopup(userPopupContent);
 
   }, [userLocation, user]);
 
   useEffect(() => {
     fetchArtisans();
   }, []);
-
 
   return (
     <section className="py-16 bg-gradient-to-br from-secondary/20 to-accent/20">

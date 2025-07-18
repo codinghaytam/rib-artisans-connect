@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
+import L from 'leaflet';
 import { ArtisanProfile } from '@/hooks/useTopArtisans';
 
 interface ArtisanMapContextType {
@@ -9,8 +9,8 @@ interface ArtisanMapContextType {
   setSelectedArtisan: (artisan: ArtisanProfile | null) => void;
   hoveredArtisan: ArtisanProfile | null;
   setHoveredArtisan: (artisan: ArtisanProfile | null) => void;
-  mapRef: React.MutableRefObject<mapboxgl.Map | null>;
-  markersRef: React.MutableRefObject<mapboxgl.Marker[]>;
+  mapRef: React.MutableRefObject<L.Map | null>;
+  markersRef: React.MutableRefObject<L.Marker[]>;
   highlightArtisanOnMap: (artisanId: string) => void;
   resetMapHighlight: () => void;
   flyToArtisan: (artisan: ArtisanProfile) => void;
@@ -30,8 +30,8 @@ export const ArtisanMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([]);
   const [selectedArtisan, setSelectedArtisan] = useState<ArtisanProfile | null>(null);
   const [hoveredArtisan, setHoveredArtisan] = useState<ArtisanProfile | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   const highlightArtisanOnMap = useCallback((artisanId: string) => {
     markersRef.current.forEach((marker) => {
@@ -65,15 +65,13 @@ export const ArtisanMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       // Find the marker for this artisan
       const targetMarker = markersRef.current.find(
-        marker => marker.getElement().dataset.artisanId === artisan.user_id
+        marker => (marker.getElement() as any)?.dataset?.artisanId === artisan.user_id
       );
 
       if (targetMarker) {
-        const lngLat = targetMarker.getLngLat();
-        mapRef.current.flyTo({
-          center: [lngLat.lng, lngLat.lat],
-          zoom: 12,
-          duration: 1500
+        const latLng = targetMarker.getLatLng();
+        mapRef.current.flyTo([latLng.lat, latLng.lng], 12, {
+          duration: 1.5
         });
 
         // Highlight the marker
