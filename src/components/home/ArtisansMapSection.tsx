@@ -20,50 +20,53 @@ const ArtisansMapSection = () => {
   const { user } = useAuth();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
-  const leafletMap = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const leafletMapRef = useRef<L.Map | null>(null);
+  const artisanMarkersRef = useRef<L.Marker[]>([]);
   
   const { 
     artisans, 
     setArtisans, 
     selectedArtisan,
-    setSelectedArtisan,
-    hoveredArtisan 
+    setSelectedArtisan
   } = useArtisanMap();
 
   // Fetch artisans with locations
   const fetchArtisans = async () => {
-    const { data, error } = await supabase
-      .from('artisan_profiles')
-      .select(`
-        *,
-        profiles!user_id (
-          id,
-          name,
-          avatar_url,
-          phone,
-          email
-        ),
-        categories!category_id (
-          id,
-          name,
-          emoji
-        ),
-        cities!city_id (
-          id,
-          name,
-          region
-        )
-      `)
-      .not('address', 'is', null)
-      .eq('is_active', true);
+    try {
+      const { data, error } = await supabase
+        .from('artisan_profiles')
+        .select(`
+          *,
+          profiles!user_id (
+            id,
+            name,
+            avatar_url,
+            phone,
+            email
+          ),
+          categories!category_id (
+            id,
+            name,
+            emoji
+          ),
+          cities!city_id (
+            id,
+            name,
+            region
+          )
+        `)
+        .not('address', 'is', null)
+        .eq('is_active', true);
 
-    if (error) {
+      if (error) {
+        console.error('Error fetching artisans:', error);
+        return;
+      }
+
+      setArtisans(data || []);
+    } catch (error) {
       console.error('Error fetching artisans:', error);
-      return;
     }
-
-    setArtisans(data || []);
   };
 
   // Geocode address using Nominatim (OpenStreetMap)
@@ -100,7 +103,7 @@ const ArtisansMapSection = () => {
     }
   }, [user]);
 
-  // Initialize map
+  // Initialize Leaflet map
   useEffect(() => {
     if (!mapContainer.current) return;
 
@@ -110,7 +113,7 @@ const ArtisansMapSection = () => {
       [35.9, -1.0]   // Northeast coordinates [lat, lng]
     ];
     
-    leafletMap.current = L.map(mapContainer.current, {
+    leafletMapRef.current = L.map(mapContainer.current, {
       center: [33.5167, -7.6167], // Morocco center (Casablanca) [lat, lng]
       zoom: 6,
       maxBounds: moroccoBounds,
@@ -122,22 +125,29 @@ const ArtisansMapSection = () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19
-    }).addTo(leafletMap.current);
+    }).addTo(leafletMapRef.current);
 
     return () => {
-      leafletMap.current?.remove();
+      if (leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+      }
     };
   }, []);
 
   // Add artisan markers
   useEffect(() => {
-    if (!leafletMap.current || !artisans.length) return;
+    if (!leafletMapRef.current || !artisans.length) return;
 
     // Clear existing markers
-    markersRef.current.forEach(marker => leafletMap.current?.removeLayer(marker));
-    markersRef.current = [];
+    artisanMarkersRef.current.forEach(marker => {
+      if (leafletMapRef.current) {
+        leafletMapRef.current.removeLayer(marker);
+      }
+    });
+    artisanMarkersRef.current = [];
 
-    const addMarkers = async () => {
+    const addMarkersToMap = async () => {
       for (const artisan of artisans) {
         if (!artisan.address) continue;
 
@@ -163,7 +173,7 @@ const ArtisansMapSection = () => {
               <span style="color: white; font-size: 18px;">${artisan.categories?.emoji || '🔧'}</span>
             </div>
           `,
-          className: 'artisan-marker',
+          className: 'leaflet-artisan-marker',
           iconSize: [40, 40],
           iconAnchor: [20, 20]
         });
@@ -206,7 +216,7 @@ const ArtisansMapSection = () => {
         `;
 
         const marker = L.marker(coordinates, { icon: artisanIcon })
-          .addTo(leafletMap.current!)
+          .addTo(leafletMapRef.current!)
           .bindPopup(popupContent);
 
         // Add hover effects
@@ -214,11 +224,11 @@ const ArtisansMapSection = () => {
           setSelectedArtisan(artisan);
         });
 
-        markersRef.current.push(marker);
+        artisanMarkersRef.current.push(marker);
       }
     };
 
-    addMarkers();
+    addMarkersToMap();
 
     // Global navigation function for popup buttons
     (window as any).navigateToArtisan = (userId: string) => {
@@ -232,11 +242,11 @@ const ArtisansMapSection = () => {
 
   // Add user location marker
   useEffect(() => {
-    if (!leafletMap.current || !userLocation || !user) return;
+    if (!leafletMapRef.current || !userLocation || !user) return;
 
     // Remove existing user marker
     if (userMarkerRef.current) {
-      leafletMap.current.removeLayer(userMarkerRef.current);
+      leafletMapRef.current.removeLayer(userMarkerRef.current);
     }
 
     // Create custom icon for user location
@@ -269,7 +279,7 @@ const ArtisansMapSection = () => {
           "></div>
         </div>
       `,
-      className: 'user-marker',
+      className: 'leaflet-user-marker',
       iconSize: [48, 48],
       iconAnchor: [24, 24]
     });
@@ -290,7 +300,7 @@ const ArtisansMapSection = () => {
     `;
 
     userMarkerRef.current = L.marker(userLocation, { icon: userIcon })
-      .addTo(leafletMap.current)
+      .addTo(leafletMapRef.current)
       .bindPopup(userPopupContent);
 
   }, [userLocation, user]);
