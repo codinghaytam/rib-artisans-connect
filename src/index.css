@@ -8,97 +8,113 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Moroccan Artisan Marketplace Theme - Deep Navy & Gold */
-    --background: 220 20% 98%;
-    --foreground: 225 100% 12%;
+    /* Islamic Geometric Harmony Theme */
+    --background: 96 82% 97%; /* cream #f1faee */
+    --foreground: 184 100% 20%; /* navy #264653 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 225 100% 12%;
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 184 100% 20%; /* navy #264653 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 225 100% 12%;
+    --popover: 0 0% 100%; /* white */
+    --popover-foreground: 184 100% 20%; /* navy #264653 */
 
-    --primary: 225 100% 15%;
-    --primary-foreground: 51 100% 50%;
+    --primary: 168 65% 40%; /* teal #2a9d8f */
+    --primary-foreground: 96 82% 97%; /* cream #f1faee */
 
-    --secondary: 51 100% 50%;
-    --secondary-foreground: 225 100% 15%;
+    --secondary: 27 85% 64%; /* amber #f4a261 */
+    --secondary-foreground: 184 100% 20%; /* navy #264653 */
 
-    --muted: 220 20% 95%;
-    --muted-foreground: 225 30% 40%;
+    --muted: 220 9% 91%; /* neutral-200 #e4e4e7 */
+    --muted-foreground: 220 9% 46%; /* neutral-500 #71717a */
 
-    --accent: 45 100% 60%;
-    --accent-foreground: 225 100% 15%;
+    --accent: 168 65% 44%; /* dark teal #1f7a6b */
+    --accent-foreground: 96 82% 97%; /* cream #f1faee */
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 9 77% 58%; /* rust #e76f51 */
+    --destructive-foreground: 0 0% 100%; /* white */
 
-    --success: 160 84% 39%;
-    --success-foreground: 0 0% 100%;
+    --success: 168 65% 40%; /* teal #2a9d8f */
+    --success-foreground: 96 82% 97%; /* cream #f1faee */
 
-    --border: 220 20% 90%;
-    --input: 220 20% 95%;
-    --ring: 51 100% 50%;
+    --warning: 27 85% 64%; /* amber #f4a261 */
+    --warning-foreground: 184 100% 20%; /* navy #264653 */
+
+    --border: 220 13% 89%; /* neutral-200 #e4e4e7 */
+    --input: 220 9% 83%; /* neutral-300 #d4d4d8 */
+    --ring: 168 65% 40%; /* teal #2a9d8f */
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Islamic geometric gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(184 100% 20%), hsl(168 65% 40%));
+    --gradient-secondary: linear-gradient(135deg, hsl(9 77% 58%), hsl(27 85% 64%));
+    --gradient-accent: linear-gradient(135deg, hsl(168 65% 44%), hsl(168 65% 40%), hsl(27 85% 64%));
+    --gradient-neutral: linear-gradient(135deg, hsl(96 82% 97%), hsl(220 9% 83%));
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Geometric shadows */
+    --shadow-sm: 0 2px 8px hsl(184 100% 20% / 0.1);
+    --shadow-md: 0 4px 16px hsl(184 100% 20% / 0.15);
+    --shadow-lg: 0 8px 32px hsl(184 100% 20% / 0.2);
+    --shadow-teal: 0 4px 16px hsl(168 65% 40% / 0.3);
+    --shadow-rust: 0 4px 16px hsl(9 77% 58% / 0.3);
+    --shadow-amber: 0 4px 16px hsl(27 85% 64% / 0.3);
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar tokens */
+    --sidebar-background: 184 100% 20%; /* navy #264653 */
+    --sidebar-foreground: 96 82% 97%; /* cream #f1faee */
+    --sidebar-primary: 27 85% 64%; /* amber #f4a261 */
+    --sidebar-primary-foreground: 184 100% 20%; /* navy #264653 */
+    --sidebar-accent: 168 65% 40%; /* teal #2a9d8f */
+    --sidebar-accent-foreground: 96 82% 97%; /* cream #f1faee */
+    --sidebar-border: 184 50% 30%; /* darker navy */
+    --sidebar-ring: 168 65% 40%; /* teal #2a9d8f */
   }
 
   .dark {
-    /* Dark mode variants - Deep Navy & Gold Theme */
-    --background: 225 100% 8%;
-    --foreground: 51 100% 80%;
+    /* Dark mode - Islamic Geometric Harmony Theme */
+    --background: 184 100% 15%; /* darker navy */
+    --foreground: 96 82% 97%; /* cream #f1faee */
 
-    --card: 225 100% 12%;
-    --card-foreground: 51 100% 80%;
+    --card: 184 100% 18%; /* slightly lighter navy */
+    --card-foreground: 96 82% 97%; /* cream #f1faee */
 
-    --popover: 225 100% 12%;
-    --popover-foreground: 51 100% 80%;
+    --popover: 184 100% 18%; /* slightly lighter navy */
+    --popover-foreground: 96 82% 97%; /* cream #f1faee */
 
-    --primary: 51 100% 60%;
-    --primary-foreground: 225 100% 12%;
+    --primary: 168 65% 55%; /* lighter teal */
+    --primary-foreground: 184 100% 15%; /* dark navy */
 
-    --secondary: 225 100% 20%;
-    --secondary-foreground: 51 100% 80%;
+    --secondary: 27 85% 70%; /* lighter amber */
+    --secondary-foreground: 184 100% 15%; /* dark navy */
 
-    --muted: 225 50% 15%;
-    --muted-foreground: 51 50% 60%;
+    --muted: 184 50% 25%; /* muted navy */
+    --muted-foreground: 96 40% 70%; /* muted cream */
 
-    --accent: 45 100% 70%;
-    --accent-foreground: 225 100% 8%;
+    --accent: 9 77% 65%; /* lighter rust */
+    --accent-foreground: 184 100% 15%; /* dark navy */
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 9 77% 65%; /* lighter rust */
+    --destructive-foreground: 96 82% 97%; /* cream */
 
-    --success: 160 84% 39%;
-    --success-foreground: 0 0% 100%;
+    --success: 168 65% 55%; /* lighter teal */
+    --success-foreground: 184 100% 15%; /* dark navy */
 
-    --border: 225 50% 20%;
-    --input: 225 50% 20%;
-    --ring: 51 100% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --warning: 27 85% 70%; /* lighter amber */
+    --warning-foreground: 184 100% 15%; /* dark navy */
+
+    --border: 184 50% 30%; /* border navy */
+    --input: 184 50% 25%; /* input navy */
+    --ring: 168 65% 55%; /* lighter teal */
+
+    /* Dark mode sidebar */
+    --sidebar-background: 184 100% 12%; /* very dark navy */
+    --sidebar-foreground: 96 82% 97%; /* cream */
+    --sidebar-primary: 27 85% 64%; /* amber */
+    --sidebar-primary-foreground: 184 100% 12%; /* very dark navy */
+    --sidebar-accent: 168 65% 40%; /* teal */
+    --sidebar-accent-foreground: 96 82% 97%; /* cream */
+    --sidebar-border: 184 50% 20%; /* darker navy border */
+    --sidebar-ring: 168 65% 55%; /* lighter teal */
   }
 }
 
