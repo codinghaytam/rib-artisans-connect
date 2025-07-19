@@ -89,95 +89,51 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Islamic Geometric Harmony Colors
-				navy: {
-					50: 'hsl(184 100% 95%)',
-					100: 'hsl(184 100% 90%)',
-					200: 'hsl(184 100% 80%)',
-					300: 'hsl(184 100% 70%)',
-					400: 'hsl(184 100% 60%)',
-					500: 'hsl(184 100% 50%)',
-					600: 'hsl(184 100% 40%)',
-					700: 'hsl(184 100% 30%)',
-					800: 'hsl(184 100% 25%)',
-					900: 'hsl(184 100% 20%)', // main navy
-					950: 'hsl(184 100% 15%)'
+				// Simplified 2-Color System - Cyan Blue & Orange
+				cyan: {
+					50: 'hsl(188 100% 95%)',
+					100: 'hsl(188 100% 90%)',
+					200: 'hsl(188 100% 80%)',
+					300: 'hsl(188 100% 70%)',
+					400: 'hsl(188 100% 60%)',
+					500: 'hsl(188 100% 50%)',
+					600: 'hsl(188 100% 42%)', // main cyan
+					700: 'hsl(188 100% 35%)',
+					800: 'hsl(188 100% 30%)',
+					900: 'hsl(188 100% 25%)',
+					950: 'hsl(188 100% 20%)'
 				},
-				teal: {
-					50: 'hsl(168 65% 95%)',
-					100: 'hsl(168 65% 90%)',
-					200: 'hsl(168 65% 80%)',
-					300: 'hsl(168 65% 70%)',
-					400: 'hsl(168 65% 60%)',
-					500: 'hsl(168 65% 50%)',
-					600: 'hsl(168 65% 40%)', // main teal
-					700: 'hsl(168 65% 35%)',
-					800: 'hsl(168 65% 30%)',
-					900: 'hsl(168 65% 25%)',
-					950: 'hsl(168 65% 20%)'
-				},
-				rust: {
-					50: 'hsl(9 77% 95%)',
-					100: 'hsl(9 77% 90%)',
-					200: 'hsl(9 77% 80%)',
-					300: 'hsl(9 77% 70%)',
-					400: 'hsl(9 77% 65%)',
-					500: 'hsl(9 77% 58%)', // main rust
-					600: 'hsl(9 77% 53%)',
-					700: 'hsl(9 77% 48%)',
-					800: 'hsl(9 77% 43%)',
-					900: 'hsl(9 77% 38%)',
-					950: 'hsl(9 77% 33%)'
-				},
-				amber: {
-					50: 'hsl(27 85% 95%)',
-					100: 'hsl(27 85% 90%)',
-					200: 'hsl(27 85% 85%)',
-					300: 'hsl(27 85% 80%)',
-					400: 'hsl(27 85% 75%)',
-					500: 'hsl(27 85% 70%)',
-					600: 'hsl(27 85% 64%)', // main amber
-					700: 'hsl(27 85% 59%)',
-					800: 'hsl(27 85% 54%)',
-					900: 'hsl(27 85% 49%)',
-					950: 'hsl(27 85% 44%)'
-				},
-				cream: {
-					50: 'hsl(96 82% 99%)',
-					100: 'hsl(96 82% 97%)', // main cream
-					200: 'hsl(96 82% 94%)',
-					300: 'hsl(96 82% 91%)',
-					400: 'hsl(96 82% 88%)',
-					500: 'hsl(96 82% 85%)',
-					600: 'hsl(96 82% 82%)',
-					700: 'hsl(96 82% 79%)',
-					800: 'hsl(96 82% 76%)',
-					900: 'hsl(96 82% 73%)',
-					950: 'hsl(96 82% 70%)'
+				orange: {
+					50: 'hsl(29 100% 95%)',
+					100: 'hsl(29 100% 90%)',
+					200: 'hsl(29 100% 80%)',
+					300: 'hsl(29 100% 70%)',
+					400: 'hsl(29 100% 65%)',
+					500: 'hsl(29 100% 55%)', // main orange
+					600: 'hsl(29 100% 50%)',
+					700: 'hsl(29 100% 45%)',
+					800: 'hsl(29 100% 40%)',
+					900: 'hsl(29 100% 35%)',
+					950: 'hsl(29 100% 30%)'
 				},
 				success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))',
-					light: 'hsl(168 65% 85%)',
-					main: 'hsl(168 65% 40%)',
-					dark: 'hsl(168 65% 32%)'
+					light: 'hsl(188 100% 85%)',
+					main: 'hsl(188 100% 42%)',
+					dark: 'hsl(188 100% 35%)'
 				},
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))',
-					light: 'hsl(27 85% 85%)',
-					main: 'hsl(27 85% 64%)',
-					dark: 'hsl(27 85% 54%)'
+					light: 'hsl(29 100% 85%)',
+					main: 'hsl(29 100% 55%)',
+					dark: 'hsl(29 100% 45%)'
 				},
 				error: {
-					light: 'hsl(9 77% 85%)',
-					main: 'hsl(9 77% 58%)',
-					dark: 'hsl(9 77% 48%)'
-				},
-				info: {
-					light: 'hsl(207 32% 85%)',
-					main: 'hsl(207 32% 59%)',
-					dark: 'hsl(207 32% 49%)'
+					light: 'hsl(29 100% 85%)',
+					main: 'hsl(29 100% 55%)',
+					dark: 'hsl(29 100% 45%)'
 				}
 			},
 			borderRadius: {
@@ -193,12 +149,9 @@ export default {
 				'geometric-pattern': 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23264653" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
 			},
 			boxShadow: {
-				'geometric-sm': 'var(--shadow-sm)',
-				'geometric-md': 'var(--shadow-md)',
-				'geometric-lg': 'var(--shadow-lg)',
-				'teal': 'var(--shadow-teal)',
-				'rust': 'var(--shadow-rust)',
-				'amber': 'var(--shadow-amber)'
+				'sm': 'var(--shadow-sm)',
+				'md': 'var(--shadow-md)',
+				'lg': 'var(--shadow-lg)'
 			},
 			keyframes: {
 				'accordion-down': {
