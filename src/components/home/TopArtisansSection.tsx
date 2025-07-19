@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useTopArtisans } from '@/hooks/useTopArtisans';
 import { useToast } from '@/hooks/use-toast';
 import { useArtisanMap } from '@/contexts/ArtisanMapContext';
+import { ScatteredStars } from '@/components/decorative/ScatteredStars';
 
 export const TopArtisansSection: React.FC = () => {
   // Use mock data as fallback in production environments only when all retries fail
@@ -48,8 +49,9 @@ export const TopArtisansSection: React.FC = () => {
   };
 
   return (
-    <section className="py-10 bg-background bg-[url(/public/13561297_5268821.jpg)]">
-      <div className="container mx-auto px-4">
+    <section className="py-10 bg-background relative overflow-hidden">
+      <ScatteredStars count={20} />
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12 " >
           <h2 className="text-4xl font-bold mb-4 text-foreground">
             Top artisans de confiance
