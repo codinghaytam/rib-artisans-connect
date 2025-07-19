@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Star, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroArtisan from '@/assets/hero-artisan.jpg';
-import { MoroccanPatternGrid } from '@/components/decorative/MoroccanPatterns';
 import { QuatrefoilBackground } from '@/components/decorative/QuatrefoilBackground';
 
 interface HeroSectionProps {
@@ -28,11 +27,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       </div>
       
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-primary/30"></div>
+      <div className="absolute inset-0 bg-grey/50"></div>
       
       {/* Moroccan decorative patterns */}
-      <QuatrefoilBackground opacity={0.1} />
-      
+        
       <div className="container mx-auto px-4 py-20 relative">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in text-white">
@@ -62,7 +60,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-2 border-accent text-accent bg-white/10 hover:bg-accent hover:text-primary px-8 py-4 text-lg shadow-lg backdrop-blur-sm"
+                className="border-2 border-white text-white bg-white/10 hover:bg-accent hover:text-white px-8 py-4 text-lg shadow-lg backdrop-blur-sm cl"
                 onClick={onScrollToBecomeArtisan}
               >
                 Devenir artisan
@@ -72,7 +70,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="border-2 border-accent text-accent bg-white/10 hover:bg-accent hover:text-primary px-8 py-4 text-lg shadow-lg backdrop-blur-sm"
+                  className="border-2 border-white text-white bg-white/10 hover:bg-accent hover:text-white px-8 py-4 text-lg shadow-lg backdrop-blur-sm"
                 >
                   Devenir artisan
                 </Button>

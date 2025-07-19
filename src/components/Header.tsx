@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="ghost"
-                      className="text-foreground hover:text-primary"
+                      className="text-foreground hover:text-white"
                     >
                       Connexion
                     </Button>
@@ -185,7 +185,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="outline"
-                      className="text-primary border-primary hover:bg-muted"
+                      className="text-primary border-primary hover:bg-muted hover:text-primary"
                     >
                       S'inscrire
                     </Button>
@@ -296,7 +296,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Link to="/auth">
                     <Button
                       variant="outline"
-                      className="w-full bg-white/50 border-border hover:bg-white/80"
+                      className="w-full bg-white/50 border-border hover:bg-white/80 hover:text-white"
                     >
                       Connexion
                     </Button>

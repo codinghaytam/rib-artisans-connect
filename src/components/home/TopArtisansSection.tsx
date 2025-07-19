@@ -48,9 +48,9 @@ export const TopArtisansSection: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-10 bg-background bg-[url(/public/13561297_5268821.jpg)]">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 " >
           <h2 className="text-4xl font-bold mb-4 text-foreground">
             Top artisans de confiance
           </h2>
@@ -77,7 +77,7 @@ export const TopArtisansSection: React.FC = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto bg-transparent">
             {topArtisans.map((artisan, index) => (
               <Link 
                 to={`/artisans?category=${artisan.category_id}`} 
