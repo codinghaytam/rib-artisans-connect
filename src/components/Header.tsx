@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, Search, MapPin, Menu, X } from 'lucide-react';
-import logo from '@/assets/logo.jpg';
 
 interface HeaderProps {
   onScrollToSearch?: () => void;
@@ -28,11 +27,9 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <img 
-                src={logo} 
-                alt="9RIB Logo" 
-                className="w-10 h-10 rounded-lg object-cover"
-              />
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">9</span>
+              </div>
               <span className="text-2xl font-bold text-primary">
                 9RIB
               </span>
@@ -219,11 +216,9 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div className="flex items-center space-x-2">
-                <img 
-                  src={logo} 
-                  alt="9RIB Logo" 
-                  className="w-8 h-8 rounded-lg object-cover"
-                />
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">9</span>
+                </div>
                 <span className="text-xl font-bold text-primary">
                   9RIB
                 </span>
