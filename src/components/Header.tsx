@@ -26,13 +26,10 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">9</span>
-              </div>
-              <span className="text-2xl font-bold text-primary">
-                9RIB
-              </span>
+            <Link to="/" className="items-center space-y-0 space-x-2">
+              <img src='public/9ribLogo.svg' style={{
+              width: '100px', objectFit: 'contain'
+              }}></img>
             </Link>
 
             {/* Mobile menu button */}
