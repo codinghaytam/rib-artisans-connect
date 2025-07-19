@@ -28,30 +28,30 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					50: 'hsl(220 20% 98%)',
-					100: 'hsl(218 20% 92%)',
-					200: 'hsl(215 25% 84%)',
-					300: 'hsl(213 27% 76%)',
-					400: 'hsl(210 29% 69%)',
-					500: 'hsl(207 32% 59%)',
-					600: 'hsl(168 65% 40%)', // main primary
-					700: 'hsl(168 65% 35%)',
-					800: 'hsl(168 65% 30%)',
-					900: 'hsl(168 65% 25%)'
+					50: 'hsl(188 100% 95%)',
+					100: 'hsl(188 100% 90%)',
+					200: 'hsl(188 100% 80%)',
+					300: 'hsl(188 100% 70%)',
+					400: 'hsl(188 100% 60%)',
+					500: 'hsl(188 100% 50%)',
+					600: 'hsl(188 100% 42%)', // main primary - cyan blue
+					700: 'hsl(188 100% 35%)',
+					800: 'hsl(188 100% 30%)',
+					900: 'hsl(188 100% 25%)'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))',
-					50: 'hsl(51 100% 97%)',
-					100: 'hsl(49 100% 91%)',
-					200: 'hsl(47 100% 86%)',
-					300: 'hsl(44 100% 80%)',
-					400: 'hsl(41 100% 74%)',
-					500: 'hsl(27 85% 64%)', // main secondary
-					600: 'hsl(9 77% 58%)',
-					700: 'hsl(8 68% 53%)',
-					800: 'hsl(7 69% 50%)',
-					900: 'hsl(5 64% 41%)'
+					50: 'hsl(29 100% 95%)',
+					100: 'hsl(29 100% 90%)',
+					200: 'hsl(29 100% 80%)',
+					300: 'hsl(29 100% 70%)',
+					400: 'hsl(29 100% 65%)',
+					500: 'hsl(29 100% 55%)', // main secondary - orange
+					600: 'hsl(4 90% 58%)', // red gradient end
+					700: 'hsl(4 90% 53%)',
+					800: 'hsl(4 90% 48%)',
+					900: 'hsl(4 90% 43%)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -64,12 +64,12 @@ export default {
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))',
-					teal: 'hsl(168 65% 40%)',
-					'dark-teal': 'hsl(168 65% 32%)',
-					rust: 'hsl(9 77% 58%)',
-					amber: 'hsl(27 85% 64%)',
-					navy: 'hsl(184 100% 20%)',
-					cream: 'hsl(96 82% 97%)'
+					cyan: 'hsl(188 100% 42%)',
+					'dark-cyan': 'hsl(188 100% 35%)',
+					orange: 'hsl(29 100% 55%)',
+					red: 'hsl(4 90% 58%)',
+					blue: 'hsl(200 100% 25%)',
+					white: 'hsl(0 0% 100%)'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',

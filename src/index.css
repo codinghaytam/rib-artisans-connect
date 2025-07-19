@@ -8,113 +8,113 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Islamic Geometric Harmony Theme */
-    --background: 96 82% 97%; /* cream #f1faee */
-    --foreground: 184 100% 20%; /* navy #264653 */
+    /* D'rib.ma Logo Theme */
+    --background: 0 0% 98%; /* light gray */
+    --foreground: 200 100% 25%; /* deep blue */
 
     --card: 0 0% 100%; /* white */
-    --card-foreground: 184 100% 20%; /* navy #264653 */
+    --card-foreground: 200 100% 25%; /* deep blue */
 
     --popover: 0 0% 100%; /* white */
-    --popover-foreground: 184 100% 20%; /* navy #264653 */
+    --popover-foreground: 200 100% 25%; /* deep blue */
 
-    --primary: 168 65% 40%; /* teal #2a9d8f */
-    --primary-foreground: 96 82% 97%; /* cream #f1faee */
+    --primary: 188 100% 42%; /* cyan blue #00bcd4 */
+    --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 27 85% 64%; /* amber #f4a261 */
-    --secondary-foreground: 184 100% 20%; /* navy #264653 */
+    --secondary: 29 100% 55%; /* orange #ff9800 */
+    --secondary-foreground: 0 0% 100%; /* white */
 
-    --muted: 220 9% 91%; /* neutral-200 #e4e4e7 */
-    --muted-foreground: 220 9% 46%; /* neutral-500 #71717a */
+    --muted: 220 9% 91%; /* neutral-200 */
+    --muted-foreground: 220 9% 46%; /* neutral-500 */
 
-    --accent: 168 65% 44%; /* dark teal #1f7a6b */
-    --accent-foreground: 96 82% 97%; /* cream #f1faee */
+    --accent: 4 90% 58%; /* red #f44336 */
+    --accent-foreground: 0 0% 100%; /* white */
 
-    --destructive: 9 77% 58%; /* rust #e76f51 */
+    --destructive: 4 90% 58%; /* red #f44336 */
     --destructive-foreground: 0 0% 100%; /* white */
 
-    --success: 168 65% 40%; /* teal #2a9d8f */
-    --success-foreground: 96 82% 97%; /* cream #f1faee */
+    --success: 188 100% 42%; /* cyan blue */
+    --success-foreground: 0 0% 100%; /* white */
 
-    --warning: 27 85% 64%; /* amber #f4a261 */
-    --warning-foreground: 184 100% 20%; /* navy #264653 */
+    --warning: 29 100% 55%; /* orange */
+    --warning-foreground: 0 0% 100%; /* white */
 
-    --border: 220 13% 89%; /* neutral-200 #e4e4e7 */
-    --input: 220 9% 83%; /* neutral-300 #d4d4d8 */
-    --ring: 168 65% 40%; /* teal #2a9d8f */
+    --border: 220 13% 89%; /* neutral-200 */
+    --input: 220 9% 83%; /* neutral-300 */
+    --ring: 188 100% 42%; /* cyan blue */
 
     --radius: 0.75rem;
 
-    /* Islamic geometric gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(184 100% 20%), hsl(168 65% 40%));
-    --gradient-secondary: linear-gradient(135deg, hsl(9 77% 58%), hsl(27 85% 64%));
-    --gradient-accent: linear-gradient(135deg, hsl(168 65% 44%), hsl(168 65% 40%), hsl(27 85% 64%));
-    --gradient-neutral: linear-gradient(135deg, hsl(96 82% 97%), hsl(220 9% 83%));
+    /* D'rib.ma logo gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(188 100% 42%), hsl(200 100% 35%));
+    --gradient-secondary: linear-gradient(135deg, hsl(29 100% 55%), hsl(4 90% 58%));
+    --gradient-accent: linear-gradient(135deg, hsl(188 100% 42%), hsl(29 100% 55%), hsl(4 90% 58%));
+    --gradient-neutral: linear-gradient(135deg, hsl(0 0% 98%), hsl(220 9% 83%));
 
-    /* Geometric shadows */
-    --shadow-sm: 0 2px 8px hsl(184 100% 20% / 0.1);
-    --shadow-md: 0 4px 16px hsl(184 100% 20% / 0.15);
-    --shadow-lg: 0 8px 32px hsl(184 100% 20% / 0.2);
-    --shadow-teal: 0 4px 16px hsl(168 65% 40% / 0.3);
-    --shadow-rust: 0 4px 16px hsl(9 77% 58% / 0.3);
-    --shadow-amber: 0 4px 16px hsl(27 85% 64% / 0.3);
+    /* Logo-inspired shadows */
+    --shadow-sm: 0 2px 8px hsl(200 100% 25% / 0.1);
+    --shadow-md: 0 4px 16px hsl(200 100% 25% / 0.15);
+    --shadow-lg: 0 8px 32px hsl(200 100% 25% / 0.2);
+    --shadow-cyan: 0 4px 16px hsl(188 100% 42% / 0.3);
+    --shadow-orange: 0 4px 16px hsl(29 100% 55% / 0.3);
+    --shadow-red: 0 4px 16px hsl(4 90% 58% / 0.3);
 
     /* Sidebar tokens */
-    --sidebar-background: 184 100% 20%; /* navy #264653 */
-    --sidebar-foreground: 96 82% 97%; /* cream #f1faee */
-    --sidebar-primary: 27 85% 64%; /* amber #f4a261 */
-    --sidebar-primary-foreground: 184 100% 20%; /* navy #264653 */
-    --sidebar-accent: 168 65% 40%; /* teal #2a9d8f */
-    --sidebar-accent-foreground: 96 82% 97%; /* cream #f1faee */
-    --sidebar-border: 184 50% 30%; /* darker navy */
-    --sidebar-ring: 168 65% 40%; /* teal #2a9d8f */
+    --sidebar-background: 200 100% 25%; /* deep blue */
+    --sidebar-foreground: 0 0% 100%; /* white */
+    --sidebar-primary: 29 100% 55%; /* orange */
+    --sidebar-primary-foreground: 0 0% 100%; /* white */
+    --sidebar-accent: 188 100% 42%; /* cyan blue */
+    --sidebar-accent-foreground: 0 0% 100%; /* white */
+    --sidebar-border: 200 80% 30%; /* darker blue */
+    --sidebar-ring: 188 100% 42%; /* cyan blue */
   }
 
   .dark {
-    /* Dark mode - Islamic Geometric Harmony Theme */
-    --background: 184 100% 15%; /* darker navy */
-    --foreground: 96 82% 97%; /* cream #f1faee */
+    /* Dark mode - D'rib.ma Logo Theme */
+    --background: 200 100% 8%; /* very dark blue */
+    --foreground: 0 0% 95%; /* light gray */
 
-    --card: 184 100% 18%; /* slightly lighter navy */
-    --card-foreground: 96 82% 97%; /* cream #f1faee */
+    --card: 200 100% 12%; /* dark blue */
+    --card-foreground: 0 0% 95%; /* light gray */
 
-    --popover: 184 100% 18%; /* slightly lighter navy */
-    --popover-foreground: 96 82% 97%; /* cream #f1faee */
+    --popover: 200 100% 12%; /* dark blue */
+    --popover-foreground: 0 0% 95%; /* light gray */
 
-    --primary: 168 65% 55%; /* lighter teal */
-    --primary-foreground: 184 100% 15%; /* dark navy */
+    --primary: 188 100% 55%; /* brighter cyan */
+    --primary-foreground: 200 100% 8%; /* very dark blue */
 
-    --secondary: 27 85% 70%; /* lighter amber */
-    --secondary-foreground: 184 100% 15%; /* dark navy */
+    --secondary: 29 100% 65%; /* brighter orange */
+    --secondary-foreground: 200 100% 8%; /* very dark blue */
 
-    --muted: 184 50% 25%; /* muted navy */
-    --muted-foreground: 96 40% 70%; /* muted cream */
+    --muted: 200 50% 20%; /* muted blue */
+    --muted-foreground: 0 20% 70%; /* muted gray */
 
-    --accent: 9 77% 65%; /* lighter rust */
-    --accent-foreground: 184 100% 15%; /* dark navy */
+    --accent: 4 90% 65%; /* brighter red */
+    --accent-foreground: 200 100% 8%; /* very dark blue */
 
-    --destructive: 9 77% 65%; /* lighter rust */
-    --destructive-foreground: 96 82% 97%; /* cream */
+    --destructive: 4 90% 65%; /* brighter red */
+    --destructive-foreground: 0 0% 95%; /* light gray */
 
-    --success: 168 65% 55%; /* lighter teal */
-    --success-foreground: 184 100% 15%; /* dark navy */
+    --success: 188 100% 55%; /* brighter cyan */
+    --success-foreground: 200 100% 8%; /* very dark blue */
 
-    --warning: 27 85% 70%; /* lighter amber */
-    --warning-foreground: 184 100% 15%; /* dark navy */
+    --warning: 29 100% 65%; /* brighter orange */
+    --warning-foreground: 200 100% 8%; /* very dark blue */
 
-    --border: 184 50% 30%; /* border navy */
-    --input: 184 50% 25%; /* input navy */
-    --ring: 168 65% 55%; /* lighter teal */
+    --border: 200 50% 25%; /* border blue */
+    --input: 200 50% 20%; /* input blue */
+    --ring: 188 100% 55%; /* brighter cyan */
 
     /* Dark mode sidebar */
-    --sidebar-background: 184 100% 12%; /* very dark navy */
-    --sidebar-foreground: 96 82% 97%; /* cream */
-    --sidebar-primary: 27 85% 64%; /* amber */
-    --sidebar-primary-foreground: 184 100% 12%; /* very dark navy */
-    --sidebar-accent: 168 65% 40%; /* teal */
-    --sidebar-accent-foreground: 96 82% 97%; /* cream */
-    --sidebar-border: 184 50% 20%; /* darker navy border */
-    --sidebar-ring: 168 65% 55%; /* lighter teal */
+    --sidebar-background: 200 100% 5%; /* darkest blue */
+    --sidebar-foreground: 0 0% 95%; /* light gray */
+    --sidebar-primary: 29 100% 55%; /* orange */
+    --sidebar-primary-foreground: 200 100% 5%; /* darkest blue */
+    --sidebar-accent: 188 100% 42%; /* cyan */
+    --sidebar-accent-foreground: 0 0% 95%; /* light gray */
+    --sidebar-border: 200 50% 15%; /* darker blue border */
+    --sidebar-ring: 188 100% 55%; /* brighter cyan */
   }
 }
 
