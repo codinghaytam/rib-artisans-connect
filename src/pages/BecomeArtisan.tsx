@@ -150,7 +150,7 @@ const BecomeArtisan = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background images */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-5 pointer-events-none -z-10">
         <img 
           src={heroArtisan} 
           alt="Artisan marocain" 
