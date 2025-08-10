@@ -80,34 +80,26 @@ const ArtisansMapSection = () => {
     }
   };
 
-  // Geocode address using Geoapify
+  // Geocode address using Nominatim (free, no API key needed)
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
     try {
-      // Use Geoapify's geocoding API
+      console.log('🔍 Geocoding with Nominatim:', address);
+      
       const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address + ', Morocco')}&limit=1&format=json&apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=ma&addressdetails=1`
       );
       const data = await response.json();
       
-      if (data && data.results && data.results.length > 0) {
-        const result = data.results[0];
-        return [result.lat, result.lon];
+      if (data && data.length > 0) {
+        const result = data[0];
+        const coords: [number, number] = [parseFloat(result.lat), parseFloat(result.lon)];
+        console.log('✅ Nominatim success:', coords, 'for', address);
+        return coords;
+      } else {
+        console.log('❌ Nominatim no results for:', address);
       }
     } catch (error) {
-      console.error('Geoapify geocoding error:', error);
-      // Fallback to Nominatim if Geoapify fails
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Morocco')}&limit=1&countrycodes=ma`
-        );
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-        }
-      } catch (fallbackError) {
-        console.error('Fallback geocoding error:', fallbackError);
-      }
+      console.error('❌ Nominatim geocoding error:', error);
     }
     
     return null;
@@ -147,9 +139,9 @@ const ArtisansMapSection = () => {
       maxZoom: 16
     });
 
-    // Add Geoapify tile layer (with fallback to OpenStreetMap)
-    L.tileLayer('https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8', {
-      attribution: '© Geoapify © OpenStreetMap contributors',
+    // Use OpenStreetMap tiles (free, no API key needed)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(leafletMapRef.current);
 
