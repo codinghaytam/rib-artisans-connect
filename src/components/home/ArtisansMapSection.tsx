@@ -34,7 +34,10 @@ const ArtisansMapSection = () => {
   // Fetch artisans with locations
   const fetchArtisans = async () => {
     try {
-      const { data, error } = await supabase
+      console.log('🗺️ Fetching artisans for map...');
+      
+      // First, let's get all artisans to see what data we have
+      const { data: allArtisans, error: allError } = await supabase
         .from('artisan_profiles')
         .select(`
           *,
@@ -56,17 +59,24 @@ const ArtisansMapSection = () => {
             region
           )
         `)
-        .not('address', 'is', null)
         .eq('is_active', true);
 
-      if (error) {
-        console.error('Error fetching artisans:', error);
+      if (allError) {
+        console.error('❌ Error fetching all artisans:', allError);
         return;
       }
 
-      setArtisans(data || []);
+      console.log('📊 All artisans data:', allArtisans);
+      console.log('📍 Artisans with addresses:', allArtisans?.filter(a => a.address));
+
+      // Since artisans don't have addresses, let's use their city data instead
+      const artisansWithLocation = allArtisans?.filter(artisan => artisan.cities?.name) || [];
+      
+      console.log('🏙️ Using city data for locations:', artisansWithLocation.length, 'artisans');
+      
+      setArtisans(artisansWithLocation);
     } catch (error) {
-      console.error('Error fetching artisans:', error);
+      console.error('❌ Error fetching artisans:', error);
     }
   };
 
@@ -164,11 +174,26 @@ const ArtisansMapSection = () => {
     artisanMarkersRef.current = [];
 
     const addMarkersToMap = async () => {
+      console.log('🎯 Adding markers for', artisans.length, 'artisans');
+      
       for (const artisan of artisans) {
-        if (!artisan.address) continue;
+        console.log('📍 Processing artisan:', artisan.business_name, 'City:', artisan.cities?.name);
+        
+        // Use city name instead of address since addresses are null
+        const locationQuery = artisan.cities?.name ? `${artisan.cities.name}, Morocco` : null;
+        if (!locationQuery) {
+          console.log('⏭️ Skipping artisan without city:', artisan.business_name);
+          continue;
+        }
 
-        const coordinates = await geocodeAddress(artisan.address);
-        if (!coordinates) continue;
+        console.log('🔍 Geocoding:', locationQuery);
+        const coordinates = await geocodeAddress(locationQuery);
+        if (!coordinates) {
+          console.log('❌ Failed to geocode:', locationQuery);
+          continue;
+        }
+        
+        console.log('✅ Got coordinates:', coordinates, 'for', artisan.business_name);
 
         // Create custom icon for artisan with enhanced styling
         const artisanIcon = L.divIcon({
@@ -224,7 +249,7 @@ const ArtisansMapSection = () => {
               </div>
             </div>
             <p style="font-size: 12px; color: #333; margin: 0 0 8px 0;">${artisan.business_name || ''}</p>
-            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${artisan.address}</p>
+            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${artisan.cities?.name || ''}, ${artisan.cities?.region || 'Morocco'}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
               style="
@@ -249,6 +274,8 @@ const ArtisansMapSection = () => {
         const marker = L.marker(coordinates, { icon: artisanIcon })
           .addTo(leafletMapRef.current!)
           .bindPopup(popupContent);
+        
+        console.log('🎯 Added marker for:', artisan.business_name, 'at', coordinates);
 
         // Add hover effects
         marker.on('mouseover', () => {
