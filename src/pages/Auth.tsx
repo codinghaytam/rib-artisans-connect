@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,8 @@ const Auth = () => {
   const { login, register, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/';
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -37,9 +39,9 @@ const Auth = () => {
   // Redirect authenticated users
   React.useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate(from, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +68,7 @@ const Auth = () => {
         title: "Connexion réussie",
         description: "Bienvenue sur 9RIB !",
       });
-      navigate('/');
+      navigate(from, { replace: true });
     }
     setIsLoading(false);
   };
@@ -126,7 +128,7 @@ const Auth = () => {
         title: "Inscription réussie",
         description: "Bienvenue sur 9RIB !",
       });
-      navigate('/');
+      navigate(from, { replace: true });
     }
     setIsLoading(false);
   };

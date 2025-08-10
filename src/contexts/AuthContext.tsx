@@ -46,63 +46,86 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session);
-        setSession(session);
-        
-        if (session?.user) {
-          // Fetch user profile from profiles table
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+  // Fetch profile from DB and merge into current user state (deferred)
+  const fetchAndSetProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
 
-          if (profile && !error) {
-            // Create user profile object from the database record
-            const userProfile: User = {
-              id: profile.id,
-              email: profile.email,
-              name: profile.name || '',
-              role: profile.role as UserRole,
-              phone: profile.phone || undefined,
-              isVerified: false, // Default value
-              avatar: profile.avatar_url || undefined
-            };
-            
-            // Check for optional/custom properties in the database
-            if ('is_verified' in profile) {
-              userProfile.isVerified = Boolean(profile.is_verified);
-            }
-            
-            if ('cin' in profile) {
-              userProfile.cin = profile.cin as string;
-            }
-            
-            if ('city' in profile) {
-              userProfile.city = profile.city as string;
-            }
-            
-            setUser(userProfile);
-          }
-        } else {
-          setUser(null);
-        }
-        setIsLoading(false);
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return;
       }
-    );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session);
-      // The onAuthStateChange will handle the rest
-    });
+      if (profile) {
+        const userProfile: User = {
+          id: profile.id,
+          email: profile.email,
+          name: profile.name || profile.email,
+          role: (profile.role as UserRole) || 'client',
+          phone: profile.phone || undefined,
+          isVerified: Boolean((profile as any).is_verified ?? false),
+          avatar: profile.avatar_url || undefined,
+          cin: (profile as any).cin,
+          city: (profile as any).city,
+        };
+        setUser((prev) => ({ ...(prev || userProfile), ...userProfile }));
+      }
+    } catch (e) {
+      console.error('Unexpected error fetching profile:', e);
+    }
+  };
 
-    return () => subscription.unsubscribe();
-  }, []);
+useEffect(() => {
+  // Listener FIRST — do not run async Supabase calls inside the callback
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
+    console.log('Auth state changed:', event, sess);
+    setSession(sess);
+
+    const authUser = sess?.user ?? null;
+    if (authUser) {
+      const minimalUser: User = {
+        id: authUser.id,
+        email: authUser.email || '',
+        name: (authUser.user_metadata?.name as string) || authUser.email || '',
+        role: (authUser.user_metadata?.role as UserRole) || 'client',
+        isVerified: Boolean(authUser.user_metadata?.is_verified),
+      };
+      setUser(minimalUser);
+      // Defer DB fetch to avoid deadlocks
+      setTimeout(() => fetchAndSetProfile(authUser.id), 0);
+    } else {
+      setUser(null);
+    }
+    setIsLoading(false);
+  });
+
+  // THEN check for existing session to restore persisted auth
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    console.log('Initial session:', session);
+    setSession(session);
+    const authUser = session?.user ?? null;
+    if (authUser) {
+      const minimalUser: User = {
+        id: authUser.id,
+        email: authUser.email || '',
+        name: (authUser.user_metadata?.name as string) || authUser.email || '',
+        role: (authUser.user_metadata?.role as UserRole) || 'client',
+        isVerified: Boolean(authUser.user_metadata?.is_verified),
+      };
+      setUser(minimalUser);
+      setTimeout(() => fetchAndSetProfile(authUser.id), 0);
+    } else {
+      setUser(null);
+    }
+    setIsLoading(false);
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     setIsLoading(true);
