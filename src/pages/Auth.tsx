@@ -9,7 +9,7 @@ import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Loader2, User, Hammer } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
@@ -209,36 +209,12 @@ const Auth = () => {
 
                 <TabsContent value="register" className="space-y-4 mt-6">
                   <div className="space-y-4">
-                    <div className="grid w-full grid-cols-2 gap-2">
-                      <div className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        registerData.role === 'client' 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-muted-foreground'
-                      }`}
-                      onClick={() => setRegisterData(prev => ({ ...prev, role: 'client' }))}>
-                        <div className="flex items-center space-x-2">
-                          <User className="h-4 w-4" />
-                          <span className="text-sm font-medium">Client</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Rechercher des artisans
-                        </p>
-                      </div>
-                      
-                      <div className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        registerData.role === 'artisan' 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-muted-foreground'
-                      }`}
-                      onClick={() => setRegisterData(prev => ({ ...prev, role: 'artisan' }))}>
-                        <div className="flex items-center space-x-2">
-                          <Hammer className="h-4 w-4" />
-                          <span className="text-sm font-medium">Artisan</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Proposer mes services
-                        </p>
-                      </div>
+                    {/* Client-only registration; artisans use dedicated page */}
+                    <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
+                      Vous êtes artisan ? Utilisez la page dédiée pour vous inscrire.
+                      <Link to="/become-artisan" className="ml-2 text-primary underline underline-offset-2">
+                        Devenir artisan →
+                      </Link>
                     </div>
 
                     <form onSubmit={handleRegister} className="space-y-4">
