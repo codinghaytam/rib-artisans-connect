@@ -69,10 +69,10 @@ const ArtisansMapSection = () => {
       console.log('📊 All artisans data:', allArtisans);
       console.log('📍 Artisans with addresses:', allArtisans?.filter(a => a.address));
 
-      // Since artisans don't have addresses, let's use their city data instead
-      const artisansWithLocation = allArtisans?.filter(artisan => artisan.cities?.name) || [];
+      // Now use artisans that have address data (after our database update)
+      const artisansWithLocation = allArtisans?.filter(artisan => artisan.address || artisan.cities?.name) || [];
       
-      console.log('🏙️ Using city data for locations:', artisansWithLocation.length, 'artisans');
+      console.log('🏙️ Using address/city data for locations:', artisansWithLocation.length, 'artisans');
       
       setArtisans(artisansWithLocation);
     } catch (error) {
@@ -169,12 +169,12 @@ const ArtisansMapSection = () => {
       console.log('🎯 Adding markers for', artisans.length, 'artisans');
       
       for (const artisan of artisans) {
-        console.log('📍 Processing artisan:', artisan.business_name, 'City:', artisan.cities?.name);
+        console.log('📍 Processing artisan:', artisan.business_name, 'Address:', artisan.address, 'City:', artisan.cities?.name);
         
-        // Use city name instead of address since addresses are null
-        const locationQuery = artisan.cities?.name ? `${artisan.cities.name}, Morocco` : null;
+        // Use address if available, otherwise fall back to city name
+        const locationQuery = artisan.address || (artisan.cities?.name ? `${artisan.cities.name}, Morocco` : null);
         if (!locationQuery) {
-          console.log('⏭️ Skipping artisan without city:', artisan.business_name);
+          console.log('⏭️ Skipping artisan without location:', artisan.business_name);
           continue;
         }
 
@@ -241,7 +241,7 @@ const ArtisansMapSection = () => {
               </div>
             </div>
             <p style="font-size: 12px; color: #333; margin: 0 0 8px 0;">${artisan.business_name || ''}</p>
-            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${artisan.cities?.name || ''}, ${artisan.cities?.region || 'Morocco'}</p>
+            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${artisan.address || `${artisan.cities?.name || ''}, ${artisan.cities?.region || 'Morocco'}`}</p>
             <button 
               onclick="window.navigateToArtisan('${artisan.user_id}')"
               style="
