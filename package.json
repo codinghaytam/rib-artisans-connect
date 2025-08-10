@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@geoapify/geocoder-autocomplete": "^2.1.0",
+    "@geoapify/leaflet-address-search-plugin": "^1.0.2",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",

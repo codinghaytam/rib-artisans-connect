@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useArtisanMap } from '@/contexts/ArtisanMapContext';
 import { useAuth } from '@/contexts/AuthContext';
+import LocationSearch from '@/components/LocationSearch';
 
 // Fix Leaflet default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -69,19 +70,34 @@ const ArtisansMapSection = () => {
     }
   };
 
-  // Geocode address using Nominatim (OpenStreetMap)
+  // Geocode address using Geoapify
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
     try {
+      // Use Geoapify's geocoding API
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Morocco')}&limit=1&countrycodes=ma`
+        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address + ', Morocco')}&limit=1&format=json&apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8`
       );
       const data = await response.json();
       
-      if (data && data.length > 0) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+      if (data && data.results && data.results.length > 0) {
+        const result = data.results[0];
+        return [result.lat, result.lon];
       }
     } catch (error) {
-      console.error('Geocoding error:', error);
+      console.error('Geoapify geocoding error:', error);
+      // Fallback to Nominatim if Geoapify fails
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Morocco')}&limit=1&countrycodes=ma`
+        );
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+      } catch (fallbackError) {
+        console.error('Fallback geocoding error:', fallbackError);
+      }
     }
     
     return null;
@@ -121,9 +137,9 @@ const ArtisansMapSection = () => {
       maxZoom: 16
     });
 
-    // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+    // Add Geoapify tile layer (with fallback to OpenStreetMap)
+    L.tileLayer('https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8', {
+      attribution: '© Geoapify © OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(leafletMapRef.current);
 
@@ -154,28 +170,43 @@ const ArtisansMapSection = () => {
         const coordinates = await geocodeAddress(artisan.address);
         if (!coordinates) continue;
 
-        // Create custom icon for artisan
+        // Create custom icon for artisan with enhanced styling
         const artisanIcon = L.divIcon({
           html: `
             <div style="
-              width: 40px; 
-              height: 40px; 
+              width: 44px; 
+              height: 44px; 
               border-radius: 50%; 
-              background-color: hsl(var(--primary)); 
-              border: 2px solid white; 
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+              background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); 
+              border: 3px solid white; 
+              box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2); 
               display: flex; 
               align-items: center; 
               justify-content: center; 
               cursor: pointer; 
-              transition: transform 0.2s ease;
-            ">
-              <span style="color: white; font-size: 18px;">${artisan.categories?.emoji || '🔧'}</span>
+              transition: all 0.3s ease;
+              position: relative;
+            " 
+            onmouseover="this.style.transform='scale(1.1)'"
+            onmouseout="this.style.transform='scale(1)'"
+            >
+              <span style="color: white; font-size: 20px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${artisan.categories?.emoji || '🔧'}</span>
+              <div style="
+                position: absolute; 
+                top: -2px; 
+                right: -2px; 
+                width: 12px; 
+                height: 12px; 
+                background-color: #10b981; 
+                border: 2px solid white; 
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+              "></div>
             </div>
           `,
           className: 'leaflet-artisan-marker',
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
+          iconSize: [44, 44],
+          iconAnchor: [22, 22]
         });
 
         // Create popup content
@@ -316,9 +347,22 @@ const ArtisansMapSection = () => {
           <h2 className="text-3xl font-bold text-foreground mb-4">
             Trouvez des Artisans Près de Chez Vous
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             Découvrez les artisans disponibles dans votre région au Maroc
           </p>
+          
+          {/* Location Search */}
+          <div className="max-w-md mx-auto">
+            <LocationSearch
+              onLocationSelect={(location) => {
+                if (leafletMapRef.current) {
+                  leafletMapRef.current.setView([location.lat, location.lon], 12);
+                }
+              }}
+              placeholder="Rechercher une ville ou une adresse..."
+              className="w-full"
+            />
+          </div>
         </div>
         
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden shadow-lg">
