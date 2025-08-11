@@ -114,6 +114,21 @@ All colors MUST be HSL.
   }
 }
 
+/* Brightened Moroccan Red for hero section only */
+.theme-hero-bright {
+  --primary: 2 70% 56%;
+  --accent: 2 70% 56%;
+  --secondary: 2 66% 40%;
+  --ring: 2 70% 56%;
+}
+
+.dark .theme-hero-bright {
+  --primary: 2 75% 60%;
+  --accent: 2 75% 60%;
+  --secondary: 2 66% 44%;
+  --ring: 2 75% 60%;
+}
+
 @layer base {
   * {
     @apply border-border;

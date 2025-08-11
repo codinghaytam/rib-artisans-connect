@@ -16,7 +16,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onScrollToBecomeArtisan
 }) => {
   return (
-    <section className="relative overflow-hidden bg-background">
+    <section className="relative overflow-hidden bg-background theme-hero-bright">
       {/* Background image */}
       <div className="absolute inset-0 opacity-60">
         <img 
