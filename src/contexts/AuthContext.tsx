@@ -19,6 +19,7 @@ export interface User {
 
 export interface AuthContextType {
   user: User | null;
+  profile: User | null; // alias for user for backward compatibility
   session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
@@ -310,6 +311,7 @@ useEffect(() => {
 
   const value: AuthContextType = {
     user,
+    profile: user, // alias for user for backward compatibility
     session,
     isLoading,
     login,

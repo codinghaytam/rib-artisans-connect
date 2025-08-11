@@ -15,6 +15,7 @@ import ArtisanProfile from "./pages/ArtisanProfile";
 import Categories from "./pages/Categories";
 import BecomeArtisan from "./pages/BecomeArtisan";
 import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,11 @@ const App = () => (
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
                   </ProtectedRoute>
                 } />
                 <Route path="/auth" element={<Auth />} />
