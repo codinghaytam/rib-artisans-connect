@@ -25,7 +25,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <SupabaseStatusProvider>
       <AuthProvider>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" forcedTheme="light" enableSystem={false}>
           <TooltipProvider>
             <Toaster />
             <Sonner />
