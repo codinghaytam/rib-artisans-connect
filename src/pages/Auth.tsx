@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
@@ -42,6 +43,20 @@ const Auth = () => {
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
+
+  // Seed demo accounts once (safe/idempotent)
+  React.useEffect(() => {
+    const seed = async () => {
+      try {
+        if (localStorage.getItem('seeded-demo-accounts') === '1') return;
+        const { data, error } = await supabase.functions.invoke('seed-demo-accounts');
+        if (!error) {
+          localStorage.setItem('seeded-demo-accounts', '1');
+        }
+      } catch {}
+    };
+    seed();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
