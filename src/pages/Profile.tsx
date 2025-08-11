@@ -7,9 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, Heart, User, Mail, Phone, Edit, Loader2, AlertCircle, HeartOff } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Star, MapPin, Heart, User, Mail, Phone, Edit, Loader2, AlertCircle, HeartOff, Settings, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ProfileEditor from '@/components/ProfileEditor';
+import ArtisanProfileEditor from '@/components/ArtisanProfileEditor';
 
 interface FavoriteArtisan {
   id: string;
@@ -43,6 +46,8 @@ const Profile = () => {
   const [favorites, setFavorites] = useState<FavoriteArtisan[]>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
   const [removingFavorite, setRemovingFavorite] = useState<string | null>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingArtisanProfile, setEditingArtisanProfile] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -191,78 +196,172 @@ const Profile = () => {
     return null;
   }
 
+  // If editing profile, show the editor
+  if (editingProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <ProfileEditor 
+            onSave={() => setEditingProfile(false)}
+            onCancel={() => setEditingProfile(false)}
+          />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // If editing artisan profile, show the artisan editor
+  if (editingArtisanProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <ArtisanProfileEditor 
+            onSave={() => setEditingArtisanProfile(false)}
+            onCancel={() => setEditingArtisanProfile(false)}
+          />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* User Info Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="profile">
+                <User className="h-4 w-4 mr-2" />
                 Mon Profil
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-shrink-0">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="text-lg">
-                      {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                
-                <div className="flex-1 space-y-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-foreground">{user.name}</h2>
-                    <p className="text-muted-foreground">{user.email}</p>
-                    {user.phone && (
-                      <p className="text-muted-foreground flex items-center gap-2 mt-1">
-                        <Phone className="h-4 w-4" />
-                        {user.phone}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="flex gap-4">
-                    <Badge variant={user.role === 'artisan' ? 'default' : 'secondary'}>
-                      {user.role === 'artisan' ? 'Artisan' : 'Client'}
-                    </Badge>
-                    {user.isVerified && (
-                      <Badge variant="secondary" className="bg-success/10 text-success">
-                        Vérifié
-                      </Badge>
-                    )}
-                    {user.city && (
-                      <Badge variant="outline">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {user.city}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <Button variant="outline" className="w-fit">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Modifier le profil
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </TabsTrigger>
+              {user.role === 'artisan' && (
+                <TabsTrigger value="artisan">
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  Profil Artisan
+                </TabsTrigger>
+              )}
+              <TabsTrigger value="favorites">
+                <Heart className="h-4 w-4 mr-2" />
+                Favoris ({favorites.length})
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Favorites Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 fill-destructive text-destructive" />
-                Mes Artisans Favoris ({favorites.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+            <TabsContent value="profile" className="mt-6">
+              {/* User Info Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Informations personnelles
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-shrink-0">
+                      <Avatar className="h-24 w-24">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback className="text-lg">
+                          {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <h2 className="text-2xl font-bold text-foreground">{user.name}</h2>
+                        <p className="text-muted-foreground">{user.email}</p>
+                        {user.phone && (
+                          <p className="text-muted-foreground flex items-center gap-2 mt-1">
+                            <Phone className="h-4 w-4" />
+                            {user.phone}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="flex gap-4">
+                        <Badge variant={user.role === 'artisan' ? 'default' : 'secondary'}>
+                          {user.role === 'artisan' ? 'Artisan' : 'Client'}
+                        </Badge>
+                        {user.isVerified && (
+                          <Badge variant="secondary" className="bg-success/10 text-success">
+                            Vérifié
+                          </Badge>
+                        )}
+                        {user.city && (
+                          <Badge variant="outline">
+                            <MapPin className="h-3 w-3 mr-1" />
+                            {user.city}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-fit"
+                        onClick={() => setEditingProfile(true)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Modifier le profil
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {user.role === 'artisan' && (
+              <TabsContent value="artisan" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="h-5 w-5" />
+                        Profil professionnel
+                      </div>
+                      <Button 
+                        variant="outline"
+                        onClick={() => setEditingArtisanProfile(true)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Modifier
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-foreground mb-2">
+                        Configurez votre profil artisan
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Complétez vos informations professionnelles pour attirer plus de clients
+                      </p>
+                      <Button onClick={() => setEditingArtisanProfile(true)}>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Configurer mon profil
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
+
+            <TabsContent value="favorites" className="mt-6">
+              {/* Favorites Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 fill-destructive text-destructive" />
+                    Mes Artisans Favoris ({favorites.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
               {loadingFavorites ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin" />
@@ -369,8 +468,10 @@ const Profile = () => {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       

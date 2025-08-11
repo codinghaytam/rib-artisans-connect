@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Phone, Mail, Clock, Award, User, Camera, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
+import { Star, MapPin, Phone, Mail, Clock, Award, User, Camera, MessageSquare, Loader2, AlertCircle, Edit } from 'lucide-react';
 import { useArtisanProfile, useArtisanReviews } from '@/hooks/useArtisanProfile';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -167,7 +167,18 @@ const ArtisanProfile = () => {
                       )}
                       
                       <div className="flex flex-col gap-2">
-                        {artisan.profiles?.phone && (
+                        {/* Show edit button if viewing own profile */}
+                        {user && user.id === artisan.user_id && (
+                          <Button 
+                            variant="outline"
+                            onClick={() => window.location.href = '/profile'}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Modifier mon profil
+                          </Button>
+                        )}
+                        
+                        {artisan.profiles?.phone && user?.id !== artisan.user_id && (
                           <Button 
                             onClick={() => handleContact('phone', artisan.profiles?.phone || '')}
                           >
@@ -176,7 +187,7 @@ const ArtisanProfile = () => {
                           </Button>
                         )}
                         
-                        {artisan.profiles?.email && (
+                        {artisan.profiles?.email && user?.id !== artisan.user_id && (
                           <Button 
                             variant="outline"
                             onClick={() => handleContact('email', artisan.profiles?.email || '')}
