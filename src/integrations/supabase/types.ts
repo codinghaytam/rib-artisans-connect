@@ -124,7 +124,7 @@ export type Database = {
           address: string | null
           availability_schedule: Json | null
           business_name: string | null
-          category_id: string
+          category_id: string | null
           certifications: string[] | null
           city_id: string | null
           created_at: string | null
@@ -153,7 +153,7 @@ export type Database = {
           address?: string | null
           availability_schedule?: Json | null
           business_name?: string | null
-          category_id: string
+          category_id?: string | null
           certifications?: string[] | null
           city_id?: string | null
           created_at?: string | null
@@ -182,7 +182,7 @@ export type Database = {
           address?: string | null
           availability_schedule?: Json | null
           business_name?: string | null
-          category_id?: string
+          category_id?: string | null
           certifications?: string[] | null
           city_id?: string | null
           created_at?: string | null
