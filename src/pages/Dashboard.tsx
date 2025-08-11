@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { ArtisanProjectBrowser } from '@/components/ArtisanProjectBrowser';
+import { ClientProjectManager } from '@/components/ClientProjectManager';
 import { 
   User, 
   Settings, 
@@ -112,12 +114,10 @@ const Dashboard = () => {
   );
 
   const renderArtisanDashboard = () => {
-    const { ArtisanProjectBrowser } = require('@/components/ArtisanProjectBrowser');
     return <ArtisanProjectBrowser />;
   };
 
   const renderClientDashboard = () => {
-    const { ClientProjectManager } = require('@/components/ClientProjectManager');
     return <ClientProjectManager />;
   };
 
