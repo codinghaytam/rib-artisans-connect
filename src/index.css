@@ -10,13 +10,13 @@ All colors MUST be HSL.
   :root {
     /* Two-Red Palette - Bright Red & Crimson */
     --background: 0 0% 98%; /* light background */
-    --foreground: 0 0% 15%; /* dark charcoal text */
+    --foreground: 358 70% 50%; /* bright red text */
 
     --card: 0 0% 100%; /* white */
-    --card-foreground: 0 0% 15%; /* dark charcoal */
+    --card-foreground: 358 70% 50%; /* bright red text */
 
     --popover: 0 0% 100%; /* white */
-    --popover-foreground: 0 0% 15%; /* dark charcoal */
+    --popover-foreground: 358 70% 50%; /* bright red text */
 
     --primary: 358 70% 50%; /* bright red */
     --primary-foreground: 0 0% 100%; /* white */
@@ -27,7 +27,7 @@ All colors MUST be HSL.
     --muted: 0 0% 95%; /* light neutral */
     --muted-foreground: 0 0% 40%; /* medium neutral */
 
-    --accent: 350 80% 40%; /* crimson */
+    --accent: 358 70% 50%; /* bright red */
     --accent-foreground: 0 0% 100%; /* white */
 
     --destructive: 358 70% 45%; /* deeper bright red */
@@ -58,9 +58,9 @@ All colors MUST be HSL.
     /* Sidebar tokens */
     --sidebar-background: 358 66% 18%; /* darkest red */
     --sidebar-foreground: 0 0% 100%; /* white */
-    --sidebar-primary: 350 80% 40%; /* crimson */
+    --sidebar-primary: 358 70% 50%; /* bright red */
     --sidebar-primary-foreground: 0 0% 100%; /* white */
-    --sidebar-accent: 350 80% 40%; /* crimson */
+    --sidebar-accent: 358 70% 50%; /* bright red */
     --sidebar-accent-foreground: 0 0% 100%; /* white */
     --sidebar-border: 358 66% 25%; /* dark red border */
     --sidebar-ring: 358 70% 50%; /* bright red */
@@ -122,6 +122,11 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+::selection {
+  background-color: hsl(var(--primary) / 0.18);
+  color: hsl(var(--primary));
 }
 
 /* Map animations */
