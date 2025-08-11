@@ -94,10 +94,30 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
         query = query.eq('is_verified', filters.isVerified);
       }
 
-      // Search by common profile fields (avoid cross-table OR which PostgREST can't parse)
+      // Search functionality - we need to handle cross-table search carefully
       if (filters.searchTerm) {
         const searchQuery = `%${filters.searchTerm}%`;
-        query = query.or(`business_name.ilike.${searchQuery},description.ilike.${searchQuery},address.ilike.${searchQuery}`);
+        
+        // Get all artisan profiles, then filter the results with related data
+        // This avoids the PostgREST cross-table OR limitation
+        const allData = await query;
+        
+        if (!allData.error && allData.data) {
+          const filtered = allData.data.filter((artisan: any) => {
+            const searchFields = [
+              artisan.business_name,
+              artisan.description, 
+              artisan.address,
+              artisan.profiles?.name,
+            ].filter(Boolean).join(' ').toLowerCase();
+            
+            return searchFields.includes(filters.searchTerm!.toLowerCase());
+          });
+          
+          setArtisans(filtered as unknown as ArtisanProfile[]);
+          setLoading(false);
+          return;
+        }
       }
 
       // Order by featured first, then by rating
