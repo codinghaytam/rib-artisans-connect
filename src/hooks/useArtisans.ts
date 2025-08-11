@@ -94,11 +94,10 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
         query = query.eq('is_verified', filters.isVerified);
       }
 
-      // Search by name or city
+      // Search by common profile fields (avoid cross-table OR which PostgREST can't parse)
       if (filters.searchTerm) {
-        // Use textSearch for better search functionality
         const searchQuery = `%${filters.searchTerm}%`;
-        query = query.or(`profiles.name.ilike.${searchQuery},cities.name.ilike.${searchQuery},business_name.ilike.${searchQuery}`);
+        query = query.or(`business_name.ilike.${searchQuery},description.ilike.${searchQuery},address.ilike.${searchQuery}`);
       }
 
       // Order by featured first, then by rating
