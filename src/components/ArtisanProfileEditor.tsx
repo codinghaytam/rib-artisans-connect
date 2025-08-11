@@ -19,7 +19,6 @@ interface ArtisanProfileData {
   category_id: string;
   city_id: string;
   experience_years: number;
-  hourly_rate: number;
   service_radius: number;
   response_time_hours: number;
   specialties: string[];
@@ -47,7 +46,6 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     category_id: '',
     city_id: '',
     experience_years: 0,
-    hourly_rate: 0,
     service_radius: 20,
     response_time_hours: 24,
     specialties: [],
@@ -91,7 +89,6 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           category_id: data.category_id || '',
           city_id: data.city_id || '',
           experience_years: data.experience_years || 0,
-          hourly_rate: data.hourly_rate || 0,
           service_radius: data.service_radius || 20,
           response_time_hours: data.response_time_hours || 24,
           specialties: data.specialties || [],
@@ -153,7 +150,6 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           category_id: formData.category_id,
           city_id: formData.city_id || null,
           experience_years: formData.experience_years,
-          hourly_rate: formData.hourly_rate || null,
           service_radius: formData.service_radius,
           response_time_hours: formData.response_time_hours,
           specialties: formData.specialties,
@@ -335,31 +331,16 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="experience_years">Années d'expérience</Label>
-              <Input
-                id="experience_years"
-                type="number"
-                min="0"
-                max="50"
-                value={formData.experience_years}
-                onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="hourly_rate">Tarif horaire (€)</Label>
-              <Input
-                id="hourly_rate"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.hourly_rate}
-                onChange={(e) => handleInputChange('hourly_rate', parseFloat(e.target.value) || 0)}
-                placeholder="Ex: 35.00"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="experience_years">Années d'expérience</Label>
+            <Input
+              id="experience_years"
+              type="number"
+              min="0"
+              max="50"
+              value={formData.experience_years}
+              onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
