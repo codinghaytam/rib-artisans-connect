@@ -60,14 +60,13 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ artisanId, onReviewAdded
     setIsSubmitting(true);
 
     try {
-      // For direct artisan reviews, we'll use a dummy project_id since the schema requires it
-      // In a real implementation, you might want to modify the schema to make project_id optional
+      // For direct artisan reviews, project_id is set to null
       const { error } = await supabase
         .from('reviews')
         .insert({
           reviewer_id: user.id,
           reviewee_id: artisanId,
-          project_id: '00000000-0000-0000-0000-000000000000', // Dummy project for direct artisan reviews
+          project_id: null, // Direct artisan review without a project
           title: data.title,
           comment: data.comment,
           rating: data.rating,

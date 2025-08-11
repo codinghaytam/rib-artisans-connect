@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -6,19 +6,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Phone, Mail, Clock, Award, User, Camera, MessageSquare, Loader2, AlertCircle, Edit } from 'lucide-react';
+import { Star, MapPin, Phone, Mail, Clock, Award, User, Camera, MessageSquare, Loader2, AlertCircle, Edit, Plus } from 'lucide-react';
 import { useArtisanProfile, useArtisanReviews } from '@/hooks/useArtisanProfile';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { ReviewForm } from '@/components/ReviewForm';
 
 const ArtisanProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const { user } = useAuth();
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [refreshReviews, setRefreshReviews] = useState(0);
   
   const { artisan, loading: artisanLoading, error: artisanError } = useArtisanProfile(id || '');
-  const { reviews, loading: reviewsLoading, error: reviewsError } = useArtisanReviews(id || '');
+  const { reviews, loading: reviewsLoading, error: reviewsError } = useArtisanReviews(id || '', refreshReviews);
+
+  const handleReviewAdded = () => {
+    setRefreshReviews(prev => prev + 1);
+    setShowReviewForm(false);
+    toast({
+      title: "Succès",
+      description: "Votre avis a été publié avec succès!"
+    });
+  };
 
   // Track artisan profile view
   useEffect(() => {
@@ -308,116 +320,161 @@ const ArtisanProfile = () => {
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Avis clients</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {reviewsLoading ? (
-                    <div className="flex justify-center py-8">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                      <span className="ml-2">Chargement des avis...</span>
-                    </div>
-                  ) : reviews && reviews.length > 0 ? (
-                    <div className="space-y-6">
-                      {reviews.map((review) => (
-                        <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="flex">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <Star
-                                      key={star}
-                                      className={`h-4 w-4 ${
-                                        star <= review.rating
-                                          ? 'fill-accent text-accent'
-                                          : 'text-muted'
-                                      }`}
-                                    />
-                                  ))}
-                                </div>
-                                <span className="font-medium">{review.rating}/5</span>
-                              </div>
-                              {review.title && (
-                                <h4 className="font-medium text-foreground">{review.title}</h4>
-                              )}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {new Date(review.created_at || '').toLocaleDateString('fr-FR')}
-                            </div>
-                          </div>
-                          
-                          {review.comment && (
-                            <p className="text-foreground mb-3">{review.comment}</p>
-                          )}
-                          
-                          {(review.work_quality_rating || review.communication_rating || review.timeliness_rating) && (
-                            <div className="flex flex-wrap gap-4 text-sm">
-                              {review.work_quality_rating && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-muted-foreground">Qualité:</span>
-                                  <div className="flex">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Star
-                                        key={star}
-                                        className={`h-3 w-3 ${
-                                          star <= review.work_quality_rating!
-                                            ? 'fill-accent text-accent'
-                                            : 'text-muted'
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {review.communication_rating && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-muted-foreground">Communication:</span>
-                                  <div className="flex">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Star
-                                        key={star}
-                                        className={`h-3 w-3 ${
-                                          star <= review.communication_rating!
-                                            ? 'fill-accent text-accent'
-                                            : 'text-muted'
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {review.timeliness_rating && (
-                                <div className="flex items-center gap-1">
-                                  <span className="text-muted-foreground">Ponctualité:</span>
-                                  <div className="flex">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Star
-                                        key={star}
-                                        className={`h-3 w-3 ${
-                                          star <= review.timeliness_rating!
-                                            ? 'fill-yellow-400 text-yellow-400'
-                                            : 'text-gray-300'
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+              <div className="space-y-6">
+                {/* Add Review Button (only show if not viewing own profile and user is logged in) */}
+                {user && user.id !== artisan.user_id && (
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>Avis clients</CardTitle>
+                          <CardDescription>
+                            {reviews && reviews.length > 0 
+                              ? `${reviews.length} avis client${reviews.length > 1 ? 's' : ''}`
+                              : "Aucun avis pour le moment"
+                            }
+                          </CardDescription>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Aucun avis disponible</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                        <Button 
+                          onClick={() => setShowReviewForm(!showReviewForm)}
+                          variant={showReviewForm ? "outline" : "default"}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          {showReviewForm ? "Annuler" : "Laisser un avis"}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    {showReviewForm && (
+                      <CardContent>
+                        <ReviewForm 
+                          artisanId={artisan.user_id} 
+                          onReviewAdded={handleReviewAdded}
+                        />
+                      </CardContent>
+                    )}
+                  </Card>
+                )}
+
+                {/* Reviews List */}
+                <Card>
+                  {!user || user.id === artisan.user_id ? (
+                    <CardHeader>
+                      <CardTitle>Avis clients</CardTitle>
+                      <CardDescription>
+                        {reviews && reviews.length > 0 
+                          ? `${reviews.length} avis client${reviews.length > 1 ? 's' : ''}`
+                          : "Aucun avis pour le moment"
+                        }
+                      </CardDescription>
+                    </CardHeader>
+                  ) : null}
+                  <CardContent>
+                    {reviewsLoading ? (
+                      <div className="flex justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span className="ml-2">Chargement des avis...</span>
+                      </div>
+                    ) : reviews && reviews.length > 0 ? (
+                      <div className="space-y-6">
+                        {reviews.map((review) => (
+                          <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div className="flex">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star
+                                        key={star}
+                                        className={`h-4 w-4 ${
+                                          star <= review.rating
+                                            ? 'fill-accent text-accent'
+                                            : 'text-muted'
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="font-medium">{review.rating}/5</span>
+                                </div>
+                                {review.title && (
+                                  <h4 className="font-medium text-foreground">{review.title}</h4>
+                                )}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {new Date(review.created_at || '').toLocaleDateString('fr-FR')}
+                              </div>
+                            </div>
+                            
+                            {review.comment && (
+                              <p className="text-foreground mb-3">{review.comment}</p>
+                            )}
+                            
+                            {(review.work_quality_rating || review.communication_rating || review.timeliness_rating) && (
+                              <div className="flex flex-wrap gap-4 text-sm">
+                                {review.work_quality_rating && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-muted-foreground">Qualité:</span>
+                                    <div className="flex">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          className={`h-3 w-3 ${
+                                            star <= review.work_quality_rating!
+                                              ? 'fill-accent text-accent'
+                                              : 'text-muted'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {review.communication_rating && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-muted-foreground">Communication:</span>
+                                    <div className="flex">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          className={`h-3 w-3 ${
+                                            star <= review.communication_rating!
+                                              ? 'fill-accent text-accent'
+                                              : 'text-muted'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {review.timeliness_rating && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-muted-foreground">Ponctualité:</span>
+                                    <div className="flex">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          className={`h-3 w-3 ${
+                                            star <= review.timeliness_rating!
+                                              ? 'fill-accent text-accent'
+                                              : 'text-muted'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>Aucun avis disponible</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </div>

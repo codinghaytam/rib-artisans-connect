@@ -792,7 +792,7 @@ export type Database = {
           id: string
           is_featured: boolean | null
           is_verified: boolean | null
-          project_id: string
+          project_id: string | null
           rating: number
           reviewee_id: string
           reviewer_id: string
@@ -809,7 +809,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_verified?: boolean | null
-          project_id: string
+          project_id?: string | null
           rating: number
           reviewee_id: string
           reviewer_id: string
@@ -826,7 +826,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           is_verified?: boolean | null
-          project_id?: string
+          project_id?: string | null
           rating?: number
           reviewee_id?: string
           reviewer_id?: string

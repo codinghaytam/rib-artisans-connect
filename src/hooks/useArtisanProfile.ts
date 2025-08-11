@@ -97,7 +97,7 @@ export const useArtisanProfile = (userId: string) => {
   return { artisan, loading, error };
 };
 
-export const useArtisanReviews = (userId: string) => {
+export const useArtisanReviews = (userId: string, refreshTrigger: number = 0) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -163,7 +163,7 @@ export const useArtisanReviews = (userId: string) => {
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [userId, refreshTrigger]);
 
   return { reviews, loading, error };
 };
