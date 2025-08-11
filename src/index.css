@@ -8,29 +8,29 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Two-Red Palette - Bright Red & Crimson */
+    /* VisitMorocco Moroccan Red Palette */
     --background: 0 0% 98%; /* light background */
-    --foreground: 358 70% 50%; /* bright red text */
+    --foreground: 2 61% 45%; /* moroccan red text */
 
     --card: 0 0% 100%; /* white */
-    --card-foreground: 358 70% 50%; /* bright red text */
+    --card-foreground: 2 61% 45%; /* moroccan red text */
 
     --popover: 0 0% 100%; /* white */
-    --popover-foreground: 358 70% 50%; /* bright red text */
+    --popover-foreground: 2 61% 45%; /* moroccan red text */
 
-    --primary: 358 70% 50%; /* bright red */
+    --primary: 2 61% 45%; /* moroccan red */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 350 80% 40%; /* crimson */
+    --secondary: 2 66% 32%; /* deep oxblood red */
     --secondary-foreground: 0 0% 100%; /* white for contrast */
 
     --muted: 0 0% 95%; /* light neutral */
     --muted-foreground: 0 0% 40%; /* medium neutral */
 
-    --accent: 358 70% 50%; /* bright red */
+    --accent: 2 61% 45%; /* moroccan red */
     --accent-foreground: 0 0% 100%; /* white */
 
-    --destructive: 358 70% 45%; /* deeper bright red */
+    --destructive: 2 61% 40%; /* deeper moroccan red */
     --destructive-foreground: 0 0% 100%; /* white */
 
     --success: 142 50% 36%; /* green for success */
@@ -41,33 +41,33 @@ All colors MUST be HSL.
 
     --border: 0 0% 90%; /* light neutral */
     --input: 0 0% 96%; /* very light neutral */
-    --ring: 358 70% 50%; /* bright red */
+    --ring: 2 61% 45%; /* moroccan red */
 
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(358 70% 50%), hsl(350 80% 40%));
-    --gradient-secondary: linear-gradient(135deg, hsl(350 80% 40%), hsl(350 80% 35%));
-    --gradient-accent: linear-gradient(135deg, hsl(358 70% 50%), hsl(350 80% 40%));
+    --gradient-primary: linear-gradient(135deg, hsl(2 61% 45%), hsl(2 66% 32%));
+    --gradient-secondary: linear-gradient(135deg, hsl(2 66% 32%), hsl(2 66% 26%));
+    --gradient-accent: linear-gradient(135deg, hsl(2 61% 45%), hsl(2 66% 32%));
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px hsl(358 70% 50% / 0.1);
-    --shadow-md: 0 4px 16px hsl(358 70% 50% / 0.15);
-    --shadow-lg: 0 8px 32px hsl(358 70% 50% / 0.2);
+    --shadow-sm: 0 2px 8px hsl(2 61% 45% / 0.1);
+    --shadow-md: 0 4px 16px hsl(2 61% 45% / 0.15);
+    --shadow-lg: 0 8px 32px hsl(2 61% 45% / 0.2);
 
     /* Sidebar tokens */
-    --sidebar-background: 358 66% 18%; /* darkest red */
+    --sidebar-background: 2 66% 18%; /* darkest red */
     --sidebar-foreground: 0 0% 100%; /* white */
-    --sidebar-primary: 358 70% 50%; /* bright red */
+    --sidebar-primary: 2 61% 45%; /* moroccan red */
     --sidebar-primary-foreground: 0 0% 100%; /* white */
-    --sidebar-accent: 358 70% 50%; /* bright red */
+    --sidebar-accent: 2 61% 45%; /* moroccan red */
     --sidebar-accent-foreground: 0 0% 100%; /* white */
-    --sidebar-border: 358 66% 25%; /* dark red border */
-    --sidebar-ring: 358 70% 50%; /* bright red */
+    --sidebar-border: 2 66% 25%; /* dark red border */
+    --sidebar-ring: 2 61% 45%; /* moroccan red */
   }
 
   .dark {
-    /* Two-Red Palette - Dark */
+    /* VisitMorocco Moroccan Red - Dark */
     --background: 0 0% 8%; /* very dark neutral */
     --foreground: 0 0% 95%; /* light gray */
 
@@ -77,19 +77,19 @@ All colors MUST be HSL.
     --popover: 0 0% 12%; /* dark neutral */
     --popover-foreground: 0 0% 95%; /* light gray */
 
-    --primary: 358 70% 56%; /* brighter red */
+    --primary: 2 65% 52%; /* brighter moroccan red */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 350 80% 46%; /* brighter crimson */
+    --secondary: 2 66% 38%; /* brighter oxblood */
     --secondary-foreground: 0 0% 100%; /* white */
 
     --muted: 0 0% 22%; /* dark neutral */
     --muted-foreground: 0 0% 70%; /* light neutral */
 
-    --accent: 350 80% 46%; /* brighter crimson */
+    --accent: 2 66% 38%; /* brighter oxblood */
     --accent-foreground: 0 0% 100%; /* white */
 
-    --destructive: 358 70% 60%; /* brighter red */
+    --destructive: 2 61% 48%; /* brighter red */
     --destructive-foreground: 0 0% 100%; /* light gray */
 
     --success: 142 50% 45%; /* green */
@@ -100,17 +100,17 @@ All colors MUST be HSL.
 
     --border: 0 0% 25%; /* dark neutral border */
     --input: 0 0% 20%; /* dark neutral input */
-    --ring: 358 70% 56%; /* brighter red */
+    --ring: 2 65% 52%; /* brighter moroccan red */
 
     /* Dark mode sidebar */
     --sidebar-background: 0 0% 6%; /* almost black */
     --sidebar-foreground: 0 0% 95%; /* light gray */
-    --sidebar-primary: 350 80% 46%; /* brighter crimson */
+    --sidebar-primary: 2 66% 38%; /* brighter oxblood */
     --sidebar-primary-foreground: 0 0% 95%; /* light gray */
-    --sidebar-accent: 350 80% 46%; /* brighter crimson */
+    --sidebar-accent: 2 66% 38%; /* brighter oxblood */
     --sidebar-accent-foreground: 0 0% 95%; /* light gray */
     --sidebar-border: 0 0% 15%; /* dark neutral border */
-    --sidebar-ring: 358 70% 56%; /* brighter red */
+    --sidebar-ring: 2 65% 52%; /* brighter moroccan red */
   }
 }
 
