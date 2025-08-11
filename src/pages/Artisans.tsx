@@ -233,11 +233,6 @@ const Artisans = () => {
                       </div>
                     )}
 
-                    {artisan.hourly_rate && (
-                      <div className="text-center text-sm font-medium text-primary">
-                        À partir de {artisan.hourly_rate}€/h
-                      </div>
-                    )}
                     
                     <div className="flex gap-2">
                       <Button 

@@ -199,7 +199,6 @@ export const getMockTopArtisans = (count: number = 4): ArtisanProfile[] => {
     is_verified: true,
     is_featured: i === 0,
     experience_years: 5 + i,
-    hourly_rate: 150 + (i * 25),
     rating_average: 4 + (i % 2) * 0.5,
     rating_count: 10 + i * 5,
     total_projects: 20 + i * 8,

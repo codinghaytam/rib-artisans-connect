@@ -22,7 +22,6 @@ interface FavoriteArtisan {
     id: string;
     business_name: string;
     description: string;
-    hourly_rate: number;
     rating_average: number;
     rating_count: number;
     is_verified: boolean;
@@ -94,7 +93,6 @@ const Profile = () => {
             user_id,
             business_name,
             description,
-            hourly_rate,
             rating_average,
             rating_count,
             is_verified,
@@ -439,11 +437,6 @@ const Profile = () => {
                                   </div>
                                 )}
                                 
-                                {artisan.hourly_rate && (
-                                  <span className="text-sm font-medium text-foreground">
-                                    {artisan.hourly_rate}€/h
-                                  </span>
-                                )}
                                 
                                 {artisan.is_verified && (
                                   <Badge variant="secondary" className="bg-success/10 text-success text-xs">

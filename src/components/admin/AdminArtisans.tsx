@@ -15,7 +15,6 @@ interface Artisan {
   business_name: string;
   description: string;
   experience_years: number;
-  hourly_rate: number;
   rating_average: number;
   rating_count: number;
   total_projects: number;
@@ -206,8 +205,6 @@ export const AdminArtisans = () => {
                             <p>{selectedArtisan.experience_years} ans</p>
                           </div>
                           <div>
-                            <label className="font-semibold">Tarif horaire</label>
-                            <p>{selectedArtisan.hourly_rate || "Non spécifié"} MAD</p>
                           </div>
                         </div>
 

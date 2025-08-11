@@ -184,12 +184,6 @@ export const TopArtisansSection: React.FC = () => {
                       </div>
                     )}
                     
-                    {/* Hourly Rate */}
-                    {artisan.hourly_rate && (
-                      <div className="text-center text-sm font-medium text-primary mb-3">
-                        À partir de {artisan.hourly_rate}€/h
-                      </div>
-                    )}
 
                   {/* Action Buttons */}
                   <div className="space-y-2">

@@ -157,14 +157,6 @@ const ArtisanProfile = () => {
                     </div>
                     
                     <div className="flex flex-col gap-3">
-                      {artisan.hourly_rate && (
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-primary">
-                            {artisan.hourly_rate}€/h
-                          </div>
-                          <div className="text-sm text-muted-foreground">À partir de</div>
-                        </div>
-                      )}
                       
                       <div className="flex flex-col gap-2">
                         {/* Show edit button if viewing own profile */}
