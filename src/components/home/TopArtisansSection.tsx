@@ -12,7 +12,7 @@ import { ScatteredStars } from '@/components/decorative/ScatteredStars';
 
 export const TopArtisansSection: React.FC = () => {
   // Use mock data as fallback in production environments only when all retries fail
-  const useMockData = process.env.NODE_ENV === 'production';
+  const useMockData = import.meta.env.PROD;
   const { topArtisans, loading, error, usedMockData } = useTopArtisans(4, useMockData);
   const { toast } = useToast();
   const { 

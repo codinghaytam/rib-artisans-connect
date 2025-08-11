@@ -25,7 +25,7 @@ export const SupabaseStatusProvider: React.FC<SupabaseStatusProviderProps> = ({ 
           setIsConnected(false);
           
           // Show a toast only in development mode
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             toast({
               title: "Problème de connexion à la base de données",
               description: "Vérifiez la configuration de Supabase et les clés API",
