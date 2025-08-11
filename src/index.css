@@ -8,109 +8,109 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Simplified 2-Color Theme - Cyan Blue & Orange */
-    --background: 0 0% 98%; /* light gray */
-    --foreground: 188 100% 42%; /* cyan blue */
+    /* Visit Morocco-inspired Theme - Moroccan Red & Desert Gold */
+    --background: 0 0% 98%; /* light background */
+    --foreground: 0 0% 15%; /* dark charcoal text */
 
     --card: 0 0% 100%; /* white */
-    --card-foreground: 188 100% 42%; /* cyan blue */
+    --card-foreground: 0 0% 15%; /* dark charcoal */
 
     --popover: 0 0% 100%; /* white */
-    --popover-foreground: 188 100% 42%; /* cyan blue */
+    --popover-foreground: 0 0% 15%; /* dark charcoal */
 
-    --primary: 188 100% 42%; /* cyan blue */
+    --primary: 358 66% 45%; /* Moroccan red */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 29 100% 55%; /* orange */
-    --secondary-foreground: 0 0% 100%; /* white */
+    --secondary: 40 44% 57%; /* desert gold */
+    --secondary-foreground: 0 0% 10%; /* near-black for contrast */
 
     --muted: 0 0% 95%; /* light neutral */
-    --muted-foreground: 0 0% 45%; /* dark neutral */
+    --muted-foreground: 0 0% 40%; /* medium neutral */
 
-    --accent: 29 100% 55%; /* orange */
-    --accent-foreground: 0 0% 100%; /* white */
+    --accent: 40 44% 57%; /* desert gold */
+    --accent-foreground: 0 0% 10%; /* near-black */
 
-    --destructive: 29 100% 55%; /* orange for errors */
+    --destructive: 358 66% 40%; /* deeper Moroccan red */
     --destructive-foreground: 0 0% 100%; /* white */
 
-    --success: 188 100% 42%; /* cyan blue */
-    --success-foreground: 0 0% 100%; /* white */
+    --success: 142 50% 36%; /* green for success */
+    --success-foreground: 0 0% 100%;
 
-    --warning: 29 100% 55%; /* orange */
-    --warning-foreground: 0 0% 100%; /* white */
+    --warning: 40 100% 50%; /* amber/gold */
+    --warning-foreground: 0 0% 10%;
 
     --border: 0 0% 90%; /* light neutral */
-    --input: 0 0% 95%; /* light neutral */
-    --ring: 188 100% 42%; /* cyan blue */
+    --input: 0 0% 96%; /* very light neutral */
+    --ring: 358 66% 45%; /* Moroccan red */
 
     --radius: 0.75rem;
 
-    /* Simple 2-color gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(188 100% 42%), hsl(188 100% 35%));
-    --gradient-secondary: linear-gradient(135deg, hsl(29 100% 55%), hsl(29 100% 48%));
-    --gradient-accent: linear-gradient(135deg, hsl(188 100% 42%), hsl(29 100% 55%));
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(358 66% 45%), hsl(358 66% 35%));
+    --gradient-secondary: linear-gradient(135deg, hsl(40 44% 57%), hsl(40 44% 47%));
+    --gradient-accent: linear-gradient(135deg, hsl(358 66% 45%), hsl(40 44% 57%));
 
-    /* Simple shadows */
-    --shadow-sm: 0 2px 8px hsl(188 100% 42% / 0.1);
-    --shadow-md: 0 4px 16px hsl(188 100% 42% / 0.15);
-    --shadow-lg: 0 8px 32px hsl(188 100% 42% / 0.2);
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(358 66% 45% / 0.1);
+    --shadow-md: 0 4px 16px hsl(358 66% 45% / 0.15);
+    --shadow-lg: 0 8px 32px hsl(358 66% 45% / 0.2);
 
     /* Sidebar tokens */
-    --sidebar-background: 188 100% 42%; /* cyan blue */
+    --sidebar-background: 358 66% 18%; /* darkest red */
     --sidebar-foreground: 0 0% 100%; /* white */
-    --sidebar-primary: 29 100% 55%; /* orange */
-    --sidebar-primary-foreground: 0 0% 100%; /* white */
-    --sidebar-accent: 29 100% 55%; /* orange */
-    --sidebar-accent-foreground: 0 0% 100%; /* white */
-    --sidebar-border: 188 100% 35%; /* darker cyan */
-    --sidebar-ring: 29 100% 55%; /* orange */
+    --sidebar-primary: 40 44% 57%; /* desert gold */
+    --sidebar-primary-foreground: 358 66% 18%; /* darkest red */
+    --sidebar-accent: 40 44% 57%; /* desert gold */
+    --sidebar-accent-foreground: 358 66% 18%; /* darkest red */
+    --sidebar-border: 358 66% 25%; /* dark red border */
+    --sidebar-ring: 40 44% 57%; /* desert gold */
   }
 
   .dark {
-    /* Dark mode - Simplified 2-Color Theme */
-    --background: 188 100% 8%; /* very dark cyan */
+    /* Visit Morocco-inspired Theme - Dark */
+    --background: 0 0% 8%; /* very dark neutral */
     --foreground: 0 0% 95%; /* light gray */
 
-    --card: 188 100% 12%; /* dark cyan */
+    --card: 0 0% 12%; /* dark neutral */
     --card-foreground: 0 0% 95%; /* light gray */
 
-    --popover: 188 100% 12%; /* dark cyan */
+    --popover: 0 0% 12%; /* dark neutral */
     --popover-foreground: 0 0% 95%; /* light gray */
 
-    --primary: 188 100% 55%; /* brighter cyan */
-    --primary-foreground: 188 100% 8%; /* very dark cyan */
+    --primary: 358 66% 52%; /* brighter Moroccan red */
+    --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 29 100% 65%; /* brighter orange */
-    --secondary-foreground: 188 100% 8%; /* very dark cyan */
+    --secondary: 40 44% 64%; /* brighter desert gold */
+    --secondary-foreground: 0 0% 10%; /* near-black */
 
-    --muted: 0 0% 20%; /* dark neutral */
+    --muted: 0 0% 22%; /* dark neutral */
     --muted-foreground: 0 0% 70%; /* light neutral */
 
-    --accent: 29 100% 65%; /* brighter orange */
-    --accent-foreground: 188 100% 8%; /* very dark cyan */
+    --accent: 40 44% 64%; /* brighter desert gold */
+    --accent-foreground: 0 0% 10%; /* near-black */
 
-    --destructive: 29 100% 65%; /* brighter orange */
-    --destructive-foreground: 0 0% 95%; /* light gray */
+    --destructive: 358 66% 60%; /* brighter red */
+    --destructive-foreground: 0 0% 100%; /* light gray */
 
-    --success: 188 100% 55%; /* brighter cyan */
-    --success-foreground: 188 100% 8%; /* very dark cyan */
+    --success: 142 50% 45%; /* green */
+    --success-foreground: 0 0% 100%; /* dark background */
 
-    --warning: 29 100% 65%; /* brighter orange */
-    --warning-foreground: 188 100% 8%; /* very dark cyan */
+    --warning: 40 100% 55%; /* amber/gold */
+    --warning-foreground: 0 0% 10%;
 
     --border: 0 0% 25%; /* dark neutral border */
     --input: 0 0% 20%; /* dark neutral input */
-    --ring: 188 100% 55%; /* brighter cyan */
+    --ring: 358 66% 52%; /* brighter red */
 
     /* Dark mode sidebar */
-    --sidebar-background: 188 100% 5%; /* darkest cyan */
+    --sidebar-background: 0 0% 6%; /* almost black */
     --sidebar-foreground: 0 0% 95%; /* light gray */
-    --sidebar-primary: 29 100% 55%; /* orange */
-    --sidebar-primary-foreground: 188 100% 5%; /* darkest cyan */
-    --sidebar-accent: 29 100% 55%; /* orange */
+    --sidebar-primary: 40 44% 57%; /* desert gold */
+    --sidebar-primary-foreground: 0 0% 6%; /* almost black */
+    --sidebar-accent: 40 44% 57%; /* desert gold */
     --sidebar-accent-foreground: 0 0% 95%; /* light gray */
     --sidebar-border: 0 0% 15%; /* dark neutral border */
-    --sidebar-ring: 29 100% 55%; /* orange */
+    --sidebar-ring: 40 44% 57%; /* desert gold */
   }
 }
 
