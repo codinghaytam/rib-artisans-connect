@@ -21,13 +21,13 @@ All colors MUST be HSL.
     --primary: 358 66% 45%; /* Moroccan red */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 40 44% 57%; /* desert gold */
+    --secondary: 40 90% 52%; /* vibrant desert gold */
     --secondary-foreground: 0 0% 10%; /* near-black for contrast */
 
     --muted: 0 0% 95%; /* light neutral */
     --muted-foreground: 0 0% 40%; /* medium neutral */
 
-    --accent: 40 44% 57%; /* desert gold */
+    --accent: 40 90% 52%; /* vibrant desert gold */
     --accent-foreground: 0 0% 10%; /* near-black */
 
     --destructive: 358 66% 40%; /* deeper Moroccan red */
@@ -47,23 +47,23 @@ All colors MUST be HSL.
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(358 66% 45%), hsl(358 66% 35%));
-    --gradient-secondary: linear-gradient(135deg, hsl(40 44% 57%), hsl(40 44% 47%));
-    --gradient-accent: linear-gradient(135deg, hsl(358 66% 45%), hsl(40 44% 57%));
+    --gradient-secondary: linear-gradient(135deg, hsl(40 90% 56%), hsl(40 95% 46%));
+    --gradient-accent: linear-gradient(135deg, hsl(40 90% 56%), hsl(40 95% 46%));
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px hsl(358 66% 45% / 0.1);
-    --shadow-md: 0 4px 16px hsl(358 66% 45% / 0.15);
-    --shadow-lg: 0 8px 32px hsl(358 66% 45% / 0.2);
+    /* Shadows (gold-tinted for subtle glow) */
+    --shadow-sm: 0 2px 8px hsl(40 90% 50% / 0.12);
+    --shadow-md: 0 4px 16px hsl(40 90% 50% / 0.18);
+    --shadow-lg: 0 8px 32px hsl(40 90% 50% / 0.24);
 
     /* Sidebar tokens */
     --sidebar-background: 358 66% 18%; /* darkest red */
     --sidebar-foreground: 0 0% 100%; /* white */
-    --sidebar-primary: 40 44% 57%; /* desert gold */
+    --sidebar-primary: 40 90% 52%; /* desert gold */
     --sidebar-primary-foreground: 358 66% 18%; /* darkest red */
-    --sidebar-accent: 40 44% 57%; /* desert gold */
+    --sidebar-accent: 40 90% 52%; /* desert gold */
     --sidebar-accent-foreground: 358 66% 18%; /* darkest red */
     --sidebar-border: 358 66% 25%; /* dark red border */
-    --sidebar-ring: 40 44% 57%; /* desert gold */
+    --sidebar-ring: 40 90% 52%; /* desert gold */
   }
 
   .dark {
@@ -80,13 +80,13 @@ All colors MUST be HSL.
     --primary: 358 66% 52%; /* brighter Moroccan red */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 40 44% 64%; /* brighter desert gold */
+    --secondary: 40 90% 62%; /* brighter desert gold */
     --secondary-foreground: 0 0% 10%; /* near-black */
 
     --muted: 0 0% 22%; /* dark neutral */
     --muted-foreground: 0 0% 70%; /* light neutral */
 
-    --accent: 40 44% 64%; /* brighter desert gold */
+    --accent: 40 90% 62%; /* brighter desert gold */
     --accent-foreground: 0 0% 10%; /* near-black */
 
     --destructive: 358 66% 60%; /* brighter red */
@@ -105,12 +105,12 @@ All colors MUST be HSL.
     /* Dark mode sidebar */
     --sidebar-background: 0 0% 6%; /* almost black */
     --sidebar-foreground: 0 0% 95%; /* light gray */
-    --sidebar-primary: 40 44% 57%; /* desert gold */
+    --sidebar-primary: 40 90% 60%; /* desert gold */
     --sidebar-primary-foreground: 0 0% 6%; /* almost black */
-    --sidebar-accent: 40 44% 57%; /* desert gold */
+    --sidebar-accent: 40 90% 60%; /* desert gold */
     --sidebar-accent-foreground: 0 0% 95%; /* light gray */
     --sidebar-border: 0 0% 15%; /* dark neutral border */
-    --sidebar-ring: 40 44% 57%; /* desert gold */
+    --sidebar-ring: 40 90% 60%; /* desert gold */
   }
 }
 
