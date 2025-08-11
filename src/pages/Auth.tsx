@@ -314,6 +314,76 @@ const Auth = () => {
             </CardContent>
           </Card>
 
+          {/* Development Demo Accounts */}
+          {import.meta.env.DEV && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="text-lg">Comptes de démonstration</CardTitle>
+                <CardDescription>
+                  Utilisez ces comptes pour tester l'application
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid gap-2 text-sm">
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                    <div>
+                      <div className="font-medium">Admin</div>
+                      <div className="text-muted-foreground">admin@example.com</div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setLoginData({ email: 'admin@example.com', password: '9Rib!Demo123' });
+                        setActiveTab('login');
+                      }}
+                    >
+                      Utiliser
+                    </Button>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                    <div>
+                      <div className="font-medium">Client</div>
+                      <div className="text-muted-foreground">client@example.com</div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setLoginData({ email: 'client@example.com', password: '9Rib!Demo123' });
+                        setActiveTab('login');
+                      }}
+                    >
+                      Utiliser
+                    </Button>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                    <div>
+                      <div className="font-medium">Artisan</div>
+                      <div className="text-muted-foreground">artisan@example.com</div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setLoginData({ email: 'artisan@example.com', password: '9Rib!Demo123' });
+                        setActiveTab('login');
+                      }}
+                    >
+                      Utiliser
+                    </Button>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  Mot de passe pour tous les comptes: <code className="bg-muted px-1 rounded">9Rib!Demo123</code>
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="text-center mt-6">
             <Link 
               to="/" 
