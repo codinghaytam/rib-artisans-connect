@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { handleSupabaseError } from '@/integrations/supabase/error-handling';
 import { Database } from '@/integrations/supabase/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Define Category type from the database
 export type Category = Database['public']['Tables']['categories']['Row'] & {
@@ -20,11 +21,15 @@ export type Profile = {
   email: string;
 };
 
-// Define ArtisanProfile type with nested relations
+// Define ArtisanProfile type with nested relations and security-aware fields
 export type ArtisanProfile = Database['public']['Tables']['artisan_profiles']['Row'] & {
   profiles?: Profile;
   categories?: Category;
   cities?: City;
+  phone?: string; // Available only for authenticated users
+  email?: string; // Available only for authenticated users
+  address_status?: string; // Public status indicator
+  service_availability?: string; // Public availability indicator
 };
 
 export interface ArtisanFilters {
@@ -41,6 +46,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const { user } = useAuth();
   const MAX_RETRIES = 3;
 
   const fetchArtisans = async () => {
@@ -53,16 +59,17 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
         throw new Error("Erreur de configuration de la base de données");
       }
 
+      // Use secure views based on authentication status
+      const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+      
       let query = supabase
-        .from('artisan_profiles')
+        .from(tableName)
         .select(`
           *,
           profiles!user_id (
             id,
             name,
-            avatar_url,
-            phone,
-            email
+            avatar_url${user ? ',\n            phone,\n            email' : ''}
           ),
           categories!category_id (
             id,
@@ -74,8 +81,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
             name,
             region
           )
-        `)
-        .eq('is_active', true);
+        `);
 
       // Apply filters
       if (filters.categoryId) {
@@ -168,7 +174,8 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
     filters.minRating,
     filters.isVerified,
     filters.isAvailable,
-    retryCount // Re-fetch when retry count changes
+    retryCount, // Re-fetch when retry count changes
+    user?.id // Re-fetch when authentication status changes
   ]);
 
   return {

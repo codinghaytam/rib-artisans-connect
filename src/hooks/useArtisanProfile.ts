@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { handleSupabaseError } from '@/integrations/supabase/error-handling';
 import { Database } from '@/integrations/supabase/types';
 import { ArtisanProfile } from '@/hooks/useArtisans';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Define Review type from the database
 export type Review = Database['public']['Tables']['reviews']['Row'] & {
@@ -21,6 +22,7 @@ export const useArtisanProfile = (userId: string) => {
   const [artisan, setArtisan] = useState<ArtisanProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -40,16 +42,17 @@ export const useArtisanProfile = (userId: string) => {
           throw new Error("Erreur de configuration de la base de données");
         }
 
+        // Use secure views based on authentication status
+        const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+        
         const { data, error: fetchError } = await supabase
-          .from('artisan_profiles')
+          .from(tableName)
           .select(`
             *,
             profiles!user_id (
               id,
               name,
-              avatar_url,
-              phone,
-              email
+              avatar_url${user ? ',\n              phone,\n              email' : ''}
             ),
             categories!category_id (
               id,
@@ -63,7 +66,6 @@ export const useArtisanProfile = (userId: string) => {
             )
           `)
           .eq('user_id', userId)
-          .eq('is_active', true)
           .single();
 
         if (fetchError) {
@@ -92,7 +94,7 @@ export const useArtisanProfile = (userId: string) => {
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [userId, user?.id]);
 
   return { artisan, loading, error };
 };

@@ -928,7 +928,6 @@ export type Database = {
           description: string | null
           experience_years: number | null
           featured_until: string | null
-          hourly_rate: number | null
           id: string | null
           is_active: boolean | null
           is_featured: boolean | null
@@ -952,7 +951,6 @@ export type Database = {
           description?: string | null
           experience_years?: number | null
           featured_until?: string | null
-          hourly_rate?: never
           id?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
@@ -976,7 +974,6 @@ export type Database = {
           description?: string | null
           experience_years?: number | null
           featured_until?: string | null
-          hourly_rate?: never
           id?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null

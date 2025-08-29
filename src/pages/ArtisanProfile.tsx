@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { ReviewForm } from '@/components/ReviewForm';
 
 const ArtisanProfile = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -182,22 +183,37 @@ const ArtisanProfile = () => {
                           </Button>
                         )}
                         
-                        {artisan.profiles?.phone && user?.id !== artisan.user_id && (
-                          <Button 
-                            onClick={() => handleContact('phone', artisan.profiles?.phone || '')}
-                          >
-                            <Phone className="h-4 w-4 mr-2" />
-                            Appeler
-                          </Button>
+                        {/* Show contact buttons only if user is authenticated and has access to contact info */}
+                        {user && user.id !== artisan.user_id && (
+                          <>
+                            {(artisan.phone || artisan.profiles?.phone) && (
+                              <Button 
+                                onClick={() => handleContact('phone', artisan.phone || artisan.profiles?.phone || '')}
+                              >
+                                <Phone className="h-4 w-4 mr-2" />
+                                Appeler
+                              </Button>
+                            )}
+                            
+                            {(artisan.email || artisan.profiles?.email) && (
+                              <Button 
+                                variant="outline"
+                                onClick={() => handleContact('email', artisan.email || artisan.profiles?.email || '')}
+                              >
+                                <Mail className="h-4 w-4 mr-2" />
+                                Email
+                              </Button>
+                            )}
+                          </>
                         )}
                         
-                        {artisan.profiles?.email && user?.id !== artisan.user_id && (
+                        {/* Show login prompt for unauthenticated users */}
+                        {!user && (
                           <Button 
-                            variant="outline"
-                            onClick={() => handleContact('email', artisan.profiles?.email || '')}
+                            onClick={() => navigate('/auth')}
                           >
-                            <Mail className="h-4 w-4 mr-2" />
-                            Email
+                            <Phone className="h-4 w-4 mr-2" />
+                            Se connecter pour contacter
                           </Button>
                         )}
                       </div>
@@ -252,8 +268,12 @@ const ArtisanProfile = () => {
                           <span>{artisan.response_time_hours || 24}h</span>
                         </div>
                         <div className="flex justify-between">
+                          <span className="text-muted-foreground">Adresse:</span>
+                          <span>{user ? (artisan.address || 'Non précisée') : (artisan.address_status || 'Connectez-vous pour voir')}</span>
+                        </div>
+                        <div className="flex justify-between">
                           <span className="text-muted-foreground">Rayon d'action:</span>
-                          <span>{artisan.service_radius || 20} km</span>
+                          <span>{user ? `${artisan.service_radius || 20} km` : (artisan.service_availability || 'Connectez-vous pour voir')}</span>
                         </div>
                       </div>
                     </div>
