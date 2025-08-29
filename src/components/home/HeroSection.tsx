@@ -78,24 +78,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             )}
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-3xl font-bold text-accent mb-2 drop-shadow-lg">2,500+</div>
-              <div className="text-white/80 drop-shadow-md">Artisans vérifiés</div>
-            </div>
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="text-3xl font-bold text-accent mb-2 drop-shadow-lg">15,000+</div>
-              <div className="text-white/80 drop-shadow-md">Projets réalisés</div>
-            </div>
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="flex items-center justify-center mb-2">
-                <span className="text-3xl font-bold text-accent drop-shadow-lg">4.8</span>
-                <Star className="h-6 w-6 text-accent fill-current ml-1 drop-shadow-lg" />
-              </div>
-              <div className="text-white/80 drop-shadow-md">Note moyenne</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

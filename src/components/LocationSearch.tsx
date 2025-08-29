@@ -34,13 +34,26 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
     if (!searchQuery.trim()) return [];
 
     try {
+      const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY as string | undefined;
+      if (!apiKey) {
+        console.error('Missing VITE_GEOAPIFY_API_KEY in environment.');
+        return [];
+      }
       const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(searchQuery)}&limit=5&format=json&apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8&filter=countrycode:ma`
+        `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(searchQuery)}&limit=5&format=json&apiKey=${apiKey}&filter=countrycode:ma`
       );
       const data = await response.json();
 
-      if (data && data.results) {
-        return data.results.map((result: any) => ({
+      if (data && Array.isArray(data.results)) {
+        type GeoapifyResult = {
+          lat: number;
+          lon: number;
+          formatted: string;
+          city?: string;
+          country?: string;
+        };
+
+        return (data.results as GeoapifyResult[]).map((result) => ({
           lat: result.lat,
           lon: result.lon,
           formatted: result.formatted,
@@ -96,8 +109,14 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
           
           // Reverse geocode to get address
           try {
+            const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY as string | undefined;
+            if (!apiKey) {
+              console.error('Missing VITE_GEOAPIFY_API_KEY in environment.');
+              setIsLoading(false);
+              return;
+            }
             const response = await fetch(
-              `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=5a9c3b7c17b54c4bb8a7e1f4a3e5d6c8`
+              `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
             );
             const data = await response.json();
             

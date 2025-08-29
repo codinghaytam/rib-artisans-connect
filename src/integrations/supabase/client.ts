@@ -2,23 +2,30 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://ddglsaqmhmxygskvvqcz.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkZ2xzYXFtaG14eWdza3Z2cWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyNzQ3NzYsImV4cCI6MjA2Nzg1MDc3Nn0.F3sUTrRvIVK11cDci_RrMs_7gEN47WwBj78QmHVeMdw";
-
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Read configuration from Vite environment variables
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+
 // Check if we have valid configuration before creating the client
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  console.error("Missing Supabase configuration. Please check your environment variables.");
+  console.error(
+    "Missing Supabase configuration. Please set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in your .env file."
+  );
 }
 
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+export const supabase = createClient<Database>(
+  SUPABASE_URL ?? '',
+  SUPABASE_PUBLISHABLE_KEY ?? '',
+  {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
   }
-});
+);

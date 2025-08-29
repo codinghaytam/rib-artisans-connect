@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const logStep = (step: string, details?: any) => {
+const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[PROCESS-APPLICATION] ${step}${detailsStr}`);
 };
@@ -58,35 +58,48 @@ serve(async (req) => {
       .single();
 
     if (appError) throw new Error(`Application not found: ${appError.message}`);
+    if (!application.user_id) {
+      throw new Error("Application has no user_id; cannot create artisan profile");
+    }
 
-    let updateData: any = {
+    const updateData: Record<string, unknown> = {
       processed_by: user.id,
       processed_at: new Date().toISOString(),
       admin_notes: adminNotes,
     };
 
     switch (action) {
-      case "validate":
-        updateData.status = "validated";
-        
-        // Create artisan profile
+      case "validate": {
+        (updateData as any).status = "validated";
+
+        // Create or update artisan profile (idempotent)
         const { error: profileError } = await supabaseClient
           .from("artisan_profiles")
-          .insert({
-            user_id: application.user_id,
-            category_id: application.category_id,
-            city_id: application.city_id,
-            business_name: application.business_name,
-            description: application.description,
-            experience_years: application.experience_years,
-            specialties: application.specialties,
-            is_verified: true,
-            verification_date: new Date().toISOString(),
-            is_active: true,
-          });
+          .upsert(
+            {
+              user_id: application.user_id,
+              category_id: application.category_id ?? null,
+              city_id: application.city_id ?? null,
+              business_name: application.business_name ?? null,
+              description: application.description ?? null,
+              experience_years: application.experience_years ?? 0,
+              specialties: application.specialties ?? null,
+              is_verified: true,
+              verification_date: new Date().toISOString(),
+              is_active: true,
+            },
+            { onConflict: "user_id" }
+          );
 
         if (profileError) {
-          logStep("Error creating artisan profile", profileError);
+          logStep("Error creating artisan profile", {
+            message: profileError.message,
+            name: profileError.name,
+            status: (profileError as any).status,
+            details: (profileError as any).details,
+            hint: (profileError as any).hint,
+            code: (profileError as any).code,
+          });
           throw new Error(`Failed to create artisan profile: ${profileError.message}`);
         }
 
@@ -98,21 +111,22 @@ serve(async (req) => {
 
         logStep("Artisan profile created successfully");
         break;
+      }
 
       case "request_payment":
-        updateData.status = "in_progress";
+        (updateData as any).status = "in_progress";
         // TODO: Send payment request email
         logStep("Payment request email sent");
         break;
 
       case "request_verification":
-        updateData.status = "not_read";
+        (updateData as any).status = "not_read";
         // TODO: Send verification email
         logStep("Verification email sent");
         break;
 
       case "reject":
-        updateData.status = "rejected";
+        (updateData as any).status = "rejected";
         // TODO: Send rejection email
         logStep("Application rejected");
         break;
