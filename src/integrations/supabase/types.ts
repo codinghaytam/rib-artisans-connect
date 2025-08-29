@@ -862,7 +862,159 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      artisan_contact_profiles: {
+        Row: {
+          address: string | null
+          availability_schedule: Json | null
+          business_name: string | null
+          category_id: string | null
+          certifications: string[] | null
+          city_id: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          experience_years: number | null
+          featured_until: string | null
+          hourly_rate: number | null
+          id: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          is_verified: boolean | null
+          languages: string[] | null
+          phone: string | null
+          portfolio_images: string[] | null
+          rating_average: number | null
+          rating_count: number | null
+          response_time_hours: number | null
+          service_radius: number | null
+          specialties: string[] | null
+          total_projects: number | null
+          updated_at: string | null
+          user_id: string | null
+          verification_date: string | null
+          verification_documents: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_profiles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_profiles_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artisan_public_profiles: {
+        Row: {
+          address_status: string | null
+          business_name: string | null
+          category_id: string | null
+          certifications: string[] | null
+          city_id: string | null
+          description: string | null
+          experience_years: number | null
+          featured_until: string | null
+          hourly_rate: number | null
+          id: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          is_verified: boolean | null
+          languages: string[] | null
+          portfolio_images: string[] | null
+          rating_average: number | null
+          rating_count: number | null
+          response_time_hours: number | null
+          service_availability: string | null
+          specialties: string[] | null
+          total_projects: number | null
+          user_id: string | null
+        }
+        Insert: {
+          address_status?: never
+          business_name?: string | null
+          category_id?: string | null
+          certifications?: string[] | null
+          city_id?: string | null
+          description?: string | null
+          experience_years?: number | null
+          featured_until?: string | null
+          hourly_rate?: never
+          id?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          languages?: string[] | null
+          portfolio_images?: string[] | null
+          rating_average?: number | null
+          rating_count?: number | null
+          response_time_hours?: number | null
+          service_availability?: never
+          specialties?: string[] | null
+          total_projects?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          address_status?: never
+          business_name?: string | null
+          category_id?: string | null
+          certifications?: string[] | null
+          city_id?: string | null
+          description?: string | null
+          experience_years?: number | null
+          featured_until?: string | null
+          hourly_rate?: never
+          id?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          languages?: string[] | null
+          portfolio_images?: string[] | null
+          rating_average?: number | null
+          rating_count?: number | null
+          response_time_hours?: number | null
+          service_availability?: never
+          specialties?: string[] | null
+          total_projects?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_profiles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_profiles_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_current_user_role: {
