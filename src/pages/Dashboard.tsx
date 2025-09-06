@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
-import { ArtisanProjectBrowser } from '@/components/ArtisanProjectBrowser';
+// import { ArtisanProjectBrowser } from '@/components/ArtisanProjectBrowser';
 import { ClientProjectManager } from '@/components/ClientProjectManager';
+import ArtisanProfileEditor from '@/components/ArtisanProfileEditor';
 import { 
   User, 
   Settings, 
@@ -114,7 +115,7 @@ const Dashboard = () => {
   );
 
   const renderArtisanDashboard = () => {
-    return <ArtisanProjectBrowser />;
+    return <ArtisanProfileEditor />;
   };
 
   const renderClientDashboard = () => {
@@ -139,7 +140,7 @@ const Dashboard = () => {
       case 'admin':
         return 'Admin Dashboard';
       case 'artisan':
-        return 'Projets Disponibles';
+        return 'Mon Profil Artisan';
       case 'client':
         return 'Mes Projets';
       default:

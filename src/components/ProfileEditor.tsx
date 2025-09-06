@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, Save, Loader2, Upload } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { STORAGE_BUCKET } from '@/integrations/supabase/storage';
+
+type City = { id: string; name: string };
 
 interface ProfileEditorProps {
   onSave?: () => void;
@@ -19,33 +23,39 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({ onSave, onCancel }) => {
   
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
     phone: user?.phone || '',
     city: user?.city || '',
-    cin: user?.cin || '',
   });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedCityId, setSelectedCityId] = useState<string>('');
+
+  useEffect(() => {
+    const loadCities = async () => {
+      const { data } = await supabase
+        .from('cities')
+        .select('id,name')
+        .eq('is_active', true);
+      setCities(data || []);
+      if (user?.city && data) {
+        const match = data.find((c) => c.name === user.city);
+        if (match) setSelectedCityId(match.id);
+      }
+    };
+    loadCities();
+  }, [user?.city]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
     // Basic validation
-    if (!formData.name.trim()) {
-      toast({
-        title: 'Erreur',
-        description: 'Le nom est requis',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     try {
       setSaving(true);
       await updateProfile({
-        name: formData.name.trim(),
         phone: formData.phone.trim() || undefined,
-        city: formData.city.trim() || undefined,
-        cin: formData.cin.trim() || undefined,
+  city: formData.city.trim() || undefined,
       });
 
       toast({
@@ -75,6 +85,37 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({ onSave, onCancel }) => {
     }));
   };
 
+  const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setUploading(true);
+      const ext = file.name.split('.').pop();
+      const path = `avatars/${user.id}.${ext}`;
+  const { data: up, error: upErr } = await supabase.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: true, cacheControl: '3600' });
+      if (upErr) throw upErr;
+  const { data: pub } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+      const url = pub.publicUrl;
+      await updateProfile({ avatar: url });
+      toast({ title: 'Photo mise à jour' });
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      toast({ title: 'Erreur', description: "Impossible de téléverser la photo", variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value;
+    setSelectedCityId(id);
+    const name = cities.find((c) => c.id === id)?.name || '';
+    setFormData((prev) => ({ ...prev, city: name }));
+  };
+
   if (!user) {
     return null;
   }
@@ -101,25 +142,15 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({ onSave, onCancel }) => {
                 {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <Button type="button" variant="outline" size="sm">
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+            <Button type="button" variant="outline" size="sm" onClick={handleAvatarClick} disabled={uploading}>
               <Upload className="h-4 w-4 mr-2" />
-              Changer la photo
+              {uploading ? 'Téléversement...' : 'Changer la photo'}
             </Button>
           </div>
 
           {/* Personal Information */}
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom complet *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="Votre nom complet"
-                required
-              />
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -146,24 +177,21 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({ onSave, onCancel }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="city">Ville</Label>
-              <Input
-                id="city"
-                value={formData.city}
-                onChange={(e) => handleInputChange('city', e.target.value)}
-                placeholder="Votre ville"
-              />
+              <Label htmlFor="city_id">Ville</Label>
+              <select
+                id="city_id"
+                value={selectedCityId}
+                onChange={handleCityChange}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Sélectionnez une ville</option>
+                {cities.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="cin">CIN</Label>
-              <Input
-                id="cin"
-                value={formData.cin}
-                onChange={(e) => handleInputChange('cin', e.target.value)}
-                placeholder="Votre numéro CIN"
-              />
-            </div>
+            {/* CIN removed per new schema */}
           </div>
 
           {/* Action Buttons */}

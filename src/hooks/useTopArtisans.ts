@@ -70,14 +70,12 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
         // Wrap in a timeout promise to handle network timeouts better
         const fetchWithTimeout = (() => {
           // Use secure views: public for anonymous users, contact for authenticated
-          const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
           const fetchPromise = supabase
-            .from(tableName)
+            .from("artisan_profiles")
             .select(`
               *,
               profiles!user_id (
                 id,
-                name,
                 avatar_url${user ? ',\n                phone,\n                email' : ''}
               ),
               categories!category_id (

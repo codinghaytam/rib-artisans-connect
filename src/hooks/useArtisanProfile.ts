@@ -43,7 +43,7 @@ export const useArtisanProfile = (userId: string) => {
         }
 
         // Use secure views based on authentication status
-  const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+  const tableName = user ? 'artisan_profiles' : 'artisan_profiles';
         
         const { data, error: fetchError } = await supabase
           .from(tableName)
@@ -51,7 +51,6 @@ export const useArtisanProfile = (userId: string) => {
             *,
             profiles!user_id (
               id,
-              name,
               avatar_url${user ? ',\n              phone,\n              email' : ''}
             ),
             categories!category_id (

@@ -39,7 +39,7 @@ const ArtisansMapSection = () => {
       
       // First, let's get all artisans to see what data we have
       // Use secure views for map data
-      const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+      const tableName = user ? 'artisan_profiles' : 'artisan_profiles';
       const { data: allArtisans, error: allError } = await supabase
         .from(tableName)
         .select(`

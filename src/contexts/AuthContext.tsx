@@ -1,7 +1,8 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+/* eslint-disable react-refresh/only-export-components */
 
 export type UserRole = 'client' | 'artisan' | 'admin';
 
@@ -11,7 +12,6 @@ export interface User {
   name: string;
   role: UserRole;
   phone?: string;
-  cin?: string;
   isVerified: boolean;
   avatar?: string;
   city?: string;
@@ -23,7 +23,7 @@ export interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (email: string, password: string, name: string, role: UserRole, phone?: string, cin?: string) => Promise<{ error?: string, needsEmailConfirmation?: boolean }>;
+  register: (email: string, password: string, name: string, role: UserRole, phone?: string) => Promise<{ error?: string, needsEmailConfirmation?: boolean }>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
@@ -47,14 +47,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  type DBProfile = {
+    id: string;
+    email: string;
+    role: string;
+    phone?: string | null;
+    is_verified?: boolean | null;
+    avatar_url?: string | null;
+    city?: string | null;
+  };
+
   // Fetch profile from DB and merge into current user state (deferred)
-  const fetchAndSetProfile = async (userId: string) => {
+  const fetchAndSetProfile = useCallback(async (userId: string) => {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id,email,role,phone,is_verified,avatar_url,city')
         .eq('id', userId)
-        .maybeSingle();
+        .maybeSingle<DBProfile>();
 
       if (error) {
         console.error('Profile fetch error:', error);
@@ -62,23 +72,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (profile) {
-        const userProfile: User = {
+        setUser((prev) => ({
           id: profile.id,
           email: profile.email,
-          name: profile.name || profile.email,
+          name: prev?.name || profile.email,
           role: (profile.role as UserRole) || 'client',
-          phone: profile.phone || undefined,
-          isVerified: Boolean((profile as any).is_verified ?? false),
-          avatar: profile.avatar_url || undefined,
-          cin: (profile as any).cin,
-          city: (profile as any).city,
-        };
-        setUser((prev) => ({ ...(prev || userProfile), ...userProfile }));
+          phone: profile.phone ?? undefined,
+          isVerified: Boolean(profile.is_verified ?? false),
+          avatar: profile.avatar_url ?? undefined,
+          city: profile.city ?? undefined,
+        }));
       }
     } catch (e) {
       console.error('Unexpected error fetching profile:', e);
     }
-  };
+  }, []);
 
 useEffect(() => {
   // Listener FIRST — do not run async Supabase calls inside the callback
@@ -105,7 +113,7 @@ useEffect(() => {
   });
 
   // THEN check for existing session to restore persisted auth
-  supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
     console.log('Initial session:', session);
     setSession(session);
     const authUser = session?.user ?? null;
@@ -125,8 +133,8 @@ useEffect(() => {
     setIsLoading(false);
   });
 
-  return () => subscription.unsubscribe();
-}, []);
+    return () => subscription.unsubscribe();
+  }, [fetchAndSetProfile]);
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     setIsLoading(true);
@@ -147,9 +155,9 @@ useEffect(() => {
         // Fetch user profile from profiles table
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id,email,role,phone,is_verified,avatar_url,city')
           .eq('id', data.user.id)
-          .single();
+          .single<DBProfile>();
           
         if (profile && !profileError) {
           // Create user profile object from the database record
@@ -157,26 +165,13 @@ useEffect(() => {
           const userProfile: User = {
             id: profile.id,
             email: profile.email,
-            name: profile.name || '',
+            name: (data.user.user_metadata?.name as string) || profile.email || '',
             role: profile.role as UserRole,
-            phone: profile.phone || undefined,
-            isVerified: false, // Default to false, will be updated below
-            avatar: profile.avatar_url || undefined
+            phone: profile.phone ?? undefined,
+            isVerified: Boolean(profile.is_verified ?? false),
+            avatar: profile.avatar_url ?? undefined
           };
-          
-          // Check for optional/custom properties in the database
-          // These may not be in the types.ts but could exist in the actual table
-          if ('is_verified' in profile) {
-            userProfile.isVerified = Boolean(profile.is_verified);
-          }
-          
-          if ('cin' in profile) {
-            userProfile.cin = profile.cin as string;
-          }
-          
-          if ('city' in profile) {
-            userProfile.city = profile.city as string;
-          }
+          userProfile.city = profile.city ?? undefined;
           
           setUser(userProfile);
           setSession(data.session);
@@ -188,10 +183,11 @@ useEffect(() => {
       
       setIsLoading(false);
       return {};
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
       setIsLoading(false);
-      return { error: error.message || 'An unexpected error occurred during login' };
+      const msg = error instanceof Error ? error.message : 'An unexpected error occurred during login';
+      return { error: msg };
     }
   };
 
@@ -201,7 +197,7 @@ useEffect(() => {
     name: string, 
     role: UserRole, 
     phone?: string,
-    cin?: string
+  // cin removed from schema
   ): Promise<{ error?: string, needsEmailConfirmation?: boolean }> => {
     setIsLoading(true);
     
@@ -217,8 +213,7 @@ useEffect(() => {
           data: {
             name,
             role,
-            phone,
-            cin
+            phone
           }
         }
       });
@@ -250,7 +245,7 @@ useEffect(() => {
           name: name,
           role: role,
           phone: phone,
-          cin: cin,
+          // cin removed from schema
           isVerified: role === 'client', // Auto-verify clients, artisans need verification
         };
         
@@ -261,10 +256,11 @@ useEffect(() => {
       
       setIsLoading(false);
       return {};
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
       setIsLoading(false);
-      return { error: error.message || 'An unexpected error occurred during registration' };
+      const msg = error instanceof Error ? error.message : 'An unexpected error occurred during registration';
+      return { error: msg };
     }
   };
 
@@ -290,10 +286,8 @@ useEffect(() => {
     
     setIsLoading(true);
     
-    const updateData: any = {};
-    if (data.name) updateData.name = data.name;
+    const updateData: Record<string, unknown> = {};
     if (data.phone) updateData.phone = data.phone;
-    if (data.cin) updateData.cin = data.cin;
     if (data.city) updateData.city = data.city;
     if (data.avatar) updateData.avatar_url = data.avatar;
     

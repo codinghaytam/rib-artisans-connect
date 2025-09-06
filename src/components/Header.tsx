@@ -130,18 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
                       </div>
                       <div className="py-2">
-                        {user.role !== 'client' && (
-                          <Link
-                            to="/dashboard"
-                            className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            <span className="mr-2">
-                              {user.role === 'admin' ? '⚙️' : '🧰'}
-                            </span> 
-                            Tableau de bord
-                          </Link>
-                        )}
+                        {/* Dashboard removed */}
                         <Link
                           to="/profile"
                           className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
@@ -149,15 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
                         >
                           <span className="mr-2">👤</span> Mon profil
                         </Link>
-                        {user.role === 'client' && (
-                          <Link
-                            to="/dashboard"
-                            className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            <span className="mr-2">📋</span> Mes projets
-                          </Link>
-                        )}
+                        {/* Client projects removed */}
                         <div className="border-t border-border my-1"></div>
                         <button
                           onClick={() => {

@@ -76,7 +76,7 @@ const Profile = () => {
       if (data && data.length > 0) {
         const artisanIds = data.map(fav => fav.artisan_id);
         const { data: artisanProfiles, error: artisanError } = await supabase
-          .from('artisan_contact_profiles')
+          .from('artisan_profiles')
           .select(`
             id,
             user_id,

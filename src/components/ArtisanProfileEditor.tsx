@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { STORAGE_BUCKET } from '@/integrations/supabase/storage';
 import { useCategories, useCities } from '@/hooks/useArtisans';
 import { Loader2, Save, ArrowLeft, Plus, X } from 'lucide-react';
 
@@ -22,6 +23,7 @@ interface ArtisanProfileData {
   response_time_hours: number;
   specialties: string[];
   address: string;
+  portfolio_images?: string[];
 }
 
 interface ArtisanProfileEditorProps {
@@ -47,7 +49,9 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     response_time_hours: 24,
     specialties: [],
     address: '',
+    portfolio_images: [],
   });
+  const [uploading, setUploading] = useState(false);
   const [newSpecialty, setNewSpecialty] = useState('');
   // Removed languages per schema
 
@@ -72,7 +76,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
         return;
       }
 
-      if (data) {
+    if (data) {
         setFormData({
           business_name: data.business_name || '',
           description: data.description || '',
@@ -81,7 +85,8 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           service_radius: data.service_radius || 20,
           response_time_hours: data.response_time_hours || 24,
           specialties: data.specialties || [],
-          address: data.address || '',
+      address: data.address || '',
+      portfolio_images: data.portfolio_images || [],
         });
       }
     } catch (error) {
@@ -147,6 +152,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           response_time_hours: formData.response_time_hours,
           specialties: formData.specialties,
           address: formData.address.trim() || null,
+          portfolio_images: formData.portfolio_images || [],
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -163,7 +169,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
       if (onSave) {
         onSave();
       } else {
-        navigate('/dashboard');
+        navigate('/profile');
       }
     } catch (error) {
       console.error('Error updating artisan profile:', error);
@@ -201,6 +207,33 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     }));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !user) return;
+    try {
+      setUploading(true);
+      const uploadedUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        const path = `portfolio/${user.id}/${Date.now()}-${file.name}`;
+  const { data: up, error: upErr } = await supabase.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: false });
+        if (upErr) throw upErr;
+  const { data: pub } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(up.path);
+        if (pub?.publicUrl) uploadedUrls.push(pub.publicUrl);
+      }
+      setFormData(prev => ({
+        ...prev,
+        portfolio_images: [...(prev.portfolio_images || []), ...uploadedUrls],
+      }));
+      toast({ title: 'Images ajoutées', description: `${uploadedUrls.length} image(s) ajoutée(s)` });
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast({ title: 'Erreur', description: "Échec du téléversement d'images", variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
   // Languages removed per schema
 
   if (loading || categoriesLoading || citiesLoading) {
@@ -231,6 +264,20 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
       
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Portfolio images */}
+          <div className="space-y-2">
+            <Label>Portfolio (images)</Label>
+            <Input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploading} />
+            {formData.portfolio_images && formData.portfolio_images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                {formData.portfolio_images.map((url, idx) => (
+                  <div key={idx} className="relative group">
+                    <img src={url} alt={`portfolio-${idx}`} className="w-full h-28 object-cover rounded-md" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">

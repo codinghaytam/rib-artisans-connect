@@ -60,7 +60,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
       }
 
       // Use secure views based on authentication status
-  const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+  const tableName = user ? 'artisan_profiles' : 'artisan_profiles';
       
       let query = supabase
         .from(tableName)
@@ -68,7 +68,6 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
           *,
           profiles!user_id (
             id,
-            name,
             avatar_url${user ? ',\n            phone,\n            email' : ''}
           ),
           categories!category_id (

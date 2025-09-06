@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Star, Users, Shield, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { STORAGE_BUCKET } from '@/integrations/supabase/storage';
 import { useAuth } from '@/contexts/AuthContext';
 import heroArtisan from '@/assets/hero-artisan.jpg';
 import woodCarver from '@/assets/wood-carver.jpg';
@@ -27,9 +29,11 @@ const BecomeArtisan = () => {
     city_id: '',
     category_id: '',
     description: '',
-    specialties: ''
+    specialties: '',
+    portfolio_images: [] as string[],
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [cities, setCities] = useState<CityType[]>([]);
   const { toast } = useToast();
@@ -69,6 +73,7 @@ const BecomeArtisan = () => {
             category_id: artisan?.category_id || prev.category_id,
             description: artisan?.description || prev.description,
             specialties: (artisan?.specialties || []).join(', '),
+            portfolio_images: artisan?.portfolio_images || [],
           }));
         } catch (e) {
           // Silent prefill failure
@@ -162,6 +167,7 @@ const BecomeArtisan = () => {
           description: formData.description.trim() || null,
           specialties: specialtiesArray,
           service_radius: isNaN(serviceRadius) ? 20 : serviceRadius,
+          portfolio_images: formData.portfolio_images || [],
           is_active: true,
           updated_at: now,
         }, { onConflict: 'user_id' })
@@ -176,7 +182,7 @@ const BecomeArtisan = () => {
         description: "Votre profil a été enregistré. Bienvenue parmi les artisans!",
       });
 
-      navigate('/dashboard');
+  navigate('/profile');
     } catch (error) {
       console.error('Error submitting application:', error);
       toast({
@@ -259,6 +265,55 @@ const BecomeArtisan = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Portfolio images */}
+                  <div className="space-y-2">
+                    <Label>Portfolio (images)</Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={async (e) => {
+                        const files = e.target.files;
+                        if (!files || !user) return;
+                        try {
+                          setUploading(true);
+                          const uploadedUrls: string[] = [];
+                          for (const file of Array.from(files)) {
+                            const path = `portfolio/${user.id}/${Date.now()}-${file.name}`;
+                            const { data: up, error: upErr } = await supabase.storage
+                              .from(STORAGE_BUCKET)
+                              .upload(path, file, { upsert: false });
+                            if (upErr) throw upErr;
+                            const { data: pub } = supabase.storage
+                              .from(STORAGE_BUCKET)
+                              .getPublicUrl(up.path);
+                            if (pub?.publicUrl) uploadedUrls.push(pub.publicUrl);
+                          }
+                          setFormData((prev) => ({
+                            ...prev,
+                            portfolio_images: [...(prev.portfolio_images || []), ...uploadedUrls],
+                          }));
+                          toast({ title: 'Images ajoutées', description: `${uploadedUrls.length} image(s) ajoutée(s)` });
+                        } catch (err) {
+                          console.error('Upload error:', err);
+                          toast({ title: 'Erreur', description: "Échec du téléversement d'images", variant: 'destructive' });
+                        } finally {
+                          setUploading(false);
+                          if (e.target) e.target.value = '';
+                        }
+                      }}
+                      disabled={uploading}
+                    />
+                    {formData.portfolio_images && formData.portfolio_images.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                        {formData.portfolio_images.map((url, idx) => (
+                          <div key={idx} className="relative group">
+                            <img src={url} alt={`portfolio-${idx}`} className="w-full h-28 object-cover rounded-md" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
