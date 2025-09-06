@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,14 +43,10 @@ export const AdminArtisans = () => {
   const [selectedArtisan, setSelectedArtisan] = useState<Artisan | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchArtisans();
-  }, []);
-
-  const fetchArtisans = async () => {
+  const fetchArtisans = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from("artisan_profiles")
+        .from("artisan_contact_profiles")
         .select(`
           *,
           profiles(name, email, phone),
@@ -71,7 +67,11 @@ export const AdminArtisans = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchArtisans();
+  }, [fetchArtisans]);
 
   const toggleArtisanStatus = async (artisanId: string, field: string, value: boolean) => {
     try {

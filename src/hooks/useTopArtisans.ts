@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { handleSupabaseError } from '@/integrations/supabase/error-handling';
 import type { Database } from '@/integrations/supabase/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Define Category type
 export type Category = {
@@ -44,6 +45,7 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
   const [retryCount, setRetryCount] = useState(0);
   const [usedMockData, setUsedMockData] = useState(false);
   const MAX_RETRIES = 3;
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true; // To prevent setting state after unmount
@@ -66,45 +68,40 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
         }
 
         // Wrap in a timeout promise to handle network timeouts better
-        const fetchWithTimeout = new Promise<any>(async (resolve, reject) => {
-          try {
-            const { data, error: fetchError } = await supabase
-              .from('artisan_profiles')
-              .select(`
-                *,
-                profiles!user_id (
-                  id,
-                  name,
-                  avatar_url,
-                  phone,
-                  email
-                ),
-                categories!category_id (
-                  id,
-                  name,
-                  emoji
-                ),
-                cities!city_id (
-                  id,
-                  name,
-                  region
-                )
-              `)
-              .eq('is_active', true)
-              .eq('is_verified', true)
-              .order('rating_average', { ascending: false })
-              .order('rating_count', { ascending: false })
-              .limit(limit);
-              
-            if (fetchError) {
-              reject(fetchError);
-            } else {
-              resolve(data);
-            }
-          } catch (error) {
-            reject(error);
-          }
-        });
+        const fetchWithTimeout = (() => {
+          // Use secure views: public for anonymous users, contact for authenticated
+          const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+          const fetchPromise = supabase
+            .from(tableName)
+            .select(`
+              *,
+              profiles!user_id (
+                id,
+                name,
+                avatar_url${user ? ',\n                phone,\n                email' : ''}
+              ),
+              categories!category_id (
+                id,
+                name,
+                emoji
+              ),
+              cities!city_id (
+                id,
+                name,
+                region
+              )
+            `)
+            // Views already filter to active; keep explicit verified filter
+            .eq('is_verified', true)
+            .order('rating_average', { ascending: false })
+            .order('rating_count', { ascending: false })
+            .limit(limit)
+            .then(({ data, error: fetchError }) => {
+              if (fetchError) throw fetchError;
+              return data;
+            });
+          return fetchPromise;
+        })();
         
         // Race the fetch against a timeout
         const timeoutPromise = new Promise((_, reject) => 
@@ -146,31 +143,6 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
       }
     };
 
-    // Set a timeout for long-running requests
-    const timeoutId = setTimeout(() => {
-      if (loading && isMounted) {
-        console.warn("Top artisans fetch timeout");
-        
-        if (retryCount < MAX_RETRIES) {
-          console.log(`Retrying fetch (${retryCount + 1}/${MAX_RETRIES})...`);
-          setRetryCount(prev => prev + 1);
-          // Don't set error or loading false, let it retry
-        } else {
-          // Try mock data if enabled, otherwise show error
-          if (useMockOnFailure) {
-            console.log("Using mock data for top artisans after timeout");
-            const mockData = getMockTopArtisans(limit);
-            setTopArtisans(mockData);
-            setUsedMockData(true);
-            setError(null);
-          } else {
-            setError("Le temps de chargement a expiré. Veuillez réessayer plus tard.");
-          }
-          setLoading(false);
-        }
-      }
-    }, 5000); // 5 seconds timeout before retry
-    
     // Only fetch if we're under the retry limit or if we changed the limit parameter
     if (retryCount <= MAX_RETRIES) {
       fetchTopArtisans();
@@ -179,9 +151,8 @@ export const useTopArtisans = (limit: number = 4, useMockOnFailure: boolean = fa
     // Cleanup function
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
     };
-  }, [limit, retryCount, useMockOnFailure]);
+  }, [limit, retryCount, useMockOnFailure, user]);
 
   return { topArtisans, loading, error, usedMockData };
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -48,18 +48,7 @@ const Profile = () => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingArtisanProfile, setEditingArtisanProfile] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      navigate('/');
-      return;
-    }
-
-    if (user) {
-      fetchFavorites();
-    }
-  }, [user, isLoading, navigate]);
-
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -87,7 +76,7 @@ const Profile = () => {
       if (data && data.length > 0) {
         const artisanIds = data.map(fav => fav.artisan_id);
         const { data: artisanProfiles, error: artisanError } = await supabase
-          .from('artisan_profiles')
+          .from('artisan_contact_profiles')
           .select(`
             id,
             user_id,
@@ -132,7 +121,18 @@ const Profile = () => {
     } finally {
       setLoadingFavorites(false);
     }
-  };
+  }, [toast, user]);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/');
+      return;
+    }
+
+    if (user) {
+      fetchFavorites();
+    }
+  }, [user, isLoading, navigate, fetchFavorites]);
 
   const removeFavorite = async (favoriteId: string, artisanName: string) => {
     if (!user) return;

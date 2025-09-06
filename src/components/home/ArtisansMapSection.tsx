@@ -3,12 +3,13 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { useArtisanMap } from '@/contexts/ArtisanMapContext';
+import { useArtisanMap, MapArtisan } from '@/contexts/ArtisanMapContext';
 import { useAuth } from '@/contexts/AuthContext';
 import LocationSearch from '@/components/LocationSearch';
 
 // Fix Leaflet default marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+const DefaultIconProto = L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown };
+delete DefaultIconProto._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
@@ -32,21 +33,21 @@ const ArtisansMapSection = () => {
   } = useArtisanMap();
 
   // Fetch artisans with locations
-  const fetchArtisans = async () => {
+  const fetchArtisans = React.useCallback(async () => {
     try {
       console.log('🗺️ Fetching artisans for map...');
       
       // First, let's get all artisans to see what data we have
+      // Use secure views for map data
+      const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
       const { data: allArtisans, error: allError } = await supabase
-        .from('artisan_profiles')
+        .from(tableName)
         .select(`
           *,
           profiles!user_id (
             id,
             name,
-            avatar_url,
-            phone,
-            email
+            avatar_url${user ? ',\n            phone,\n            email' : ''}
           ),
           categories!category_id (
             id,
@@ -59,26 +60,29 @@ const ArtisansMapSection = () => {
             region
           )
         `)
-        .eq('is_active', true);
+        ;
 
       if (allError) {
         console.error('❌ Error fetching all artisans:', allError);
         return;
       }
 
-      console.log('📊 All artisans data:', allArtisans);
-      console.log('📍 Artisans with addresses:', allArtisans?.filter(a => a.address));
-
-      // Now use artisans that have address data (after our database update)
-      const artisansWithLocation = allArtisans?.filter(artisan => artisan.address || artisan.cities?.name) || [];
+  console.log('📊 All artisans data:', allArtisans);
+  // Now use artisans that have address data (auth) or city fallback (public)
+  const raw = (allArtisans ?? []) as unknown as MapArtisan[];
+      const artisansWithLocation = raw.filter((artisan) => {
+        const addrUnknown = (artisan as unknown as Record<string, unknown>).address;
+        const hasAddr = typeof addrUnknown === 'string' && addrUnknown.length > 0;
+        return (user && hasAddr) || Boolean(artisan.cities?.name);
+      });
       
       console.log('🏙️ Using address/city data for locations:', artisansWithLocation.length, 'artisans');
       
-      setArtisans(artisansWithLocation);
+  setArtisans(artisansWithLocation);
     } catch (error) {
       console.error('❌ Error fetching artisans:', error);
     }
-  };
+  }, [setArtisans, user]);
 
   // Geocode address using Nominatim (free, no API key needed)
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
@@ -281,11 +285,13 @@ const ArtisansMapSection = () => {
     addMarkersToMap();
 
     // Global navigation function for popup buttons
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).navigateToArtisan = (userId: string) => {
       navigate(`/artisan/${userId}`);
     };
 
     return () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (window as any).navigateToArtisan;
     };
   }, [artisans, navigate, setSelectedArtisan]);
@@ -357,7 +363,7 @@ const ArtisansMapSection = () => {
 
   useEffect(() => {
     fetchArtisans();
-  }, []);
+  }, [fetchArtisans]);
 
   return (
     <section className="py-16 bg-gradient-to-br from-secondary/20 to-accent/20">

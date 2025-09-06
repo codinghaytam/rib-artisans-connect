@@ -1,19 +1,30 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
 import L from 'leaflet';
-import { ArtisanProfile } from '@/hooks/useTopArtisans';
+
+// Narrow type for map needs; compatible with both public and contact views
+export type MapArtisan = {
+  id?: string | null;
+  user_id: string;
+  business_name?: string | null;
+  address?: string | null; // Only present for authenticated/contact view
+  categories?: { emoji?: string | null; name?: string | null } | null;
+  cities?: { name?: string | null; region?: string | null } | null;
+  profiles?: { name?: string | null; avatar_url?: string | null } | null;
+};
 
 interface ArtisanMapContextType {
-  artisans: ArtisanProfile[];
-  setArtisans: (artisans: ArtisanProfile[]) => void;
-  selectedArtisan: ArtisanProfile | null;
-  setSelectedArtisan: (artisan: ArtisanProfile | null) => void;
-  hoveredArtisan: ArtisanProfile | null;
-  setHoveredArtisan: (artisan: ArtisanProfile | null) => void;
+  artisans: MapArtisan[];
+  setArtisans: (artisans: MapArtisan[]) => void;
+  selectedArtisan: MapArtisan | null;
+  setSelectedArtisan: (artisan: MapArtisan | null) => void;
+  hoveredArtisan: MapArtisan | null;
+  setHoveredArtisan: (artisan: MapArtisan | null) => void;
   mapRef: React.MutableRefObject<L.Map | null>;
   markersRef: React.MutableRefObject<L.Marker[]>;
   highlightArtisanOnMap: (artisanId: string) => void;
   resetMapHighlight: () => void;
-  flyToArtisan: (artisan: ArtisanProfile) => void;
+  flyToArtisan: (artisan: MapArtisan) => void;
 }
 
 const ArtisanMapContext = createContext<ArtisanMapContextType | undefined>(undefined);
@@ -27,9 +38,9 @@ export const useArtisanMap = () => {
 };
 
 export const ArtisanMapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [artisans, setArtisans] = useState<ArtisanProfile[]>([]);
-  const [selectedArtisan, setSelectedArtisan] = useState<ArtisanProfile | null>(null);
-  const [hoveredArtisan, setHoveredArtisan] = useState<ArtisanProfile | null>(null);
+  const [artisans, setArtisans] = useState<MapArtisan[]>([]);
+  const [selectedArtisan, setSelectedArtisan] = useState<MapArtisan | null>(null);
+  const [hoveredArtisan, setHoveredArtisan] = useState<MapArtisan | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
 
@@ -59,14 +70,15 @@ export const ArtisanMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   }, []);
 
-  const flyToArtisan = useCallback(async (artisan: ArtisanProfile) => {
+  const flyToArtisan = useCallback(async (artisan: MapArtisan) => {
     if (!mapRef.current || !artisan.address) return;
 
     try {
       // Find the marker for this artisan
-      const targetMarker = markersRef.current.find(
-        marker => (marker.getElement() as any)?.dataset?.artisanId === artisan.user_id
-      );
+      const targetMarker = markersRef.current.find((marker) => {
+        const el = marker.getElement() as HTMLElement | null;
+        return el?.dataset?.artisanId === artisan.user_id;
+      });
 
       if (targetMarker) {
         const latLng = targetMarker.getLatLng();

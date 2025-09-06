@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { handleSupabaseError } from '@/integrations/supabase/error-handling';
 import { Database } from '@/integrations/supabase/types';
@@ -49,7 +49,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
   const { user } = useAuth();
   const MAX_RETRIES = 3;
 
-  const fetchArtisans = async () => {
+  const fetchArtisans = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -109,6 +109,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
         const allData = await query;
         
         if (!allData.error && allData.data) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const filtered = allData.data.filter((artisan: any) => {
             const searchFields = [
               artisan.business_name,
@@ -157,7 +158,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters.categoryId, filters.cityId, filters.isVerified, filters.minRating, filters.searchTerm, retryCount, user]);
 
   useEffect(() => {
     let isMounted = true;
@@ -167,16 +168,7 @@ export const useArtisans = (filters: ArtisanFilters = {}) => {
     return () => {
       isMounted = false;
     };
-  }, [
-    filters.searchTerm,
-    filters.categoryId,
-    filters.cityId,
-    filters.minRating,
-    filters.isVerified,
-    filters.isAvailable,
-    retryCount, // Re-fetch when retry count changes
-    user?.id // Re-fetch when authentication status changes
-  ]);
+  }, [fetchArtisans]);
 
   return {
     artisans,
@@ -224,10 +216,9 @@ export const useCategories = () => {
           const categoriesWithCounts = await Promise.all(
             data.map(async (category) => {
               const { count, error: countError } = await supabase
-                .from('artisan_profiles')
+                .from('artisan_public_profiles')
                 .select('*', { count: 'exact', head: true })
-                .eq('category_id', category.id)
-                .eq('is_active', true);
+                .eq('category_id', category.id);
                 
               if (countError) console.error('Error fetching count:', countError);
               return {
