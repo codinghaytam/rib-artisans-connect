@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import type { Category as CategoryType, City as CityType } from '@/hooks/useArtisans';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -18,20 +19,19 @@ const BecomeArtisan = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     phone: '',
-    cin: '',
     business_name: '',
+    address: '',
+    service_radius: '20',
     city_id: '',
     category_id: '',
-    experience_years: '',
     description: '',
     specialties: ''
   });
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [cities, setCities] = useState<CityType[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,10 +40,40 @@ const BecomeArtisan = () => {
     if (user) {
       setFormData(prev => ({
         ...prev,
-        name: user.name || '',
         email: user.email || '',
-        phone: user.phone || ''
       }));
+
+      // Prefill from existing profile records
+      (async () => {
+        try {
+          const [{ data: artisan }, { data: profile } ] = await Promise.all([
+            supabase
+              .from('artisan_profiles')
+              .select('*')
+              .eq('user_id', user.id)
+              .single(),
+            supabase
+              .from('profiles')
+              .select('phone')
+              .eq('id', user.id)
+              .single(),
+          ]);
+
+          setFormData(prev => ({
+            ...prev,
+            phone: profile?.phone || prev.phone,
+            business_name: artisan?.business_name || prev.business_name,
+            address: artisan?.address || prev.address,
+            service_radius: artisan?.service_radius?.toString?.() || prev.service_radius,
+            city_id: artisan?.city_id || prev.city_id,
+            category_id: artisan?.category_id || prev.category_id,
+            description: artisan?.description || prev.description,
+            specialties: (artisan?.specialties || []).join(', '),
+          }));
+        } catch (e) {
+          // Silent prefill failure
+        }
+      })();
     }
   }, [user]);
 
@@ -90,55 +120,68 @@ const BecomeArtisan = () => {
         .split(',')
         .map(s => s.trim())
         .filter(s => s.length > 0);
+      
+      if (!user) throw new Error('Utilisateur non connecté');
 
-      const applicationData = {
-        user_id: user?.id || null,
-        email: formData.email,
-        name: formData.name,
-        phone: formData.phone,
-        business_name: formData.business_name,
-        category_id: formData.category_id,
-        city_id: formData.city_id,
-        description: formData.description,
-        experience_years: parseInt(formData.experience_years),
-        specialties: specialtiesArray,
-        status: 'not_read'
-      };
+      // Resolve city name for profiles.city field
+      let cityName: string | null = null;
+      if (formData.city_id) {
+        const { data: cityRow } = await supabase
+          .from('cities')
+          .select('name')
+          .eq('id', formData.city_id)
+          .single();
+        cityName = cityRow?.name || null;
+      }
 
-      const { error } = await supabase
-        .from('artisan_applications')
-        .insert([applicationData]);
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          phone: formData.phone || null,
+          city: cityName,
+          role: 'artisan',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+        .select('id')
+        .single();
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Upsert artisan profile for this user
+      const serviceRadius = parseInt(formData.service_radius || '20', 10);
+      const now = new Date().toISOString();
+      const { error: artisanError } = await supabase
+        .from('artisan_profiles')
+        .upsert({
+          user_id: user.id,
+          business_name: formData.business_name.trim() || null,
+          address: formData.address.trim() || null,
+          category_id: formData.category_id || null,
+          city_id: formData.city_id || null,
+          description: formData.description.trim() || null,
+          specialties: specialtiesArray,
+          service_radius: isNaN(serviceRadius) ? 20 : serviceRadius,
+          is_active: true,
+          updated_at: now,
+        }, { onConflict: 'user_id' })
+        .eq('user_id', user.id)
+        .select('id')
+        .single();
+
+      if (artisanError) throw artisanError;
 
       toast({
-        title: "Candidature envoyée",
-        description: "Nous examinerons votre demande et vous contacterons sous 48h.",
+        title: "Profil artisan mis à jour",
+        description: "Votre profil a été enregistré. Bienvenue parmi les artisans!",
       });
 
-      // Redirect to dashboard after successful application
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
-
-      // Reset form
-      setFormData({
-        name: user?.name || '',
-        email: user?.email || '',
-        phone: user?.phone || '',
-        cin: '',
-        business_name: '',
-        city_id: '',
-        category_id: '',
-        experience_years: '',
-        description: '',
-        specialties: ''
-      });
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error submitting application:', error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi de votre candidature.",
+        description: "Impossible d'enregistrer votre profil artisan (droits ou RLS)",
         variant: "destructive",
       });
     } finally {
@@ -206,40 +249,26 @@ const BecomeArtisan = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Application Form */}
+            {/* Artisan Profile Form */}
             <Card>
               <CardHeader>
-                <CardTitle>Candidature d'artisan</CardTitle>
+                <CardTitle>Profil artisan</CardTitle>
                 <CardDescription>
-                  Remplissez ce formulaire pour rejoindre notre plateforme
+                  Complétez votre profil pour apparaître dans les recherches
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                        Nom complet *
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Votre nom complet"
-                      />
-                    </div>
-                    <div>
                       <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                        Email *
+                        Email
                       </label>
                       <Input
                         id="email"
                         name="email"
                         type="email"
-                        required
+                        disabled
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="votre@email.com"
@@ -262,20 +291,7 @@ const BecomeArtisan = () => {
                         placeholder="+212 6XX-XXXXXX"
                       />
                     </div>
-                    <div>
-                      <label htmlFor="cin" className="block text-sm font-medium text-foreground mb-2">
-                        CIN *
-                      </label>
-                      <Input
-                        id="cin"
-                        name="cin"
-                        type="text"
-                        required
-                        value={formData.cin}
-                        onChange={handleChange}
-                        placeholder="Votre CIN"
-                      />
-                    </div>
+                    
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,6 +306,19 @@ const BecomeArtisan = () => {
                         value={formData.business_name}
                         onChange={handleChange}
                         placeholder="Nom de votre entreprise (optionnel)"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="address" className="block text-sm font-medium text-foreground mb-2">
+                        Adresse
+                      </label>
+                      <Input
+                        id="address"
+                        name="address"
+                        type="text"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Adresse complète (optionnel)"
                       />
                     </div>
                   </div>
@@ -335,20 +364,21 @@ const BecomeArtisan = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="experience_years" className="block text-sm font-medium text-foreground mb-2">
-                      Années d'expérience *
-                    </label>
-                    <Input
-                      id="experience_years"
-                      name="experience_years"
-                      type="number"
-                      required
-                      min="0"
-                      value={formData.experience_years}
-                      onChange={handleChange}
-                      placeholder="Nombre d'années"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="service_radius" className="block text-sm font-medium text-foreground mb-2">
+                        Rayon de service (km)
+                      </label>
+                      <Input
+                        id="service_radius"
+                        name="service_radius"
+                        type="number"
+                        min="1"
+                        value={formData.service_radius}
+                        onChange={handleChange}
+                        placeholder="20"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -387,10 +417,10 @@ const BecomeArtisan = () => {
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Envoi en cours...
+                        Enregistrement...
                       </>
                     ) : (
-                      "Envoyer ma candidature"
+                      "Enregistrer mon profil"
                     )}
                   </Button>
                 </form>
