@@ -43,7 +43,7 @@ export const useArtisanProfile = (userId: string) => {
         }
 
         // Use secure views based on authentication status
-        const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
+  const tableName = user ? 'artisan_contact_profiles' : 'artisan_public_profiles';
         
         const { data, error: fetchError } = await supabase
           .from(tableName)
@@ -122,7 +122,7 @@ export const useArtisanReviews = (userId: string, refreshTrigger: number = 0) =>
           throw new Error("Erreur de configuration de la base de données");
         }
 
-        const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await supabase
           .from('reviews')
           .select(`
             *,
@@ -130,11 +130,7 @@ export const useArtisanReviews = (userId: string, refreshTrigger: number = 0) =>
               id,
               name,
               avatar_url
-            ),
-            project:projects!project_id (
-              id,
-              title
-            )
+      )
           `)
           .eq('reviewee_id', userId)
           .order('created_at', { ascending: false });

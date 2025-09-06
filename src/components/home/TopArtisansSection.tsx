@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { useTopArtisans } from '@/hooks/useTopArtisans';
 import { useToast } from '@/hooks/use-toast';
 import { useArtisanMap } from '@/contexts/ArtisanMapContext';
-import { ScatteredStars } from '@/components/decorative/ScatteredStars';
 
 export const TopArtisansSection: React.FC = () => {
   // Use mock data as fallback in production environments only when all retries fail
@@ -50,7 +49,6 @@ export const TopArtisansSection: React.FC = () => {
 
   return (
     <section className="py-10 bg-background relative overflow-hidden">
-      <ScatteredStars count={20} />
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12 " >
           <h2 className="text-4xl font-bold mb-4 text-foreground">
@@ -177,12 +175,7 @@ export const TopArtisansSection: React.FC = () => {
                       )}
                     </div>
                     
-                    {/* Experience Years */}
-                    {artisan.experience_years > 0 && (
-                      <div className="text-center text-sm text-muted-foreground mb-3">
-                        {artisan.experience_years} ans d'expérience
-                      </div>
-                    )}
+                    {/* Experience years removed per schema */}
                     
 
                   {/* Action Buttons */}

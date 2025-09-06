@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -41,15 +43,23 @@ export const AdminArtisans = () => {
   const [artisans, setArtisans] = useState<Artisan[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedArtisan, setSelectedArtisan] = useState<Artisan | null>(null);
+  const [saving, setSaving] = useState(false);
+  // Editable fields state
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editBusinessName, setEditBusinessName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editSpecialties, setEditSpecialties] = useState("");
   const { toast } = useToast();
 
   const fetchArtisans = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from("artisan_contact_profiles")
+        .from("artisan_profiles")
         .select(`
           *,
-          profiles(name, email, phone),
+          profiles(email, phone),
           categories(name, emoji),
           cities(name)
         `)
@@ -75,24 +85,32 @@ export const AdminArtisans = () => {
 
   const toggleArtisanStatus = async (artisanId: string, field: string, value: boolean) => {
     try {
-      const { error } = await supabase
-        .from("artisan_profiles")
-        .update({ [field]: value })
-        .eq("id", artisanId);
+      // Optimistic UI update
+      setArtisans(prev => prev.map(a => a.id === artisanId ? { ...a, [field]: value } as Artisan : a));
+      setSelectedArtisan(prev => prev ? (prev.id === artisanId ? { ...prev, [field]: value } as Artisan : prev) : prev);
 
-      if (error) throw error;
+      // Do update and require a returned row; if RLS denies, .single() will error
+      const { data, error } = await supabase
+        .from("artisan_profiles")
+        .update({ [field]: value, updated_at: new Date().toISOString() })
+        .eq("id", artisanId)
+        .select("id, is_active, is_featured, is_verified")
+        .single();
+
+      if (error || !data) throw error || new Error('Mise à jour non autorisée');
 
       toast({
         title: "Succès",
         description: "Statut mis à jour avec succès",
       });
-
-      await fetchArtisans();
     } catch (error) {
       console.error("Error updating artisan:", error);
+      // Rollback optimistic change
+      setArtisans(prev => prev.map(a => a.id === artisanId ? { ...a, [field]: !value } as Artisan : a));
+      setSelectedArtisan(prev => prev ? (prev.id === artisanId ? { ...prev, [field]: !value } as Artisan : prev) : prev);
       toast({
         title: "Erreur",
-        description: "Erreur lors de la mise à jour",
+        description: "Mise à jour refusée (droits insuffisants ou RLS).",
         variant: "destructive",
       });
     }
@@ -107,12 +125,10 @@ export const AdminArtisans = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nom</TableHead>
             <TableHead>Entreprise</TableHead>
             <TableHead>Catégorie</TableHead>
             <TableHead>Ville</TableHead>
             <TableHead>Note</TableHead>
-            <TableHead>Projets</TableHead>
             <TableHead>Statut</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -120,7 +136,6 @@ export const AdminArtisans = () => {
         <TableBody>
           {artisans.map((artisan) => (
             <TableRow key={artisan.id}>
-              <TableCell className="font-medium">{artisan.profiles?.name}</TableCell>
               <TableCell>{artisan.business_name}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
@@ -141,7 +156,6 @@ export const AdminArtisans = () => {
                   <span className="text-muted-foreground">({artisan.rating_count})</span>
                 </div>
               </TableCell>
-              <TableCell>{artisan.total_projects}</TableCell>
               <TableCell>
                 <div className="flex gap-1 flex-wrap">
                   {artisan.is_verified && (
@@ -167,7 +181,15 @@ export const AdminArtisans = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setSelectedArtisan(artisan)}
+                      onClick={() => {
+                        setSelectedArtisan(artisan);
+                        // Seed edit state from selected artisan
+                        setEditEmail(artisan.profiles?.email || "");
+                        setEditPhone(artisan.profiles?.phone || "");
+                        setEditBusinessName(artisan.business_name || "");
+                        setEditDescription(artisan.description || "");
+                        setEditSpecialties((artisan.specialties || []).join(", "));
+                      }}
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Gérer
@@ -184,44 +206,99 @@ export const AdminArtisans = () => {
                     {selectedArtisan && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="font-semibold">Nom</label>
-                            <p>{selectedArtisan.profiles?.name}</p>
-                          </div>
+                      
                           <div>
                             <label className="font-semibold">Email</label>
-                            <p>{selectedArtisan.profiles?.email}</p>
+                            <Input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="email@example.com" />
                           </div>
                           <div>
                             <label className="font-semibold">Téléphone</label>
-                            <p>{selectedArtisan.profiles?.phone}</p>
+                            <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+212 ..." />
                           </div>
                           <div>
                             <label className="font-semibold">Entreprise</label>
-                            <p>{selectedArtisan.business_name}</p>
+                            <Input value={editBusinessName} onChange={(e) => setEditBusinessName(e.target.value)} placeholder="Raison sociale" />
                           </div>
-                          <div>
-                            <label className="font-semibold">Expérience</label>
-                            <p>{selectedArtisan.experience_years} ans</p>
-                          </div>
+                          {/* experience_years removed per schema */}
                           <div>
                           </div>
                         </div>
 
                         <div>
                           <label className="font-semibold">Description</label>
-                          <p className="mt-1 text-sm">{selectedArtisan.description}</p>
+                          <Textarea className="mt-1" rows={4} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Description de l'artisan" />
                         </div>
 
                         <div>
                           <label className="font-semibold">Spécialités</label>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {selectedArtisan.specialties?.map((specialty) => (
-                              <Badge key={specialty} variant="outline">
-                                {specialty}
-                              </Badge>
-                            ))}
-                          </div>
+                          <Input className="mt-1" value={editSpecialties} onChange={(e) => setEditSpecialties(e.target.value)} placeholder="Séparées par des virgules" />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={async () => {
+                              if (!selectedArtisan) return;
+                              try {
+                                setSaving(true);
+                                // Update profiles (name, email, phone)
+                                const { error: profileErr } = await supabase
+                                  .from('profiles')
+                                  .update({
+                                    email: editEmail.trim() || null,
+                                    phone: editPhone.trim() || null,
+                                    updated_at: new Date().toISOString(),
+                                  })
+                                  .eq('id', selectedArtisan.user_id)
+                                  .select('id')
+                                  .single();
+
+                                if (profileErr) throw profileErr;
+
+                                // Update artisan_profiles (business_name, description, specialties)
+                                const specialtiesArray = editSpecialties
+                                  .split(',')
+                                  .map(s => s.trim())
+                                  .filter(Boolean);
+
+                                const { error: artisanErr } = await supabase
+                                  .from('artisan_profiles')
+                                  .update({
+                                    business_name: editBusinessName.trim() || null,
+                                    description: editDescription.trim() || null,
+                                    specialties: specialtiesArray,
+                                    updated_at: new Date().toISOString(),
+                                  })
+                                  .eq('id', selectedArtisan.id)
+                                  .select('id')
+                                  .single();
+
+                                if (artisanErr) throw artisanErr;
+
+                                toast({ title: 'Succès', description: "Informations mises à jour" });
+                                // Reflect in UI
+                                setArtisans(prev => prev.map(a => a.id === selectedArtisan.id ? {
+                                  ...a,
+                                  business_name: editBusinessName,
+                                  description: editDescription,
+                                  specialties: specialtiesArray,
+                                  profiles: {
+                                    ...a.profiles,
+                                    name: editName,
+                                    email: editEmail,
+                                    phone: editPhone,
+                                  }
+                                } as Artisan : a));
+                              } catch (err) {
+                                console.error('Admin save error:', err);
+                                toast({ title: 'Erreur', description: "Mise à jour refusée (droits/RLS)", variant: 'destructive' });
+                              } finally {
+                                setSaving(false);
+                              }
+                            }}
+                            disabled={saving}
+                          >
+                            {saving ? 'Enregistrement...' : 'Enregistrer'}
+                          </Button>
                         </div>
 
                         <div className="flex flex-wrap gap-2 pt-4">

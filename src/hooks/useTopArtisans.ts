@@ -179,7 +179,6 @@ export const getMockTopArtisans = (count: number = 4): ArtisanProfile[] => {
     certifications: null,
     created_at: null,
     featured_until: null,
-    languages: null,
     portfolio_images: null,
     response_time_hours: null,
     service_radius: null,

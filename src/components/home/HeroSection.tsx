@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Star, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroArtisan from '@/assets/hero-artisan.jpg';
-import { QuatrefoilBackground } from '@/components/decorative/QuatrefoilBackground';
 
 interface HeroSectionProps {
   onScrollToSearch?: () => void;

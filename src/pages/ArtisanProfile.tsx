@@ -147,10 +147,7 @@ const ArtisanProfile = () => {
                             ⭐ Vedette
                           </Badge>
                         )}
-                        <Badge variant="outline">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {artisan.experience_years || 0} ans d'expérience
-                        </Badge>
+                        {/* experience_years removed per schema */}
                       </div>
                       
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
@@ -255,10 +252,7 @@ const ArtisanProfile = () => {
                     <div>
                       <h3 className="font-semibold mb-3">Informations</h3>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Expérience:</span>
-                          <span>{artisan.experience_years || 0} ans</span>
-                        </div>
+                        {/* experience_years removed per schema */}
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Projets réalisés:</span>
                           <span>{artisan.total_projects || 0}</span>
@@ -292,18 +286,7 @@ const ArtisanProfile = () => {
                     )}
                   </div>
                   
-                  {artisan.languages && artisan.languages.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold mb-3">Langues parlées</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {artisan.languages.map((language, index) => (
-                          <Badge key={index} variant="outline">
-                            {language}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {/* Languages removed per schema */}
                 </CardContent>
               </Card>
             </TabsContent>

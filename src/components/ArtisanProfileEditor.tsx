@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,11 +18,9 @@ interface ArtisanProfileData {
   description: string;
   category_id: string;
   city_id: string;
-  experience_years: number;
   service_radius: number;
   response_time_hours: number;
   specialties: string[];
-  languages: string[];
   address: string;
 }
 
@@ -45,23 +43,15 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     description: '',
     category_id: '',
     city_id: '',
-    experience_years: 0,
     service_radius: 20,
     response_time_hours: 24,
     specialties: [],
-    languages: ['Français', 'Arabe'],
     address: '',
   });
   const [newSpecialty, setNewSpecialty] = useState('');
-  const [newLanguage, setNewLanguage] = useState('');
+  // Removed languages per schema
 
-  useEffect(() => {
-    if (user) {
-      fetchArtisanProfile();
-    }
-  }, [user]);
-
-  const fetchArtisanProfile = async () => {
+  const fetchArtisanProfile = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -88,11 +78,9 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           description: data.description || '',
           category_id: data.category_id || '',
           city_id: data.city_id || '',
-          experience_years: data.experience_years || 0,
           service_radius: data.service_radius || 20,
           response_time_hours: data.response_time_hours || 24,
           specialties: data.specialties || [],
-          languages: data.languages || ['Français', 'Arabe'],
           address: data.address || '',
         });
       }
@@ -106,7 +94,13 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast, user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchArtisanProfile();
+    }
+  }, [user, fetchArtisanProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,11 +143,9 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
           description: formData.description.trim(),
           category_id: formData.category_id,
           city_id: formData.city_id || null,
-          experience_years: formData.experience_years,
           service_radius: formData.service_radius,
           response_time_hours: formData.response_time_hours,
           specialties: formData.specialties,
-          languages: formData.languages,
           address: formData.address.trim() || null,
           updated_at: new Date().toISOString(),
         })
@@ -185,10 +177,10 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     }
   };
 
-  const handleInputChange = (field: keyof ArtisanProfileData, value: any) => {
+  const handleInputChange = (field: keyof ArtisanProfileData, value: unknown) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value,
+      [field]: value as never,
     }));
   };
 
@@ -209,22 +201,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
     }));
   };
 
-  const addLanguage = () => {
-    if (newLanguage.trim() && !formData.languages.includes(newLanguage.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        languages: [...prev.languages, newLanguage.trim()],
-      }));
-      setNewLanguage('');
-    }
-  };
-
-  const removeLanguage = (language: string) => {
-    setFormData(prev => ({
-      ...prev,
-      languages: prev.languages.filter(l => l !== language),
-    }));
-  };
+  // Languages removed per schema
 
   if (loading || categoriesLoading || citiesLoading) {
     return (
@@ -331,17 +308,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="experience_years">Années d'expérience</Label>
-            <Input
-              id="experience_years"
-              type="number"
-              min="0"
-              max="50"
-              value={formData.experience_years}
-              onChange={(e) => handleInputChange('experience_years', parseInt(e.target.value) || 0)}
-            />
-          </div>
+          {/* experience_years removed per schema */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -396,32 +363,7 @@ const ArtisanProfileEditor: React.FC<ArtisanProfileEditorProps> = ({ onSave, onC
             </div>
           </div>
 
-          {/* Languages */}
-          <div className="space-y-2">
-            <Label>Langues parlées</Label>
-            <div className="flex gap-2 mb-2">
-              <Input
-                value={newLanguage}
-                onChange={(e) => setNewLanguage(e.target.value)}
-                placeholder="Ajouter une langue..."
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLanguage())}
-              />
-              <Button type="button" variant="outline" onClick={addLanguage}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.languages.map((language) => (
-                <Badge key={language} variant="outline" className="flex items-center gap-1">
-                  {language}
-                  <X
-                    className="h-3 w-3 cursor-pointer hover:text-destructive"
-                    onClick={() => removeLanguage(language)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
+          {/* Languages removed per schema */}
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-6">

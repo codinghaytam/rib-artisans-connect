@@ -227,11 +227,7 @@ const Artisans = () => {
                       </div>
                     )}
 
-                    {artisan.experience_years && artisan.experience_years > 0 && (
-                      <div className="text-center text-sm text-muted-foreground">
-                        {artisan.experience_years} ans d'expérience
-                      </div>
-                    )}
+                    {/* experience_years removed per schema */}
 
                     
                     <div className="flex gap-2">
